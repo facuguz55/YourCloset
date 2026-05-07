@@ -18,8 +18,11 @@ export function RegisterMembershipForm({ clients, types }: Props) {
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
 
-  const today = format(new Date(), "yyyy-MM-dd");
-  const nextMonth = format(new Date(Date.now() + 30 * 86400000), "yyyy-MM-dd");
+  const now = new Date();
+  const today = format(now, "yyyy-MM-dd");
+  const nextMonthDate = new Date(now);
+  nextMonthDate.setDate(nextMonthDate.getDate() + 30);
+  const nextMonth = format(nextMonthDate, "yyyy-MM-dd");
 
   function handleSubmit(formData: FormData) {
     startTransition(async () => {

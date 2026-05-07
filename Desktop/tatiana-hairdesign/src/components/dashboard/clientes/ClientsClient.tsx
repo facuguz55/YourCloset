@@ -3,7 +3,6 @@
 import { useState, useRef, useTransition } from "react";
 import Link from "next/link";
 import { createClient_ } from "@/app/actions/clients";
-import { cn } from "@/lib/utils";
 import { Search, Plus, UserCircle, Phone, CreditCard, ChevronRight, X } from "lucide-react";
 
 interface ClientRow {

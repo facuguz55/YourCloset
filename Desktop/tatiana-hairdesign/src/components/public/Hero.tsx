@@ -22,11 +22,10 @@ const BRANCHES = [
 ] as const;
 
 interface HeroProps {
-  title: string;
   subtitle: string;
 }
 
-export function Hero({ title, subtitle }: HeroProps) {
+export function Hero({ subtitle }: HeroProps) {
   const [showModal, setShowModal] = useState(false);
 
   return (

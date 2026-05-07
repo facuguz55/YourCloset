@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { StatsClient } from "@/components/dashboard/estadisticas/StatsClient";
-import { format, subDays, startOfWeek, startOfMonth, startOfQuarter, startOfYear } from "date-fns";
+import { format, startOfWeek, startOfMonth, startOfQuarter, startOfYear } from "date-fns";
 
 export const dynamic = "force-dynamic";
 

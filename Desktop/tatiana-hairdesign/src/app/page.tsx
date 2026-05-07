@@ -20,7 +20,6 @@ export default async function HomePage() {
     redirect("/maintenance");
   }
 
-  const heroTitle = siteConfig.hero_title ?? "Tatiana Martinez Hair Design";
   const heroSubtitle =
     siteConfig.hero_subtitle ?? "Unimos belleza, formación y crecimiento.";
   const aboutText =
@@ -29,7 +28,7 @@ export default async function HomePage() {
 
   return (
     <main>
-      <Hero title={heroTitle} subtitle={heroSubtitle} />
+      <Hero subtitle={heroSubtitle} />
       <AboutSection text={aboutText} />
       <ServicesSection />
       <MembershipsSection memberships={memberships} />

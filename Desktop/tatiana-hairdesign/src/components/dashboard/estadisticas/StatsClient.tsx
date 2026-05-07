@@ -10,7 +10,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";

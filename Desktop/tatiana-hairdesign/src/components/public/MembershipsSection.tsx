@@ -115,7 +115,7 @@ export function MembershipsSection({ memberships }: MembershipsSectionProps) {
 
         {/* Footer tagline */}
         <p className="mt-12 text-center text-sm italic text-muted">
-          "Vos elegís la membresía. Nosotros cuidamos tu cabello todo el mes."
+          &ldquo;Vos elegís la membresía. Nosotros cuidamos tu cabello todo el mes.&rdquo;
         </p>
       </div>
     </section>

@@ -4,28 +4,12 @@ import { StatCards } from "@/components/dashboard/inicio/StatCards";
 import { RecentMemberships } from "@/components/dashboard/inicio/RecentMemberships";
 import { RecentCoupons } from "@/components/dashboard/inicio/RecentCoupons";
 import { SiteStatusCard } from "@/components/dashboard/inicio/SiteStatusCard";
-import { format, subDays, startOfWeek } from "date-fns";
+import { format, subDays } from "date-fns";
 import { es } from "date-fns/locale";
 
 export const dynamic = "force-dynamic";
 
 type Period = "hoy" | "ayer" | "semana";
-
-function getPeriodRange(period: Period): { from: string; to: string } {
-  const now = new Date();
-  const today = format(now, "yyyy-MM-dd");
-
-  if (period === "hoy") {
-    return { from: today, to: today };
-  }
-  if (period === "ayer") {
-    const y = format(subDays(now, 1), "yyyy-MM-dd");
-    return { from: y, to: y };
-  }
-  // semana
-  const weekStart = format(startOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
-  return { from: weekStart, to: today };
-}
 
 interface Props {
   searchParams: Promise<{ periodo?: string }>;
@@ -36,7 +20,6 @@ export default async function InicioPage({ searchParams }: Props) {
   const period: Period =
     periodo === "ayer" ? "ayer" : periodo === "semana" ? "semana" : "hoy";
 
-  const { from, to } = getPeriodRange(period);
   const supabase = await createClient();
 
   // ── Métricas ──────────────────────────────────────────────────────────────

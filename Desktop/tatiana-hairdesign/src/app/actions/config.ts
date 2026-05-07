@@ -3,11 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export async function toggleMaintenance(enabled: boolean) {
+export async function toggleMaintenance() {
   const supabase = await createClient();
+  const { data } = await supabase
+    .from("site_config")
+    .select("value")
+    .eq("key", "maintenance_mode")
+    .single();
+  const next = data?.value !== "true";
   await supabase
     .from("site_config")
-    .update({ value: enabled ? "true" : "false", updated_at: new Date().toISOString() })
+    .update({ value: next ? "true" : "false", updated_at: new Date().toISOString() })
     .eq("key", "maintenance_mode");
   revalidatePath("/");
   revalidatePath("/admin/inicio");

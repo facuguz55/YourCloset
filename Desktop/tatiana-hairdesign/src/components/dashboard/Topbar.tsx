@@ -15,10 +15,9 @@ export function Topbar({ onMenuClick, maintenanceMode, userEmail }: TopbarProps)
   const [maintenance, setMaintenance] = useState(maintenanceMode);
 
   function handleToggle() {
-    const next = !maintenance;
-    setMaintenance(next);
+    setMaintenance((prev) => !prev);
     startTransition(async () => {
-      await toggleMaintenance(next);
+      await toggleMaintenance();
     });
   }
 

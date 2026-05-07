@@ -109,7 +109,15 @@ export function Footer() {
           <p className="text-xs text-muted-dark">
             © {new Date().getFullYear()} Tatiana Martinez Hair Design. Todos los derechos reservados.
           </p>
-          <p className="text-xs text-muted-dark">Santa Fe, Argentina</p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs text-muted-dark">Santa Fe, Argentina</p>
+            <a
+              href="/admin"
+              className="text-xs text-muted-dark/40 hover:text-muted-dark transition-colors"
+            >
+              Admin
+            </a>
+          </div>
         </div>
       </div>
     </footer>

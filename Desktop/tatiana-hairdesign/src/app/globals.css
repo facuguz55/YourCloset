@@ -34,6 +34,9 @@
 
 /* ── Variables semánticas Shadcn — tema dark permanente ─── */
 :root {
+  /* Alias de fuentes para compatibilidad con componentes existentes */
+  --font-playfair:       "Playfair Display", Georgia, serif;
+
   --background:          #111111;
   --foreground:          #f0f0f0;
 
@@ -102,7 +105,7 @@
   --color-accent-foreground:           var(--accent-foreground);
   --color-accent:                      var(--accent);
   --color-muted-foreground:            var(--muted-foreground);
-  --color-muted:                       var(--muted);
+  --color-muted:                       var(--muted-foreground); /* #888888 — texto gris legible */
   --color-secondary-foreground:        var(--secondary-foreground);
   --color-secondary:                   var(--secondary);
   --color-primary-foreground:          var(--primary-foreground);
@@ -126,7 +129,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

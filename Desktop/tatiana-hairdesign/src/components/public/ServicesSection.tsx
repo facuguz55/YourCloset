@@ -28,23 +28,22 @@ const SERVICES: Service[] = [
 function ServiceCard({ service }: { service: Service }) {
   return (
     <div className="group relative overflow-hidden rounded-lg border border-dark-border bg-dark-card transition-all duration-300 hover:border-gold/40">
-      {/* Glow en hover */}
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="absolute inset-0 bg-gold/3 rounded-lg" />
+        <div className="absolute inset-0 rounded-lg bg-gold/[0.03]" />
       </div>
 
-      <div className="relative p-5">
-        {/* Nombre del servicio */}
+      {/* Mobile: compacto. Desktop: con descripción */}
+      <div className="relative p-3 md:p-5">
         <h3
-          className="mb-2 text-lg text-gold transition-colors"
+          className="text-sm font-medium text-gold md:mb-2 md:text-lg"
           style={{ fontFamily: "var(--font-playfair)", fontStyle: "italic" }}
         >
           {service.name}
         </h3>
-        {/* Línea dorada */}
-        <div className="mb-3 h-px w-8 bg-gold/40 transition-all duration-300 group-hover:w-14 group-hover:bg-gold" />
-        {/* Descripción */}
-        <p className="text-sm leading-relaxed text-muted">{service.description}</p>
+        <div className="mt-1.5 h-px w-6 bg-gold/40 transition-all duration-300 group-hover:w-10 group-hover:bg-gold md:mb-3 md:w-8" />
+        <p className="hidden text-sm leading-relaxed text-muted md:block">
+          {service.description}
+        </p>
       </div>
     </div>
   );
@@ -75,8 +74,8 @@ export function ServicesSection() {
           </p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Grid: 2 columnas en mobile, 3 en desktop */}
+        <div className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-3">
           {SERVICES.map((service) => (
             <ServiceCard key={service.name} service={service} />
           ))}

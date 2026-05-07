@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Paleta Tatiana Martinez Hair Design ─────────── */
+  --color-dark:        #111111;
+  --color-darker:      #0d0d0d;
+  --color-dark-alt:    #1a1a1a;
+  --color-dark-card:   #161616;
+  --color-dark-border: #2a2a2a;
+
+  --color-gold:        #C9A96E;
+  --color-gold-light:  #dbbf88;
+  --color-gold-dark:   #a8854a;
+
+  --color-foreground:  #f0f0f0;
+  --color-muted:       #888888;
+  --color-muted-dark:  #555555;
+
+  /* ── Fuentes ─────────────────────────────────────── */
+  --font-display: var(--font-playfair);
+  --font-sans:    var(--font-geist-sans);
+  --font-mono:    var(--font-geist-mono);
+
+  /* ── Radios ──────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius:    8px;
+}
+
+/* ── Variables semánticas Shadcn (tema dark) ─────────── */
+:root {
+  --background:   #111111;
+  --foreground:   #f0f0f0;
+
+  --card:         #161616;
+  --card-foreground: #f0f0f0;
+
+  --popover:      #1a1a1a;
+  --popover-foreground: #f0f0f0;
+
+  --primary:      #C9A96E;
+  --primary-foreground: #111111;
+
+  --secondary:    #1a1a1a;
+  --secondary-foreground: #f0f0f0;
+
+  --muted:        #1a1a1a;
+  --muted-foreground: #888888;
+
+  --accent:       #C9A96E;
+  --accent-foreground: #111111;
+
+  --destructive:  #ef4444;
+  --destructive-foreground: #f0f0f0;
+
+  --border:       #2a2a2a;
+  --input:        #1a1a1a;
+  --ring:         #C9A96E;
+
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar dark ──────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0d0d0d; }
+::-webkit-scrollbar-thumb { background: #C9A96E; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #dbbf88; }
+
+/* ── Selección de texto dorada ───────────────────────── */
+::selection {
+  background: #C9A96E33;
+  color: #f0f0f0;
+}

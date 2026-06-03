@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useProjects } from '../../hooks/useProjects'
+import { isConfigured } from '../../lib/supabase'
 import ProjectCard from '../../components/ProjectCard/ProjectCard'
 import NewProjectModal from '../../components/NewProjectModal/NewProjectModal'
 import styles from './Home.module.css'
@@ -74,6 +75,20 @@ export default function Home({ onSelectProject }) {
 
   return (
     <main className={styles.main}>
+      {/* Banner de configuración pendiente */}
+      {!isConfigured && (
+        <div className={styles.setupBanner}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="#ffaa00" strokeWidth="1.3"/>
+            <path d="M8 5V8.5M8 10.5V11" stroke="#ffaa00" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+          <div>
+            <strong>Supabase no configurado.</strong> Completá las variables en{' '}
+            <code>.env.local</code> y reiniciá el servidor para conectar la base de datos.
+          </div>
+        </div>
+      )}
+
       {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroText}>

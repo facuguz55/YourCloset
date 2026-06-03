@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase, isConfigured } from '../lib/supabase'
 
 export function useProjects() {
   const [projects, setProjects] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(isConfigured)
   const [error, setError] = useState(null)
 
   const fetchProjects = useCallback(async () => {
+    if (!isConfigured) return
     try {
       const { data, error } = await supabase
         .from('projects')
@@ -24,8 +25,8 @@ export function useProjects() {
 
   useEffect(() => {
     fetchProjects()
+    if (!isConfigured) return
 
-    // Realtime: escucha cambios en la tabla projects
     const channel = supabase
       .channel('projects-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {

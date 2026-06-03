@@ -1,15 +1,27 @@
 import { useState } from 'react'
 import Header from './components/Header/Header'
 import Home from './pages/Home/Home'
+import ProjectEditor from './pages/ProjectEditor/ProjectEditor'
 
 export default function App() {
-  const [selectedProject, setSelectedProject] = useState(null)
+  const [activeProjectId, setActiveProjectId] = useState(null)
 
-  // Por ahora solo la pantalla Home; las demás pantallas se añaden en fases siguientes
+  function openProject(project) {
+    setActiveProjectId(project.id)
+  }
+
+  function goHome() {
+    setActiveProjectId(null)
+  }
+
   return (
     <>
       <Header />
-      <Home onSelectProject={setSelectedProject} />
+      {activeProjectId ? (
+        <ProjectEditor projectId={activeProjectId} onBack={goHome} />
+      ) : (
+        <Home onSelectProject={openProject} />
+      )}
     </>
   )
 }

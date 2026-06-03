@@ -1,0 +1,105 @@
+.tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stepLabel {
+  font-size: 0.875rem;
+  color: var(--cyan);
+  font-style: italic;
+}
+
+.pct {
+  font-size: 0.875rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.bar {
+  height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 2px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  position: relative;
+}
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 26px;
+  width: 1px;
+  height: calc(100% - 14px);
+  background: var(--border);
+}
+
+.dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-2);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.done .dot {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.active .dot {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+.stepName {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+.done .stepName { color: var(--text-secondary); }
+.active .stepName { color: var(--cyan); font-weight: 500; }
+
+.spinner {
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid rgba(0, 212, 255, 0.3);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}

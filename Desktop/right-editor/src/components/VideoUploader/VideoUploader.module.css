@@ -1,0 +1,114 @@
+.zone {
+  border: 2px dashed var(--border-2);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  background: var(--surface);
+  text-align: center;
+  min-height: 280px;
+}
+
+.zone:hover, .dragging {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+}
+
+.hidden { display: none; }
+
+.iconWrap {
+  margin-bottom: 6px;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--text-primary);
+}
+
+.sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.formats {
+  margin-top: 6px;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-family: monospace;
+  letter-spacing: 0.04em;
+}
+
+.error {
+  margin-top: 8px;
+  color: var(--error);
+  font-size: 0.8125rem;
+  background: var(--error-dim);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* Estado subiendo */
+.uploadingState {
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  text-align: center;
+  min-height: 280px;
+  justify-content: center;
+}
+
+.uploadIcon {
+  animation: pulse-cyan 1.5s infinite;
+}
+
+.uploadingLabel {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--cyan);
+}
+
+.uploadingFile {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progressBar {
+  width: 240px;
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.progressPct {
+  font-size: 0.8125rem;
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-weight: 600;
+}

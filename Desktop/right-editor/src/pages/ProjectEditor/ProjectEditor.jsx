@@ -71,13 +71,17 @@ export default function ProjectEditor({ projectId, onBack }) {
     setTriggering(true)
     setTriggerError(null)
     try {
-      // Guardar opciones actuales en DB
-      await fetch(import.meta.env.VITE_N8N_WEBHOOK_URL, {
+      const headers = { 'Content-Type': 'application/json' }
+      // Adjuntar secreto compartido si está configurado — N8N debe verificarlo
+      const secret = import.meta.env.VITE_N8N_WEBHOOK_SECRET
+      if (secret) headers['X-Webhook-Secret'] = secret
+
+      const res = await fetch(import.meta.env.VITE_N8N_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ project_id: projectId, options: opts }),
       })
-      // N8N se encarga de actualizar status → 'processing' en Supabase
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
     } catch (err) {
       setTriggerError('No se pudo conectar con el servidor de procesamiento.')
     } finally {
@@ -85,14 +89,22 @@ export default function ProjectEditor({ projectId, onBack }) {
     }
   }
 
+  // Sanitizar URLs de Supabase Storage — rechazar cualquier esquema que no sea https
+  function safeStorageUrl(url) {
+    if (!url) return null
+    return /^https:\/\//i.test(url) ? url : null
+  }
+
   if (loading) return <LoadingSkeleton onBack={onBack} />
   if (error) return <ErrorState error={error} onBack={onBack} />
 
-  const isProcessing = project.status === 'processing'
-  const isCompleted  = project.status === 'completed'
-  const isError      = project.status === 'error'
-  const hasVideo     = !!project.original_url
-  const canProcess   = hasVideo && !isProcessing && !isCompleted
+  const isProcessing   = project.status === 'processing'
+  const isCompleted    = project.status === 'completed'
+  const isError        = project.status === 'error'
+  const originalUrl    = safeStorageUrl(project.original_url)
+  const processedUrl   = safeStorageUrl(project.processed_url)
+  const hasVideo       = !!originalUrl
+  const canProcess     = hasVideo && !isProcessing && !isCompleted
 
   return (
     <main className={styles.main}>
@@ -124,10 +136,10 @@ export default function ProjectEditor({ projectId, onBack }) {
               progress={uploadProgress}
               error={uploadError}
             />
-          ) : isCompleted && project.processed_url ? (
+          ) : isCompleted && processedUrl ? (
             <div className={styles.videoWrap}>
               <video
-                src={project.processed_url}
+                src={processedUrl}
                 controls
                 className={styles.video}
                 playsInline
@@ -140,7 +152,7 @@ export default function ProjectEditor({ projectId, onBack }) {
           ) : (
             <div className={styles.videoWrap}>
               <video
-                src={project.original_url}
+                src={originalUrl}
                 controls={!isProcessing}
                 className={`${styles.video} ${isProcessing ? styles.videoDim : ''}`}
                 playsInline
@@ -338,9 +350,9 @@ export default function ProjectEditor({ projectId, onBack }) {
           )}
 
           {/* Descarga cuando completado */}
-          {isCompleted && project.processed_url && (
+          {isCompleted && processedUrl && (
             <a
-              href={project.processed_url}
+              href={processedUrl}
               download
               target="_blank"
               rel="noreferrer"

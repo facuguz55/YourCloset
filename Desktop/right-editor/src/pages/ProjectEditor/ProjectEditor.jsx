@@ -104,7 +104,7 @@ export default function ProjectEditor({ projectId, onBack }) {
   const originalUrl    = safeStorageUrl(project.original_url)
   const processedUrl   = safeStorageUrl(project.processed_url)
   const hasVideo       = !!originalUrl
-  const canProcess     = hasVideo && !isProcessing && !isCompleted
+  const canProcess     = hasVideo && !isProcessing
 
   return (
     <main className={styles.main}>
@@ -203,21 +203,21 @@ export default function ProjectEditor({ projectId, onBack }) {
                   description="FFmpeg elimina pausas de +1 segundo"
                   checked={opts.removeSilence}
                   onChange={v => setOpt('removeSilence', v)}
-                  disabled={isCompleted}
+                  disabled={isProcessing}
                 />
                 <Toggle
                   label="Subtítulos animados"
                   description="Palabra a palabra, estilo CapCut"
                   checked={opts.subtitles}
                   onChange={v => setOpt('subtitles', v)}
-                  disabled={isCompleted}
+                  disabled={isProcessing}
                 />
                 <Toggle
                   label="Logo Right Botines"
                   description="Superponer logo en el video"
                   checked={opts.logo}
                   onChange={v => setOpt('logo', v)}
-                  disabled={isCompleted}
+                  disabled={isProcessing}
                 />
               </div>
             </div>
@@ -234,7 +234,7 @@ export default function ProjectEditor({ projectId, onBack }) {
                     className={styles.select}
                     value={opts.subtitleConfig.font}
                     onChange={e => setSubConfig('font', e.target.value)}
-                    disabled={isCompleted}
+                    disabled={isProcessing}
                   >
                     {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
                   </select>
@@ -246,7 +246,7 @@ export default function ProjectEditor({ projectId, onBack }) {
                     className={styles.range}
                     value={opts.subtitleConfig.size}
                     onChange={e => setSubConfig('size', Number(e.target.value))}
-                    disabled={isCompleted}
+                    disabled={isProcessing}
                   />
                 </div>
                 <div className={styles.field}>
@@ -257,7 +257,7 @@ export default function ProjectEditor({ projectId, onBack }) {
                       className={styles.colorPicker}
                       value={opts.subtitleConfig.color}
                       onChange={e => setSubConfig('color', e.target.value)}
-                      disabled={isCompleted}
+                      disabled={isProcessing}
                     />
                     <span className={styles.colorValue}>{opts.subtitleConfig.color}</span>
                   </div>
@@ -271,7 +271,7 @@ export default function ProjectEditor({ projectId, onBack }) {
                         type="button"
                         className={`${styles.pill} ${opts.subtitleConfig.position === p.value ? styles.pillActive : ''}`}
                         onClick={() => setSubConfig('position', p.value)}
-                        disabled={isCompleted}
+                        disabled={isProcessing}
                       >{p.label}</button>
                     ))}
                   </div>
@@ -294,7 +294,7 @@ export default function ProjectEditor({ projectId, onBack }) {
                         type="button"
                         className={`${styles.pill} ${opts.logoConfig.position === p.value ? styles.pillActive : ''}`}
                         onClick={() => setLogoConfig('position', p.value)}
-                        disabled={isCompleted}
+                        disabled={isProcessing}
                       >{p.label}</button>
                     ))}
                   </div>
@@ -306,7 +306,7 @@ export default function ProjectEditor({ projectId, onBack }) {
                     className={styles.range}
                     value={opts.logoConfig.size}
                     onChange={e => setLogoConfig('size', Number(e.target.value))}
-                    disabled={isCompleted}
+                    disabled={isProcessing}
                   />
                 </div>
                 <div className={styles.field}>
@@ -316,7 +316,7 @@ export default function ProjectEditor({ projectId, onBack }) {
                     className={styles.range}
                     value={opts.logoConfig.opacity}
                     onChange={e => setLogoConfig('opacity', Number(e.target.value))}
-                    disabled={isCompleted}
+                    disabled={isProcessing}
                   />
                 </div>
               </div>
@@ -342,7 +342,7 @@ export default function ProjectEditor({ projectId, onBack }) {
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                       <path d="M6 4L14 9L6 14V4Z" fill="currentColor"/>
                     </svg>
-                    Procesar Video
+                    {isCompleted ? 'Procesar de nuevo' : isError ? 'Reintentar procesamiento' : 'Procesar Video'}
                   </>
                 )}
               </button>

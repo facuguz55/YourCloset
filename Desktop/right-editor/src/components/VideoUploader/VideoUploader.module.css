@@ -45,13 +45,37 @@
   letter-spacing: 0.04em;
 }
 
-.error {
+.errorBlock {
   margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.error {
   color: var(--error);
   font-size: 0.8125rem;
   background: var(--error-dim);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.retryBtn {
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm);
+  padding: 6px 16px;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  transition: border-color var(--transition), color var(--transition);
+}
+.retryBtn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
 }
 
 /* Estado subiendo */

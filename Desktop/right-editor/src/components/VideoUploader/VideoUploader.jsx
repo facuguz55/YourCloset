@@ -14,6 +14,12 @@ export default function VideoUploader({ onFile, uploading, progress, error }) {
   const [dragging, setDragging] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
 
+  // Si hay error, resetear estado para volver al drop zone
+  function reset() {
+    setSelectedFile(null)
+    if (inputRef.current) inputRef.current.value = ''
+  }
+
   function handleFile(file) {
     if (!file) return
     setSelectedFile(file)
@@ -32,7 +38,8 @@ export default function VideoUploader({ onFile, uploading, progress, error }) {
     if (file) handleFile(file)
   }
 
-  if (uploading || (selectedFile && progress > 0)) {
+  // Mostrar estado de carga solo si está activamente subiendo y sin error
+  if (uploading || (selectedFile && progress > 0 && !error)) {
     return (
       <div className={styles.uploadingState}>
         <div className={styles.uploadIcon}>
@@ -81,7 +88,14 @@ export default function VideoUploader({ onFile, uploading, progress, error }) {
       <p className={styles.sub}>o hacé clic para seleccionar</p>
       <p className={styles.formats}>{ACCEPTED.join('  ·  ')}</p>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {error && (
+        <div className={styles.errorBlock}>
+          <p className={styles.error}>{error}</p>
+          <button type="button" className={styles.retryBtn} onClick={(e) => { e.stopPropagation(); reset() }}>
+            Reintentar
+          </button>
+        </div>
+      )}
     </div>
   )
 }

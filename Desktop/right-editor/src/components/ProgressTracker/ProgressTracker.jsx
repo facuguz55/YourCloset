@@ -1,29 +1,27 @@
 import styles from './ProgressTracker.module.css'
 
+// Steps en el orden exacto que N8N los envía, con los % de progreso como umbral
 const STEPS = [
-  { key: 'uploading',    label: 'Subiendo'             },
-  { key: 'transcribing', label: 'Transcribiendo'        },
-  { key: 'silence',      label: 'Quitando silencios'    },
-  { key: 'subtitles',    label: 'Renderizando subtítulos' },
-  { key: 'logo',         label: 'Agregando logo'        },
-  { key: 'finalizing',   label: 'Finalizando'           },
+  { label: 'Iniciando procesamiento',   minProgress: 5  },
+  { label: 'Quitando silencios',        minProgress: 20 },
+  { label: 'Transcribiendo con IA',     minProgress: 40 },
+  { label: 'Generando subtítulos',      minProgress: 60 },
+  { label: 'Agregando logo',            minProgress: 75 },
+  { label: 'Subiendo video final',      minProgress: 88 },
 ]
 
-function getStepIndex(step) {
-  const map = {
-    uploading: 0, transcribing: 1, silence: 2,
-    subtitles: 3, logo: 4, finalizing: 5,
+// Deriva el índice activo desde el progreso numérico (más confiable que el string)
+function getStepIndex(progress) {
+  if (!progress) return -1
+  let idx = -1
+  for (let i = 0; i < STEPS.length; i++) {
+    if (progress >= STEPS[i].minProgress) idx = i
   }
-  if (!step) return 0
-  const lower = step.toLowerCase()
-  for (const [key, idx] of Object.entries(map)) {
-    if (lower.includes(key)) return idx
-  }
-  return 0
+  return idx
 }
 
 export default function ProgressTracker({ progress, step, status }) {
-  const currentIdx = status === 'completed' ? STEPS.length : getStepIndex(step)
+  const currentIdx = status === 'completed' ? STEPS.length : getStepIndex(progress)
 
   return (
     <div className={styles.tracker}>
@@ -43,7 +41,7 @@ export default function ProgressTracker({ progress, step, status }) {
           const done    = i < currentIdx
           const active  = i === currentIdx && status !== 'completed'
           return (
-            <div key={s.key} className={`${styles.step} ${done ? styles.done : ''} ${active ? styles.active : ''}`}>
+            <div key={s.label} className={`${styles.step} ${done ? styles.done : ''} ${active ? styles.active : ''}`}>
               <div className={styles.dot}>
                 {done ? (
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none">

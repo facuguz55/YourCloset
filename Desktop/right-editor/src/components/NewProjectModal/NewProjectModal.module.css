@@ -1,0 +1,195 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 8, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.modal {
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), var(--cyan-glow);
+  animation: fadeIn 0.25s ease forwards;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.close {
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition), background var(--transition);
+  display: flex;
+}
+.close:hover {
+  color: var(--text-primary);
+  background: var(--surface-3);
+}
+
+.form {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+.input {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+  width: 100%;
+}
+.input::placeholder {
+  color: var(--text-muted);
+}
+.input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.12);
+}
+
+.formats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.formatBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+.formatBtn:hover {
+  border-color: var(--border-2);
+  background: var(--surface-3);
+}
+.formatActive {
+  border-color: var(--cyan) !important;
+  background: var(--cyan-dim) !important;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+}
+.formatActive .formatLabel {
+  color: var(--cyan);
+}
+
+.formatLabel {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--text-primary);
+}
+.formatDesc {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: var(--error);
+  background: var(--error-dim);
+  border: 1px solid rgba(255, 64, 96, 0.2);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.btnCancel {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 9px 18px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: border-color var(--transition), color var(--transition);
+}
+.btnCancel:hover {
+  border-color: var(--border-2);
+  color: var(--text-primary);
+}
+
+.btnCreate {
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  border: none;
+  border-radius: var(--radius);
+  padding: 9px 22px;
+  color: #050508;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.35);
+}
+.btnCreate:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(0, 212, 255, 0.5);
+}
+.btnCreate:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(5, 5, 8, 0.3);
+  border-top-color: #050508;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}

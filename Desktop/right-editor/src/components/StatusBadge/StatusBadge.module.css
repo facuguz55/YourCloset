@@ -1,0 +1,52 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pending {
+  background: rgba(107, 122, 153, 0.12);
+  color: var(--text-secondary);
+  border: 1px solid rgba(107, 122, 153, 0.25);
+}
+
+.uploading {
+  background: rgba(0, 153, 255, 0.12);
+  color: var(--blue);
+  border: 1px solid rgba(0, 153, 255, 0.25);
+}
+
+.processing {
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+}
+
+.completed {
+  background: rgba(0, 255, 179, 0.1);
+  color: var(--green);
+  border: 1px solid rgba(0, 255, 179, 0.25);
+}
+
+.error {
+  background: var(--error-dim);
+  color: var(--error);
+  border: 1px solid rgba(255, 64, 96, 0.25);
+}
+
+.spinner {
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid rgba(0, 212, 255, 0.3);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}

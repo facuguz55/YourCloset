@@ -1,0 +1,49 @@
+.canvas {
+  position: relative;
+  width: 100%;
+  background: #000;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  max-height: 72vh;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hint {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 212, 255, 0.12);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  color: var(--cyan);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.2s ease;
+}

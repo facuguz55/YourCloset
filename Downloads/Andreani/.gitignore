@@ -1,0 +1,11 @@
+# Uploads y archivos temporales de trabajo
+uploads/
+debug-screenshot.jpg
+.thumbnail
+
+# Componentes auxiliares (todo está consolidado en Andreani.html)
+components/
+
+# OS
+.DS_Store
+Thumbs.db

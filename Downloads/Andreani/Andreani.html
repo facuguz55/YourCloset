@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Andreani | Líderes en soluciones logísticas</title>
+  <meta name="theme-color" content="#d71920">
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; min-height: 100vh; scroll-behavior: smooth; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #fafafa;
+      color: #272a2f;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { min-height: 100vh; display: flex; flex-direction: column; }
+    input::placeholder { color: #9e9e9e; }
+    input:focus { border-color: #d71920 !important; outline: none; }
+    button { font-family: inherit; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #c4c8cc; border-radius: 3px; }
+    .page-enter { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+
+
+
+
+
+/* ===== HEADER ===== */
+const NAV_ITEMS = [
+{ label: 'Seguir envíos', items: ['Seguir mi envío', 'Ver mis envíos'] },
+{ label: 'Hacer envíos', items: ['Enviar un paquete', 'Cotizar envío', 'Preparar mi envío'] },
+{ label: 'Asistencia', items: ['Centro de ayuda', 'Reclamos', 'Arrepentimiento de compra'] },
+{ label: 'Sucursales', items: ['Buscar sucursal', 'Horarios de atención'] },
+{ label: 'Para tu negocio', items: ['Soluciones logísticas', 'Integraciones eCommerce', 'Andreani API'] }];
+
+
+function ChevronDown({ open }) {
+  return (
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
+      <path d="M1.5 3.5L5 7L8.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+    </svg>);
+
+}
+
+function useIsMobile(bp = 1023) {
+  const [m, setM] = React.useState(window.innerWidth <= bp);
+  React.useEffect(() => {const h = () => setM(window.innerWidth <= bp);window.addEventListener('resize', h);return () => window.removeEventListener('resize', h);}, [bp]);
+  return m;
+}
+
+function Header({ onNavigate }) {
+  const [openDD, setOpenDD] = React.useState(null);
+  const [mobOpen, setMobOpen] = React.useState(false);
+  const isMobile = useIsMobile(1023);
+
+  React.useEffect(() => {const h = () => setOpenDD(null);document.addEventListener('click', h);return () => document.removeEventListener('click', h);}, []);
+
+  const ANDREANI_LINKS = {
+    'Preparar mi envío': 'https://www.andreani.com/hacer-un-envio',
+    'Centro de ayuda': 'https://www.andreani.com/ayuda',
+    'Reclamos': 'https://www.andreani.com/ayuda/reclamos',
+    'Arrepentimiento de compra': 'https://www.andreani.com/ayuda/arrepentimiento-de-compra',
+    'Horarios de atención': 'https://www.andreani.com/sucursales',
+    'Soluciones logísticas': 'https://www.andreani.com/para-tu-negocio',
+    'Integraciones eCommerce': 'https://www.andreani.com/para-tu-negocio/ecommerce',
+    'Andreani API': 'https://developers.andreani.com'
+  };
+
+  const navAction = (label, item) => {
+    setOpenDD(null);setMobOpen(false);
+    // → Nuestra app
+    if (item === 'Seguir mi envío' || item === 'Ver mis envíos') {onNavigate('home', 'seguir');return;}
+    if (item === 'Cotizar envío' || item === 'Enviar un paquete') {onNavigate('home', 'cotizar');return;}
+    if (item === 'Buscar sucursal') {onNavigate('sucursales');return;}
+    // → Andreani real
+    const url = ANDREANI_LINKS[item];
+    if (url) window.open(url, '_blank');
+  };
+
+  return (
+    <header style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 64, zIndex: 999, backgroundColor: '#fff', boxShadow: '0 1px 9px 0 hsla(0,0%,76%,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ maxWidth: 1536, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {isMobile &&
+          <button onClick={() => setMobOpen(!mobOpen)} style={{ display: 'flex', border: 'none', backgroundColor: 'transparent', fontSize: 24, cursor: 'pointer', padding: 8, color: '#272a2f' }}>
+              {mobOpen ? '✕' : '☰'}
+            </button>
+          }
+          <img src="https://componentesui.blob.core.windows.net/recursos/logos-gla/isologo-195.png" alt="Andreani" style={{ cursor: 'pointer', height: "65px", width: "195px", padding: "0px", margin: "-4px" }} onClick={() => onNavigate('home', 'seguir')} />
+        </div>
+
+        {!isMobile &&
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1, justifyContent: 'flex-start', marginLeft: 32 }}>
+            {NAV_ITEMS.map((item, idx) =>
+          <div key={idx} style={{ position: 'relative' }}>
+                <button onClick={(e) => {e.stopPropagation();setOpenDD(openDD === idx ? null : idx);}}
+            onMouseEnter={() => setOpenDD(idx)}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', fontFamily: 'Rubik, sans-serif', fontSize: 14, fontWeight: 500, color: '#272a2f', cursor: 'pointer', borderRadius: 8, border: 'none', backgroundColor: openDD === idx ? '#f5f5f5' : 'transparent', transition: 'background 0.15s' }}>
+                  {item.label} <ChevronDown open={openDD === idx} />
+                </button>
+                {openDD === idx &&
+            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, backgroundColor: '#fff', borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.12)', padding: '8px 0', minWidth: 240, zIndex: 1000 }}>
+                    {item.items.map((sub, si) =>
+              <button key={si} onClick={() => navAction(item.label, sub)}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#fafafa'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              style={{ padding: '12px 20px', fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#4e555e', cursor: 'pointer', display: 'block', border: 'none', backgroundColor: 'transparent', width: '100%', textAlign: 'left' }}>
+                        {sub}
+                      </button>
+              )}
+                  </div>
+            }
+              </div>
+          )}
+          </nav>
+        }
+
+        <a href="https://transaccional-router-login.andreani.com" target="_blank" rel="noopener noreferrer" style={{ padding: '8px 24px', borderRadius: 24, border: '1.5px solid #d71920', backgroundColor: '#fff', color: '#d71920', fontFamily: 'Rubik, sans-serif', fontSize: 14, fontWeight: 500, cursor: 'pointer', minWidth: 100, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s' }}
+        onMouseEnter={(e) => {e.currentTarget.style.backgroundColor = '#d71920';e.currentTarget.style.color = '#fff';}}
+        onMouseLeave={(e) => {e.currentTarget.style.backgroundColor = '#fff';e.currentTarget.style.color = '#d71920';}}>
+          Ingresar
+        </a>
+      </div>
+
+      {isMobile && mobOpen &&
+      <>
+          <div onClick={() => setMobOpen(false)} style={{ position: 'fixed', top: 64, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 998 }}></div>
+          <div style={{ position: 'fixed', top: 64, right: 0, bottom: 0, width: 300, backgroundColor: '#fff', zIndex: 999, overflowY: 'auto', padding: '8px 0', boxShadow: '-4px 0 16px rgba(0,0,0,0.1)' }}>
+            {NAV_ITEMS.map((item, idx) =>
+          <div key={idx}>
+                <button onClick={(e) => {e.stopPropagation();setOpenDD(openDD === idx ? null : idx);}}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '14px 24px', fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 15, color: '#272a2f', border: 'none', backgroundColor: 'transparent', cursor: 'pointer' }}>
+                  {item.label} <ChevronDown open={openDD === idx} />
+                </button>
+                {openDD === idx && item.items.map((sub, si) =>
+            <button key={si} onClick={() => navAction(item.label, sub)}
+            style={{ display: 'block', width: '100%', padding: '10px 24px 10px 40px', fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', textAlign: 'left' }}>
+                    {sub}
+                  </button>
+            )}
+              </div>
+          )}
+          </div>
+        </>
+      }
+    </header>);
+
+}
+
+/* ===== HERO - SEGUIR ENVIO ===== */
+function HeroSeguirEnvio({ onTrack }) {
+  const [num, setNum] = React.useState('');
+  const [err, setErr] = React.useState('');
+
+  const track = () => {
+    if (!num.trim()) {setErr('Ingresá un número de seguimiento');return;}
+    if (!/^\d+$/.test(num.trim())) {setErr('Solo se permiten números, sin guiones ni puntos');return;}
+    setErr('');onTrack(num.trim());
+  };
+
+  return (
+    <div>
+      <h1 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, lineHeight: '44px', color: '#272a2f', margin: '0 0 8px', fontSize: 40 }}>Seguí tu envío ahora</h1>
+      <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 18, lineHeight: '28px', color: '#6c7580', margin: '0 0 32px' }}>Conocé el estado de tus envíos en todo momento.</p>
+      <div style={{ display: 'flex', marginBottom: 8 }}>
+        <input type="text" value={num} onChange={(e) => {setNum(e.target.value);setErr('');}}
+        onKeyDown={(e) => e.key === 'Enter' && track()}
+        placeholder="Ingresá el número de seguimiento"
+        style={{ flex: 1, height: 52, padding: '0 16px', border: '1px solid #c0c3c8', borderRight: 'none', borderRadius: '8px 0 0 8px', fontFamily: 'Roboto, sans-serif', fontSize: 16, color: '#272a2f', outline: 'none', backgroundColor: '#fff' }} />
+        <button onClick={track} style={{ width: 52, height: 52, backgroundColor: '#d71920', border: 'none', borderRadius: '0 8px 8px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M16.5 16.5L12.375 12.375M14.25 7.875C14.25 11.396 11.396 14.25 7.875 14.25C4.354 14.25 1.5 11.396 1.5 7.875C1.5 4.354 4.354 1.5 7.875 1.5C11.396 1.5 14.25 4.354 14.25 7.875Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+        </button>
+      </div>
+      {err && <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#d71920', fontStyle: 'italic', margin: '4px 0 0' }}>{err}</p>}
+      <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', fontStyle: 'italic', margin: '4px 0 0' }}>Sin guiones ni puntos. Ej. 360000000000000</p>
+      <div style={{ marginTop: 48 }}>
+        <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 16, color: '#272a2f', margin: '0 0 4px' }}>¿No tenés el número de seguimiento?</p>
+        <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', margin: 0 }}>
+          <span style={{ color: '#1a73e8', cursor: 'pointer' }}><a href="https://transaccional-router-login.andreani.com" target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8' }}>Iniciá sesión o registrate</a></span> para ver todos los envíos asociados a tu e-mail o DNI.
+        </p>
+      </div>
+    </div>);
+
+}
+
+/* ===== HERO - COTIZAR ENVIO ===== */
+function HeroCotizarEnvio({ onQuote }) {
+  const [f, setF] = React.useState({ desde: '', hasta: '', alto: '', ancho: '', largo: '', peso: '' });
+  const [errs, setErrs] = React.useState({});
+  const upd = (k, v) => {setF({ ...f, [k]: v });setErrs({ ...errs, [k]: false });};
+
+  const cotizar = () => {
+    const ne = {};
+    Object.keys(f).forEach((k) => {if (!f[k].trim()) ne[k] = true;});
+    if (Object.keys(ne).length) {setErrs(ne);return;}
+    setErrs({});onQuote(f);
+  };
+
+  const inpS = (has) => ({ height: 48, padding: '0 12px', border: `1px solid ${has ? '#d71920' : '#c4c8cc'}`, borderRadius: 4, fontFamily: 'Roboto, sans-serif', fontSize: 16, color: '#272a2f', width: '100%', boxSizing: 'border-box' });
+  const lblS = { fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 };
+
+  return (
+    <div>
+      <h1 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 32, lineHeight: '44px', color: '#272a2f', margin: '0 0 4px' }}>Cotizá tu paquete</h1>
+      <p style={{ margin: '0 0 24px' }}>
+        <span style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#1a73e8', cursor: 'pointer', textDecoration: 'underline' }}>Cotizar otro servicio (sobre, pallet, bigger o vinos)</span>
+      </p>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
+        <div style={{ flex: 1 }}>
+          <label style={lblS}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#6c7580" strokeWidth="1.5"></circle><circle cx="7" cy="7" r="2" fill="#6c7580"></circle></svg>
+            Desde
+          </label>
+          <input type="text" value={f.desde} onChange={(e) => upd('desde', e.target.value)} placeholder="CP o Localidad" style={inpS(errs.desde)} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={lblS}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#6c7580" strokeWidth="1.5"></circle><circle cx="7" cy="7" r="2" fill="#6c7580"></circle></svg>
+            Hasta
+          </label>
+          <input type="text" value={f.hasta} onChange={(e) => upd('hasta', e.target.value)} placeholder="CP o Localidad" style={inpS(errs.hasta)} />
+        </div>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <label style={{ ...lblS, marginBottom: 8 }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="#6c7580" strokeWidth="1.5"></rect><line x1="1.5" y1="5" x2="12.5" y2="5" stroke="#6c7580" strokeWidth="1.5"></line></svg>
+          Medidas del paquete
+        </label>
+        <div style={{ display: 'flex', gap: 12 }}>
+          {[{ k: 'alto', l: 'Alto', u: 'cm' }, { k: 'ancho', l: 'Ancho', u: 'cm' }, { k: 'largo', l: 'Largo', u: 'cm' }, { k: 'peso', l: 'Peso', u: 'gr' }].map((x) =>
+          <div key={x.k} style={{ flex: 1, position: 'relative' }}>
+              <input type="text" value={f[x.k]} onChange={(e) => upd(x.k, e.target.value)} placeholder={x.l} style={{ ...inpS(errs[x.k]), paddingRight: 36 }} />
+              <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#9e9e9e', pointerEvents: 'none' }}>{x.u}</span>
+            </div>
+          )}
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 32 }}>
+        <button onClick={cotizar} style={{ padding: '12px 32px', backgroundColor: '#d71920', color: '#fff', border: 'none', borderRadius: 4, fontFamily: 'Rubik, sans-serif', fontSize: 16, fontWeight: 500, cursor: 'pointer', transition: 'background 0.2s' }}
+        onMouseEnter={(e) => e.target.style.backgroundColor = '#b6040b'}
+        onMouseLeave={(e) => e.target.style.backgroundColor = '#d71920'}>
+          Cotizar
+        </button>
+      </div>
+      <div>
+        <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 16, color: '#272a2f', margin: '0 0 4px' }}>¿Hacés envíos para tu negocio?</p>
+        <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', margin: 0 }}>
+          <a href="https://transaccional-router-login.andreani.com" target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8' }}>Iniciá sesión</a>{' '}o{' '}
+          <a href="https://transaccional-router-login.andreani.com" target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8' }}>registrate</a> para hacer tus envíos.
+        </p>
+      </div>
+    </div>);
+
+}
+
+/* ===== HERO SECTION ===== */
+function HeroSection({ activeTab, setActiveTab, onTrack, onQuote }) {
+  const isMobile = useIsMobile(900);
+  return (
+    <div style={{ backgroundColor: '#fafafa', width: '100%' }}>
+      <section style={{
+        maxWidth: isMobile ? '100%' : 1536,
+        margin: '0 auto',
+        backgroundImage: isMobile ? 'none' : activeTab === 'seguir' ? "url('assets/hero-seguir.svg')" : "url('assets/hero-cotizar.svg')",
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundColor: isMobile ? '#dfe1e3' : 'transparent',
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: isMobile ? 'column' : 'row',
+        padding: isMobile ? '24px 16px' : '12px 0 0 0',
+        minHeight: isMobile ? 'auto' : 658
+      }}>
+        <div style={{ maxWidth: isMobile ? '100%' : 630, width: isMobile ? '100%' : 630, flexShrink: 0, backgroundColor: '#fff', borderRadius: 8, borderBottomRightRadius: isMobile ? 8 : 0, overflow: 'hidden', margin: isMobile ? 0 : '64px 0 64px 32px', boxShadow: '0 1px 9px 0 hsla(0,0%,76%,.3)' }}>
+          <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0' }}>
+            {['seguir', 'cotizar'].map((key) => {
+              const isActive = activeTab === key;
+              return (
+                <button key={key} onClick={() => setActiveTab(key)} style={{
+                  flex: 1, padding: '16px 24px', border: 'none', backgroundColor: 'transparent',
+                  fontFamily: 'Rubik, sans-serif', fontSize: 18, fontWeight: isActive ? 700 : 400,
+                  color: isActive ? '#272a2f' : '#6c7580', cursor: 'pointer',
+                  borderBottom: isActive ? '3px solid #d71920' : '3px solid transparent', transition: 'all 0.2s'
+                }}>
+                  {key === 'seguir' ? 'Seguir envío' : 'Cotizar envío'}
+                </button>);
+            })}
+          </div>
+          <div style={{ padding: isMobile ? '24px 16px 32px' : '32px', minHeight: isMobile ? 'auto' : 470 }}>
+            {activeTab === 'seguir' ? <HeroSeguirEnvio onTrack={onTrack} /> : <HeroCotizarEnvio onQuote={onQuote} />}
+          </div>
+        </div>
+      </section>
+    </div>);
+
+}
+
+/* ===== TRACKING RESULTS ===== */
+// ============================================================
+// ESTRUCTURA DE DATOS — reemplazá estos valores con tu backend
+// ============================================================
+function makeTrackingData(trackingNumber) {
+  return {
+    // --- DATOS DEL ENVÍO ---
+    numeroSeguimiento: trackingNumber, // string: "360002960577390"
+    nombreDestinatario: '[ NOMBRE DEL DESTINATARIO ]', // string: nombre completo
+    estadoActual: '[ ESTADO ]', // string: estado principal
+    estadoColor: 'green', // 'green' | 'red' | 'orange'
+    mensajeEstado: '[ MENSAJE DE ESTADO DEL ENVÍO ]', // string
+    // --- TIMELINE HORIZONTAL (pasos principales) ---
+    pasos: [
+    { label: 'Pendiente de ingreso', fecha: '[ FECHA ]', completado: true },
+    { label: 'Ingresado', fecha: '[ FECHA ]', completado: true },
+    { label: 'En camino', fecha: '[ FECHA ]', completado: true },
+    { label: 'Entregado', fecha: '[ FECHA ]', completado: true, actual: true }],
+
+    // --- TIMELINE VERTICAL (paso a paso detallado) ---
+    pasosDetalle: [
+    {
+      estado: 'Entregado',
+      icono: 'flag',
+      eventos: [
+      { fecha: '[ FECHA ]', hora: '[ HORA ]', mensaje: '[ DESCRIPCIÓN DEL EVENTO ]' }]
+
+    },
+    {
+      estado: 'En camino',
+      icono: 'truck',
+      eventos: [
+      { fecha: '[ FECHA ]', hora: '[ HORA ]', mensaje: '[ DESCRIPCIÓN DEL EVENTO ]' },
+      { fecha: '[ FECHA ]', hora: '[ HORA ]', mensaje: '[ DESCRIPCIÓN DEL EVENTO ]' }]
+
+    },
+    {
+      estado: 'Ingresado',
+      icono: 'box',
+      eventos: [
+      { fecha: '[ FECHA ]', hora: '[ HORA ]', mensaje: '[ DESCRIPCIÓN DEL EVENTO ]' }]
+
+    },
+    {
+      estado: 'Pendiente de ingreso',
+      icono: 'clock',
+      eventos: [
+      { fecha: '[ FECHA ]', hora: '[ HORA ]', mensaje: '[ DESCRIPCIÓN DEL EVENTO ]' }]
+
+    }]
+
+  };
+}
+
+const ESTADO_COLORS = {
+  green: { bg: '#1f7e5a', light: '#e6f4ef', text: '#1f7e5a' },
+  red: { bg: '#d71920', light: '#fbe8e9', text: '#d71920' },
+  orange: { bg: '#e67e22', light: '#fdf2e9', text: '#e67e22' }
+};
+
+const STEP_ICONS = {
+  flag:
+  <svg width="15" height="15" viewBox="0 0 448 512" fill="white"><path fill="currentColor" d="M24 0C37.3 0 48 10.7 48 24V52l85-21.2c38.1-9.5 78.3-5.1 113.5 12.5c46.3 23.2 100.8 23.2 147.1 0l9.6-4.8C423.8 28.1 448 43.1 448 66.1V345.8c0 13.3-8.3 25.3-20.8 30l-34.7 13c-46.2 17.3-97.6 14.6-141.7-7.4c-37.9-19-81.3-23.7-122.5-13.4L48 388V488c0 13.3-10.7 24-24 24s-24-10.7-24-24V24C0 10.7 10.7 0 24 0z"></path></svg>,
+
+  truck:
+  <svg width="15" height="15" viewBox="0 0 640 512" fill="white"><path fill="currentColor" d="M48 0C21.5 0 0 21.5 0 48V368c0 26.5 21.5 48 48 48H64c0 53 43 96 96 96s96-43 96-96H384c0 53 43 96 96 96s96-43 96-96h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V288 256 237.3c0-17-6.7-33.3-18.7-45.3L512 114.7c-12-12-28.3-18.7-45.3-18.7H416V48c0-26.5-21.5-48-48-48H48zM416 160h50.7L544 237.3V256H416V160zM112 416a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm368-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>,
+
+  box:
+  <svg width="15" height="15" viewBox="0 0 448 512" fill="white"><path fill="currentColor" d="M50.7 58.5L0 160H208V32H93.7C75.5 32 58.9 42.3 50.7 58.5zM240 160H448L397.3 58.5C389.1 42.3 372.5 32 354.3 32H240V160zM448 192H0V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192z"></path></svg>,
+
+  clock:
+  <svg width="15" height="15" viewBox="0 0 512 512" fill="white"><path fill="currentColor" d="M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.5 33.3-6.5s4.5-25.9-6.5-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"></path></svg>
+
+};
+
+function TrackingResults({ trackingNumber, onBack }) {
+  const isMobile = useIsMobile(768);
+  const data = makeTrackingData(trackingNumber);
+  const colors = ESTADO_COLORS[data.estadoColor] || ESTADO_COLORS.green;
+  const [pasoOpen, setPasoOpen] = React.useState(true);
+  const [notif, setNotif] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const [openFaq, setOpenFaq] = React.useState(null);
+  const [rating, setRating] = React.useState(null);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(data.numeroSeguimiento).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const completedCount = data.pasos.filter((p) => p.completado).length;
+  const lineW = `${(completedCount - 1) / (data.pasos.length - 1) * 100}%`;
+
+  return (
+    <div style={{ backgroundColor: '#f5f5f5', minHeight: 'calc(100vh - 64px)', padding: isMobile ? '16px' : '32px 48px' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto' }}>
+
+        {/* Volver */}
+        <button onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'none', cursor: 'pointer', padding: '0 0 20px', fontFamily: 'Rubik, sans-serif', fontSize: 15, fontWeight: 500, color: '#272a2f' }}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 14L6 9L11 4" stroke="#272a2f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+          Volver
+        </button>
+
+        {/* ── Card principal ── */}
+        <div style={{ backgroundColor: '#fff', borderRadius: 12, boxShadow: '0 1px 6px rgba(0,0,0,0.08)', marginBottom: 16, overflow: 'hidden' }}>
+
+          {/* Encabezado */}
+          <div style={{ padding: isMobile ? '20px 16px 16px' : '28px 32px 20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+              {/* Izquierda: título + estado */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
+                  <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 400, fontSize: isMobile ? 16 : 19, color: '#272a2f', margin: 0, lineHeight: '1.3' }}>
+                    El envío de <strong>{data.nombreDestinatario}</strong> N° {data.numeroSeguimiento}
+                  </p>
+                  {/* Copy icon */}
+                  <button onClick={handleCopy} title="Copiar número" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: copied ? colors.text : '#9e9e9e', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                    {copied ?
+                    <svg width="16" height="16" viewBox="0 0 448 512" fill="none"><path fill="currentColor" d="M441 103c9.4 9.4 9.4 24.6 0 33.9L177 401c-9.4 9.4-24.6 9.4-33.9 0L7 265c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l119 119L407 103c9.4-9.4 24.6-9.4 33.9 0z"></path></svg> :
+                    <svg width="16" height="16" viewBox="0 0 448 512" fill="none"><path fill="currentColor" d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"></path></svg>
+                    }
+                  </button>
+                </div>
+                {/* Estado grande */}
+                <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 600, fontSize: isMobile ? 22 : 28, color: colors.text, margin: 0, lineHeight: '1.2' }}>
+                  {data.estadoActual}
+                </p>
+              </div>
+              {/* Derecha: campana */}
+              <button onClick={() => setNotif(!notif)} title="Recibir notificaciones"
+              style={{ width: 44, height: 44, borderRadius: '50%', border: `1.5px solid ${notif ? colors.bg : '#e0e0e0'}`, backgroundColor: notif ? colors.light : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: notif ? colors.bg : '#9e9e9e', flexShrink: 0, transition: 'all 0.2s' }}>
+                <svg width="18" height="18" viewBox="0 0 448 512" fill="currentColor"><path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v25.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm64 352H160c0 17 6.7 33.3 18.7 45.3S207 512 224 512s33.3-6.7 45.3-18.7S288 465 288 448z"></path></svg>
+              </button>
+            </div>
+
+            {/* Recibir notificaciones button (text) */}
+            <button onClick={() => setNotif(!notif)} style={{ marginTop: 14, display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${notif ? colors.bg : '#e0e0e0'}`, borderRadius: 6, padding: '8px 14px', background: notif ? colors.light : '#fff', cursor: 'pointer', fontFamily: 'Roboto, sans-serif', fontSize: 14, color: notif ? colors.text : '#4e555e', transition: 'all 0.2s' }}>
+              <svg width="14" height="14" viewBox="0 0 448 512" fill="currentColor"><path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v25.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm64 352H160c0 17 6.7 33.3 18.7 45.3S207 512 224 512s33.3-6.7 45.3-18.7S288 465 288 448z"></path></svg>
+              {notif ? 'Notificaciones activadas' : 'Recibir notificaciones'}
+            </button>
+          </div>
+
+          {/* Banner mensaje estado */}
+          <div style={{ margin: isMobile ? '0 16px 20px' : '0 32px 24px', padding: '14px 18px', backgroundColor: colors.light, borderRadius: 8, fontFamily: 'Roboto, sans-serif', fontSize: 15, color: '#272a2f', lineHeight: '1.5' }}>
+            {data.mensajeEstado}
+          </div>
+
+          {/* ── Timeline horizontal ── */}
+          <div style={{ padding: isMobile ? '0 16px 24px' : '0 32px 28px' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start' }}>
+              {/* Línea de fondo (gris) */}
+              <div style={{ position: 'absolute', top: 17, left: `${100 / data.pasos.length / 2}%`, right: `${100 / data.pasos.length / 2}%`, height: 3, backgroundColor: '#e0e0e0', zIndex: 0 }}></div>
+              {/* Línea de progreso (color) */}
+              <div style={{ position: 'absolute', top: 17, left: `${100 / data.pasos.length / 2}%`, width: lineW, height: 3, backgroundColor: colors.bg, zIndex: 1, transition: 'width 0.5s ease' }}></div>
+
+              {data.pasos.map((p, i) => {
+                const isLast = i === data.pasos.length - 1;
+                return (
+                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                    <div style={{
+                      width: 36, height: 36, borderRadius: '50%',
+                      backgroundColor: p.completado ? colors.bg : '#fff',
+                      border: `3px solid ${p.completado ? colors.bg : '#e0e0e0'}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginBottom: 10, flexShrink: 0,
+                      boxShadow: p.actual ? `0 0 0 5px ${colors.light}` : 'none',
+                      transition: 'all 0.3s'
+                    }}>
+                      {p.completado ?
+                      <svg width="14" height="14" viewBox="0 0 448 512" fill="none"><path fill="#fff" d="M441 103c9.4 9.4 9.4 24.6 0 33.9L177 401c-9.4 9.4-24.6 9.4-33.9 0L7 265c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l119 119L407 103c9.4-9.4 24.6-9.4 33.9 0z"></path></svg> :
+                      <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#e0e0e0' }}></div>
+                      }
+                    </div>
+                    <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: p.actual ? 600 : 400, fontSize: isMobile ? 10 : 13, color: p.completado ? '#272a2f' : '#9e9e9e', margin: '0 0 3px', textAlign: 'center', lineHeight: '15px', padding: '0 4px' }}>{p.label}</p>
+                    <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: isMobile ? 9 : 12, color: p.completado ? '#6c7580' : '#bdbdbd', margin: 0 }}>{p.fecha}</p>
+                  </div>);
+
+              })}
+            </div>
+          </div>
+
+          {/* ── Paso a paso accordion ── */}
+          <div>
+            <button onClick={() => setPasoOpen(!pasoOpen)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '16px' : '18px 32px', background: 'none', border: 'none', borderTop: '1px solid #ebebeb', borderBottom: pasoOpen ? '1px solid #ebebeb' : 'none', cursor: 'pointer' }}>
+              <span style={{ fontFamily: 'Rubik, sans-serif', fontSize: 16, fontWeight: 500, color: '#272a2f' }}>Paso a paso del envío</span>
+              <svg width="14" height="14" viewBox="0 0 448 512" fill="none" style={{ transform: pasoOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.25s', flexShrink: 0 }}>
+                <path fill="#272a2f" d="M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z"></path>
+              </svg>
+            </button>
+
+            {pasoOpen &&
+            <div style={{ padding: isMobile ? '20px 16px' : '24px 32px' }}>
+                {data.pasosDetalle.map((step, si) =>
+              <div key={si} style={{ display: 'flex', gap: 16, position: 'relative' }}>
+                    {/* Línea vertical */}
+                    {si < data.pasosDetalle.length - 1 &&
+                <div style={{ position: 'absolute', left: 17, top: 36, bottom: -4, width: 2, backgroundColor: colors.bg, opacity: 0.3 }}></div>
+                }
+                    {/* Ícono circular */}
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', backgroundColor: colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 1 }}>
+                      {STEP_ICONS[step.icono]}
+                    </div>
+                    {/* Contenido */}
+                    <div style={{ flex: 1, paddingBottom: si < data.pasosDetalle.length - 1 ? 28 : 0 }}>
+                      <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 600, fontSize: 15, color: '#272a2f', margin: '6px 0 14px' }}>{step.estado}</p>
+                      {step.eventos.map((ev, ei) =>
+                  <div key={ei} style={{ marginBottom: ei < step.eventos.length - 1 ? 18 : 0, paddingLeft: 0 }}>
+                          <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', marginBottom: 3, flexWrap: 'wrap' }}>
+                            <span style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 13, color: '#272a2f' }}>{ev.fecha}</span>
+                            <span style={{ fontFamily: 'Roboto, sans-serif', fontSize: 13, color: '#6c7580' }}>{ev.hora}</span>
+                          </div>
+                          <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#4e555e', margin: 0, lineHeight: '21px' }}>{ev.mensaje}</p>
+                        </div>
+                  )}
+                    </div>
+                  </div>
+              )}
+              </div>
+            }
+          </div>
+        </div>
+
+        {/* ── FAQs ── */}
+        <div style={{ backgroundColor: '#fff', borderRadius: 12, boxShadow: '0 1px 6px rgba(0,0,0,0.08)', marginBottom: 16, overflow: 'hidden' }}>
+          <div style={{ padding: isMobile ? '18px 16px' : '22px 32px', borderBottom: '1px solid #ebebeb' }}>
+            <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 16, color: '#272a2f', margin: 0 }}>Preguntas frecuentes</p>
+          </div>
+          {[
+          { q: '¿Por qué el envío figura como entregado si no lo recibí?', a: 'Puede que el envío haya sido recibido por otra persona en tu domicilio o que se haya dejado en un lugar seguro. Te recomendamos consultar con las personas de tu hogar o revisar el detalle del seguimiento.' },
+          { q: '¿Qué pasa si mi envío está dañado o incompleto?', a: 'Si tu envío llegó dañado o incompleto podés realizar un reclamo desde nuestra web ingresando con tu usuario o a través del número de seguimiento.' }].
+          map((faq, i, arr) =>
+          <div key={i} style={{ borderBottom: i < arr.length - 1 ? '1px solid #ebebeb' : 'none' }}>
+              <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '16px' : '18px 32px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 16 }}>
+                <span style={{ fontFamily: 'Roboto, sans-serif', fontSize: 15, color: '#272a2f', lineHeight: '1.4' }}>{faq.q}</span>
+                <svg width="14" height="14" viewBox="0 0 448 512" fill="none" style={{ flexShrink: 0, transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
+                  <path fill="#272a2f" d="M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z"></path>
+                </svg>
+              </button>
+              {openFaq === i && <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', padding: isMobile ? '0 16px 16px' : '0 32px 20px', margin: 0, lineHeight: '22px' }}>{faq.a}</p>}
+            </div>
+          )}
+        </div>
+
+        {/* ── Opinión ── */}
+        <div style={{ backgroundColor: '#fff', borderRadius: 12, boxShadow: '0 1px 6px rgba(0,0,0,0.08)', padding: isMobile ? '20px 16px' : '24px 32px', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 17, color: '#272a2f', margin: '0 0 16px' }}>Queremos conocer tu opinión</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+            {['😠', '😕', '😐', '🙂', '😄'].map((em, i) =>
+            <button key={i} onClick={() => setRating(i)} style={{
+              width: 52, height: 52, borderRadius: '50%', fontSize: 24,
+              border: `2px solid ${rating === i ? colors.bg : '#e8e8e8'}`,
+              backgroundColor: rating === i ? colors.light : '#fafafa',
+              cursor: 'pointer', transition: 'all 0.15s',
+              transform: rating === i ? 'scale(1.15)' : 'scale(1)'
+            }}>
+                {em}
+              </button>
+            )}
+          </div>
+          {rating !== null &&
+          <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: colors.text, marginTop: 12 }}>
+              ¡Gracias por tu opinión!
+            </p>
+          }
+        </div>
+
+      </div>
+    </div>);
+
+}
+
+function BellIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 448 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="currentColor" d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v25.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm0 96c61.9 0 112 50.1 112 112v25.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V208c0-61.9 50.1-112 112-112zm64 352H160c0 17 6.7 33.3 18.7 45.3S207 512 224 512s33.3-6.7 45.3-18.7S288 465 288 448z"></path>
+    </svg>);
+
+}
+
+/* ===== QUOTE RESULTS ===== */
+const QUOTES = [
+{ name: 'Andreani Estándar', days: '3 a 5 días hábiles', price: 4250, feats: ['Seguimiento online', 'Entrega a domicilio', 'Cobertura nacional'] },
+{ name: 'Andreani Express', days: '1 a 2 días hábiles', price: 7890, feats: ['Seguimiento online', 'Entrega prioritaria', 'Seguro incluido', 'Cobertura nacional'], rec: true },
+{ name: 'Retiro en sucursal', days: '2 a 4 días hábiles', price: 3100, feats: ['Seguimiento online', 'Retiro en sucursal', 'Cobertura nacional'] }];
+
+
+function QuoteResults({ quoteData, onBack }) {
+  const isMobile = useIsMobile(768);
+  const [sel, setSel] = React.useState(1);
+
+  return (
+    <section style={{ backgroundColor: '#fafafa', minHeight: 'calc(100vh - 64px)', padding: isMobile ? '24px 16px' : '40px 64px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 8, border: 'none', backgroundColor: 'transparent', cursor: 'pointer', padding: '8px 0', fontFamily: 'Rubik, sans-serif', fontSize: 14, fontWeight: 500, color: '#d71920', marginBottom: 24 }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="#d71920" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+          Volver a cotizar
+        </button>
+
+        <div style={{ backgroundColor: '#fff', borderRadius: 8, padding: isMobile ? '16px' : '20px 32px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', marginBottom: 24, display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#d71920" strokeWidth="1.5"></circle><circle cx="8" cy="8" r="2.5" fill="#d71920"></circle></svg>
+            <div>
+              <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 12, color: '#9e9e9e', margin: 0 }}>Desde</p>
+              <p style={{ fontFamily: 'Rubik, sans-serif', fontSize: 14, fontWeight: 500, color: '#272a2f', margin: 0 }}>{quoteData.desde}</p>
+            </div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="#9e9e9e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#d71920" strokeWidth="1.5"></circle><circle cx="8" cy="8" r="2.5" fill="#d71920"></circle></svg>
+            <div>
+              <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 12, color: '#9e9e9e', margin: 0 }}>Hasta</p>
+              <p style={{ fontFamily: 'Rubik, sans-serif', fontSize: 14, fontWeight: 500, color: '#272a2f', margin: 0 }}>{quoteData.hasta}</p>
+            </div>
+          </div>
+          <div style={{ marginLeft: isMobile ? 0 : 'auto', display: 'flex', gap: 16 }}>
+            <span style={{ fontFamily: 'Roboto, sans-serif', fontSize: 13, color: '#6c7580' }}>📦 {quoteData.alto}×{quoteData.ancho}×{quoteData.largo} cm</span>
+            <span style={{ fontFamily: 'Roboto, sans-serif', fontSize: 13, color: '#6c7580' }}>⚖ {quoteData.peso} gr</span>
+          </div>
+        </div>
+
+        <h2 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 24, color: '#272a2f', margin: '0 0 20px' }}>Opciones de envío disponibles</h2>
+
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 20 }}>
+          {QUOTES.map((q, i) =>
+          <div key={i} onClick={() => setSel(i)} style={{ backgroundColor: '#fff', borderRadius: 8, border: sel === i ? '2px solid #d71920' : '2px solid transparent', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', cursor: 'pointer', transition: 'all 0.2s', overflow: 'hidden' }}>
+              {q.rec && <div style={{ backgroundColor: '#d71920', color: '#fff', fontFamily: 'Rubik, sans-serif', fontSize: 12, fontWeight: 500, padding: '4px 16px', textAlign: 'center' }}>Recomendado</div>}
+              <div style={{ padding: 24 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: '#fbe8e9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {i === 0 && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="#d71920" strokeWidth="1.5" strokeLinejoin="round"></path></svg>}
+                    {i === 1 && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#d71920" strokeWidth="1.5" strokeLinejoin="round"></path></svg>}
+                    {i === 2 && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 7V17C3 18.1 3.9 19 5 19H19C20.1 19 21 18.1 21 17V7M3 7L12 13L21 7M3 7L12 2L21 7" stroke="#d71920" strokeWidth="1.5" strokeLinejoin="round"></path></svg>}
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 16, color: '#272a2f', margin: 0 }}>{q.name}</p>
+                    <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 13, color: '#6c7580', margin: 0 }}>{q.days}</p>
+                  </div>
+                </div>
+                <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 700, fontSize: 28, color: '#272a2f', margin: '0 0 16px' }}>${q.price.toLocaleString('es-AR')}</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {q.feats.map((ft, fi) =>
+                <li key={fi} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', fontFamily: 'Roboto, sans-serif', fontSize: 13, color: '#6c7580' }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 4" stroke="#1f7e5a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                      {ft}
+                    </li>
+                )}
+                </ul>
+                <button style={{ marginTop: 20, width: '100%', padding: '12px 16px', backgroundColor: sel === i ? '#d71920' : '#fff', color: sel === i ? '#fff' : '#d71920', border: sel === i ? 'none' : '1.5px solid #d71920', borderRadius: 4, fontFamily: 'Rubik, sans-serif', fontSize: 14, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>
+                  {sel === i ? 'Seleccionado' : 'Seleccionar'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+/* ===== QUICK ACCESS CARDS ===== */
+function QuickAccessCards({ onNavigate }) {
+  const isMobile = useIsMobile(899);
+  const cards = [
+  { icon: 'assets/box.svg', label: 'Hacer un envío', action: () => {} },
+  { icon: 'assets/boxes.svg', label: 'Seguir mis envíos', action: () => {} },
+  { svgEl: <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M3 9L12 3L21 9V20C21 20.55 20.55 21 20 21H15V15H9V21H4C3.45 21 3 20.55 3 20V9Z" stroke="#4e555e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path></svg>, label: 'Buscar sucursal', action: () => {} },
+  { icon: 'assets/question-circle.svg', label: 'Preguntas frecuentes', action: () => {} }];
+
+  return (
+    <section style={{ backgroundColor: '#fff', padding: isMobile ? '24px 16px' : '64px', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ maxWidth: 1536, width: '100%', display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? 12 : 20 }}>
+        {cards.map((c, i) =>
+        <div key={i} onClick={c.action} style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', alignItems: 'center', justifyContent: isMobile ? 'flex-start' : 'center', gap: isMobile ? 12 : 16, padding: isMobile ? 16 : '24px 16px 28px', backgroundColor: '#fff', borderRadius: 4, boxShadow: '0 3px 6px rgba(0,0,0,0.16)', cursor: 'pointer', transition: 'all 0.2s', minHeight: isMobile ? 80 : 135, borderBottom: '3px solid transparent' }}
+        onMouseEnter={(e) => {e.currentTarget.style.borderBottomColor = '#d71920';e.currentTarget.style.boxShadow = '0 1px 9px 0 rgba(194,194,194,0.3)';}}
+        onMouseLeave={(e) => {e.currentTarget.style.borderBottomColor = 'transparent';e.currentTarget.style.boxShadow = '0 3px 6px rgba(0,0,0,0.16)';}}>
+            {c.icon ? <img src={c.icon} alt="" style={{ width: isMobile ? 32 : 48, height: isMobile ? 32 : 48, objectFit: 'contain' }} /> : c.svgEl}
+            <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: isMobile ? 14 : 16, color: '#4e555e', margin: 0, textAlign: isMobile ? 'left' : 'center', lineHeight: '22px' }}>{c.label}</p>
+          </div>
+        )}
+      </div>
+    </section>);
+
+}
+
+/* ===== SERVICES ===== */
+/* ===== INLINE SVGS FOR SERVICES ===== */
+function SobreSVG() {
+  return (
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+      <rect x="8" y="22" width="64" height="42" rx="4" fill="#F2CBCD" stroke="#272a2f" strokeWidth="2"></rect>
+      <path d="M8 26L40 48L72 26" stroke="#272a2f" strokeWidth="2" fill="none"></path>
+      <path d="M8 64L30 44" stroke="#272a2f" strokeWidth="1.5"></path>
+      <path d="M72 64L50 44" stroke="#272a2f" strokeWidth="1.5"></path>
+      <rect x="12" y="7" width="28" height="22" rx="2" fill="#fff" stroke="#272a2f" strokeWidth="1.5"></rect>
+      <path d="M16 13H34M16 17H30M16 21H26" stroke="#616161" strokeWidth="1.5" strokeLinecap="round"></path>
+    </svg>);
+
+}
+function VinosSVG() {
+  return (
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+      <path d="M26 8 L26 38 Q26 54 36 57 L36 68 L28 68 L28 72 L52 72 L52 68 L44 68 L44 57 Q54 54 54 38 L54 8 Z" fill="#F2CBCD" stroke="#272a2f" strokeWidth="2"></path>
+      <path d="M29 38 Q29 50 36 53 L36 68" stroke="none"></path>
+      <ellipse cx="40" cy="36" rx="11" ry="8" fill="#d71920" opacity="0.45"></ellipse>
+      <path d="M26 26 L54 26" stroke="#272a2f" strokeWidth="1.5"></path>
+      <circle cx="59" cy="50" r="9" fill="#F2CBCD" stroke="#272a2f" strokeWidth="1.5"></circle>
+      <circle cx="59" cy="50" r="3.5" fill="#d71920"></circle>
+    </svg>);
+
+}
+function PalletSVG() {
+  return (
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+      <rect x="6" y="56" width="68" height="9" rx="2" fill="#d4b896" stroke="#272a2f" strokeWidth="1.5"></rect>
+      <rect x="12" y="62" width="10" height="11" fill="#d4b896" stroke="#272a2f" strokeWidth="1"></rect>
+      <rect x="35" y="62" width="10" height="11" fill="#d4b896" stroke="#272a2f" strokeWidth="1"></rect>
+      <rect x="58" y="62" width="10" height="11" fill="#d4b896" stroke="#272a2f" strokeWidth="1"></rect>
+      <rect x="8" y="30" width="28" height="27" rx="2" fill="#F2CBCD" stroke="#272a2f" strokeWidth="2"></rect>
+      <rect x="44" y="30" width="28" height="27" rx="2" fill="#F2CBCD" stroke="#272a2f" strokeWidth="2"></rect>
+      <rect x="8" y="7" width="28" height="24" rx="2" fill="#F2CBCD" stroke="#272a2f" strokeWidth="2"></rect>
+      <rect x="44" y="7" width="28" height="24" rx="2" fill="#d71920" stroke="#272a2f" strokeWidth="2"></rect>
+    </svg>);
+
+}
+
+/* ===== QUE NECESITAS ENVIAR ===== */
+function ServicesSection() {
+  const isMobile = useIsMobile(768);
+  const SVCS = [
+  { img: 'assets/servicios_paqueteria.svg', t: 'Paquetería', d: 'Hasta 50 kg.' },
+  { img: null, svgEl: <SobreSVG />, t: 'Sobre', d: 'Hasta 500 g.' },
+  { img: 'assets/servicios-cartadocumento.svg', t: 'Carta Documento', d: 'Comunicación de carácter legal' },
+  { img: null, svgEl: <VinosSVG />, t: 'Vinos', d: 'En cajas de 1 a 6 botellas. Máximo 10 cajas' },
+  { img: 'assets/servicios-bigger.svg', t: 'Bigger', d: 'Desde 50 kg. en varios bultos' },
+  { img: null, svgEl: <PalletSVG />, t: 'Pallet', d: 'Desde 50 kg. en un mismo contenedor' },
+  { img: 'assets/servicios-andreanienvios.svg', t: 'Andreani envíos', d: 'El destinatario completa sus datos y abona' },
+  { img: 'assets/servicios-cambios.svg', t: 'Cambios', d: 'Gestioná el retiro y la nueva entrega del paquete' },
+  { img: 'assets/servicios-devolucion.svg', t: 'Devoluciones', d: 'Gestioná el retiro del producto' }];
+
+  const row1 = SVCS.slice(0, 5);
+  const row2 = SVCS.slice(5, 9);
+  const SvcCard = ({ s }) =>
+  <div style={{ backgroundColor: '#fff', borderRadius: 8, padding: isMobile ? '16px 12px' : '24px 20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #f0f0f0' }}
+  onMouseEnter={(e) => {e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';}}
+  onMouseLeave={(e) => {e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)';}}>
+      <div style={{ width: 80, height: 80, margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {s.img ? <img src={s.img} alt="" style={{ width: 80, height: 80, objectFit: 'contain' }} /> : s.svgEl}
+      </div>
+      <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 14, color: '#d71920', margin: '0 0 4px' }}>{s.t}</p>
+      <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 12, color: '#6c7580', margin: 0, lineHeight: '18px' }}>{s.d}</p>
+    </div>;
+
+  return (
+    <section style={{ backgroundColor: '#fafafa', padding: isMobile ? '32px 16px' : '40px 64px', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ maxWidth: 1536, width: '100%' }}>
+        <h2 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: isMobile ? 22 : 32, color: '#272a2f', margin: '0 0 32px', textAlign: 'center' }}>¿Qué necesitás enviar?</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(5,1fr)', gap: 16, marginBottom: 16 }}>
+          {row1.map((s, i) => <SvcCard key={i} s={s} />)}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: 16 }}>
+          {row2.map((s, i) => <SvcCard key={i} s={s} />)}
+        </div>
+      </div>
+    </section>);
+
+}
+
+/* ===== ESTAMOS CERCA ===== */
+function EstamosCircaSection({ onNavigate }) {
+  return (
+    <section style={{ position: 'relative', height: 320, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="0 0 1440 320" preserveAspectRatio="xMidYMid slice">
+        <rect width="1440" height="320" fill="#e8e4d9"></rect>
+        <rect x="0" y="135" width="1440" height="42" fill="#fff" opacity="0.75"></rect>
+        <rect x="0" y="242" width="1440" height="38" fill="#fff" opacity="0.75"></rect>
+        <rect x="0" y="48" width="1440" height="28" fill="#fff" opacity="0.55"></rect>
+        <rect x="315" y="0" width="42" height="320" fill="#fff" opacity="0.75"></rect>
+        <rect x="695" y="0" width="42" height="320" fill="#fff" opacity="0.75"></rect>
+        <rect x="1095" y="0" width="42" height="320" fill="#fff" opacity="0.75"></rect>
+        <rect x="60" y="68" width="235" height="58" rx="4" fill="#c8e6c9" opacity="0.7"></rect>
+        <rect x="750" y="68" width="295" height="58" rx="4" fill="#c8e6c9" opacity="0.7"></rect>
+        <rect x="60" y="196" width="235" height="36" rx="4" fill="#c8e6c9" opacity="0.7"></rect>
+        <rect x="398" y="196" width="278" height="36" rx="4" fill="#c8e6c9" opacity="0.65"></rect>
+        <rect x="448" y="0" width="5" height="320" fill="#90caf9" opacity="0.45"></rect>
+      </svg>
+      <div style={{ position: 'relative', zIndex: 2, backgroundColor: '#fff', borderRadius: 12, padding: '28px 32px', boxShadow: '0 4px 24px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', gap: 24, maxWidth: 500 }}>
+        <img src="assets/edificio-cerca.png" alt="Sucursal" style={{ width: 90, height: 90, objectFit: 'contain' }} />
+        <div>
+          <h3 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 700, fontSize: 24, color: '#272a2f', margin: '0 0 8px' }}>Estamos cerca</h3>
+          <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 16, color: '#4e555e', margin: '0 0 12px' }}>Encontrá tu sucursal más cercana</p>
+          <a href="https://www.andreani.com/sucursales" target="_blank" rel="noopener noreferrer" style={{ color: '#d71920', fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 16, cursor: 'pointer', textDecoration: 'none' }}>Ver sucursales</a>
+        </div>
+      </div>
+    </section>);
+
+}
+
+/* ===== AWARD BANNER ===== */
+function AwardBanner() {
+  const isMobile = useIsMobile(768);
+  return (
+    <section style={{ backgroundColor: '#fff', borderTop: '1px solid #efefef', borderBottom: '1px solid #efefef', padding: isMobile ? '20px 16px' : '24px 64px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {[0, 1].map((i) =>
+        <svg key={i} width="56" height="56" viewBox="0 0 56 56" fill="none">
+            <circle cx="28" cy="36" r="16" fill={i === 0 ? '#FFD700' : '#C0C0C0'} stroke={i === 0 ? '#b8960c' : '#999'} strokeWidth="1.5"></circle>
+            <circle cx="28" cy="36" r="11" fill={i === 0 ? '#FFC200' : '#A8A8A8'}></circle>
+            <path d="M20 9L28 2L36 9L33 20L23 20Z" fill={i === 0 ? '#FFD700' : '#C0C0C0'} stroke={i === 0 ? '#b8960c' : '#999'} strokeWidth="1"></path>
+            <text x="28" y="40" textAnchor="middle" fontFamily="Rubik" fontWeight="700" fontSize="9" fill="#fff">{i === 0 ? '1' : '2'}</text>
+          </svg>
+        )}
+      </div>
+      <div style={{ flex: 1, minWidth: 200, maxWidth: 480 }}>
+        <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#4e555e', margin: '0 0 4px' }}>El Instituto Latinoamericano de Comercio Electrónico, nos premió como mejor plataforma en:</p>
+        <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 14, color: '#1a73e8', margin: '0 0 2px' }}>2023 - Servicios y Soluciones para eCommerce</p>
+        <p style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 14, color: '#1a73e8', margin: 0 }}>2024 - Servicios y Soluciones para Digital Commerce: Logística y Fulfillment</p>
+      </div>
+      <img src="assets/ecommerce-award.png" alt="eCommerce Award" style={{ height: 65, objectFit: 'contain' }} />
+      <div style={{ backgroundColor: '#1a2744', borderRadius: 8, padding: '10px 16px', textAlign: 'center', minWidth: 120, flexShrink: 0 }}>
+        <p style={{ fontFamily: 'Rubik, sans-serif', fontSize: 12, color: '#8bc34a', fontWeight: 700, margin: '0 0 2px' }}>Ganadores</p>
+        <p style={{ fontFamily: 'Rubik, sans-serif', fontSize: 20, color: '#fff', fontWeight: 700, margin: 0 }}>2023 y 2024</p>
+      </div>
+    </section>);
+
+}
+
+/* ===== FAQ ===== */
+const FAQS = [
+{ q: '¿Cuáles son los tiempos de entrega?', a: 'Los tiempos de entrega varían según el servicio. Para envíos estándar, de 3 a 5 días hábiles. Para envíos express, de 1 a 2 días hábiles.' },
+{ q: '¿Cómo realizar el seguimiento de mis envíos?', a: 'Podés ingresar el número de seguimiento en el campo de búsqueda de la parte superior de esta página, o iniciar sesión para ver todos tus envíos.' },
+{ q: '¿Cómo realizar un envío?', a: 'Podés realizar tu envío en cualquiera de nuestras sucursales o solicitando una recolección a domicilio a través de nuestra web o app.' },
+{ q: '¿Qué es una etiqueta y cómo la obtengo?', a: 'La etiqueta es el documento que identifica tu envío. Podés generarla desde nuestra web o app una vez que completes los datos del envío.' },
+{ q: '¿Qué pasa si no tengo el número de seguimiento?', a: 'Si no tenés el número de seguimiento, podés iniciar sesión con tu e-mail o DNI para ver todos los envíos asociados a tu cuenta.' }];
+
+function FAQSection() {
+  const [open, setOpen] = React.useState(null);
+  const isMobile = useIsMobile(768);
+  return (
+    <section style={{ backgroundColor: '#fff', padding: isMobile ? '32px 16px' : '64px', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ maxWidth: 1200, width: '100%', display: 'flex', gap: isMobile ? 32 : 64, flexDirection: isMobile ? 'column' : 'row' }}>
+        <div style={{ width: isMobile ? '100%' : 300, flexShrink: 0 }}>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', backgroundColor: '#fbe8e9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <circle cx="12" cy="20" r="9" stroke="#d71920" strokeWidth="2" fill="none"></circle>
+              <path d="M9.5 17.5 Q12 13.5 14.5 17.5 Q14.5 20 12 21.5 L12 23.5" stroke="#d71920" strokeWidth="2" strokeLinecap="round" fill="none"></path>
+              <circle cx="12" cy="26" r="1.5" fill="#d71920"></circle>
+              <circle cx="26" cy="14" r="8" stroke="#272a2f" strokeWidth="2" fill="none"></circle>
+              <path d="M23.5 11.5 Q26 8.5 28.5 11.5 Q28.5 14 26 15.5 L26 17" stroke="#272a2f" strokeWidth="1.5" strokeLinecap="round" fill="none"></path>
+              <circle cx="26" cy="20" r="1.2" fill="#272a2f"></circle>
+            </svg>
+          </div>
+          <h3 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 24, color: '#272a2f', margin: '0 0 12px' }}>Resolvemos tus consultas</h3>
+          <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', margin: 0, lineHeight: '22px' }}>Si no encontrás lo que buscas, te invitamos a ver todas las <span style={{ color: '#1a73e8', cursor: 'pointer' }}>preguntas frecuentes</span></p>
+        </div>
+        <div style={{ flex: 1 }}>
+          {FAQS.map((faq, i) =>
+          <div key={i} style={{ borderBottom: '1px solid #e8e8e8' }}>
+              <button onClick={() => setOpen(open === i ? null : i)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 16 }}>
+                <span style={{ fontFamily: 'Roboto, sans-serif', fontSize: 16, color: '#272a2f' }}>{faq.q}</span>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, transform: open === i ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}><path d="M3 6L9 12L15 6" stroke="#272a2f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+              </button>
+              {open === i && <p style={{ fontFamily: 'Roboto,sans-serif', fontSize: 14, color: '#6c7580', padding: '0 0 18px', margin: 0, lineHeight: '22px' }}>{faq.a}</p>}
+            </div>
+          )}
+          <button onClick={() => {}} style={{ background: 'none', border: 'none', color: '#d71920', fontFamily: 'Rubik,sans-serif', fontWeight: 500, fontSize: 14, cursor: 'pointer', padding: '18px 0', display: 'block' }}>+ Ver más</button>
+        </div>
+      </div>
+    </section>);
+
+}
+
+/* ===== SUCURSALES ===== */
+function SucursalesView({ onBack }) {
+  const isMobile = useIsMobile(768);
+  const [search, setSearch] = React.useState('');
+  const sucs = [
+  { name: 'Sucursal Centro', addr: 'Av. Corrientes 1234, CABA', hrs: 'Lun a Vie 9:00 - 18:00', tel: '0810-122-1111' },
+  { name: 'Sucursal Palermo', addr: 'Av. Santa Fe 4567, CABA', hrs: 'Lun a Vie 9:00 - 19:00, Sáb 9:00 - 13:00', tel: '0810-122-1112' },
+  { name: 'Sucursal Córdoba Centro', addr: 'Av. Colón 789, Córdoba', hrs: 'Lun a Vie 8:30 - 18:30', tel: '0810-122-1113' },
+  { name: 'Sucursal Rosario', addr: 'Bv. Oroño 1234, Rosario', hrs: 'Lun a Vie 9:00 - 18:00', tel: '0810-122-1114' },
+  { name: 'Sucursal Mendoza', addr: 'Av. San Martín 567, Mendoza', hrs: 'Lun a Vie 9:00 - 17:30', tel: '0810-122-1115' },
+  { name: 'Sucursal La Plata', addr: 'Calle 7 Nro. 890, La Plata', hrs: 'Lun a Vie 9:00 - 18:00', tel: '0810-122-1116' }];
+
+  const filtered = sucs.filter((s) => s.name.toLowerCase().includes(search.toLowerCase()) || s.addr.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <section style={{ backgroundColor: '#fafafa', minHeight: 'calc(100vh - 64px)', padding: isMobile ? '24px 16px' : '40px 64px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 8, border: 'none', backgroundColor: 'transparent', cursor: 'pointer', padding: '8px 0', fontFamily: 'Rubik, sans-serif', fontSize: 14, fontWeight: 500, color: '#d71920', marginBottom: 24 }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="#d71920" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+          Volver al inicio
+        </button>
+        <h1 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 32, color: '#272a2f', margin: '0 0 24px' }}>Buscar sucursal</h1>
+        <div style={{ display: 'flex', marginBottom: 32 }}>
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscá por nombre o dirección"
+          style={{ flex: 1, height: 48, padding: '0 16px', border: '1px solid #c4c8cc', borderRight: 'none', borderRadius: '4px 0 0 4px', fontFamily: 'Roboto, sans-serif', fontSize: 16, color: '#272a2f' }} />
+          <button style={{ width: 48, height: 48, backgroundColor: '#d71920', border: 'none', borderRadius: '0 4px 4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M16.5 16.5L12.375 12.375M14.25 7.875C14.25 11.396 11.396 14.25 7.875 14.25C4.354 14.25 1.5 11.396 1.5 7.875C1.5 4.354 4.354 1.5 7.875 1.5C11.396 1.5 14.25 4.354 14.25 7.875Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+          </button>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: 16 }}>
+          {filtered.map((s, i) =>
+          <div key={i} style={{ backgroundColor: '#fff', borderRadius: 8, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', borderLeft: '4px solid #d71920', cursor: 'pointer', transition: 'all 0.2s' }}
+          onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.12)'}
+          onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'}>
+              <h3 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 18, color: '#272a2f', margin: '0 0 8px' }}>{s.name}</h3>
+              <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', margin: '0 0 4px' }}>{s.addr}</p>
+              <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#6c7580', margin: '0 0 4px' }}>{s.hrs}</p>
+              <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 14, color: '#1a73e8', margin: 0 }}>{s.tel}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+/* ===== FOOTER ===== */
+function Footer() {
+  const isMobile = useIsMobile(768);
+  const cols = [
+  { t: '¿Qué necesitás hacer?', items: [
+    { l: 'Hacer un envío', url: 'https://transaccional-router-login.andreani.com' },
+    { l: 'Buscar sucursal', url: 'https://www.andreani.com/buscar-sucursal' },
+    { l: 'Ver mis envíos', url: 'https://transaccional-router-login.andreani.com' },
+    { l: 'Ver tarifas', url: 'https://www.andreani.com/precios-productos' },
+    { l: 'Ver envíos en Rezago', url: 'https://www.andreani.com/envios-en-rezago' }]
+  },
+  { t: 'Nosotros', items: [
+    { l: 'Sustentabilidad', url: 'https://sustentabilidad.andreani.com/' },
+    { l: 'Trabajá con nosotros', url: 'https://empleos.andreani.com/' },
+    { l: 'Convertite en Transportista', url: 'https://transportistas.andreani.com' },
+    { l: 'Segmentos corporativos', url: 'https://www.andreani.com/corporativo' },
+    { l: 'Norlog', url: 'http://www.norlog.com.ar/' },
+    { l: 'Fundacion Andreani', url: 'https://www.fundacionandreani.org.ar/' },
+    { l: 'Andreani Brasil', url: 'https://www.andreani.com.br/' }]
+  },
+  { t: 'Asistencia', items: [
+    { l: 'Preguntas frecuentes', url: 'https://www.andreani.com/preguntas-frecuentes' },
+    { l: '0800-122-1112', url: null },
+    { l: 'atenciondigital@andreani.com', url: 'mailto:atenciondigital@andreani.com' },
+    { l: 'Botón de arrepentimiento', url: 'https://www.andreani.com/ayuda/arrepentimiento-de-compra' }]
+  }];
+
+  const socialLinks = [
+  { url: 'https://www.linkedin.com/company/grupologisticoandreani/mycompany/', icon:
+    <svg width="18" height="18" viewBox="0 0 448 512" fill="currentColor"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path></svg>
+  },
+  { url: 'https://www.youtube.com/playlist?list=PLomKSasqf9h_lmhJninK18EP5USkXHnT0', icon:
+    <svg width="20" height="16" viewBox="0 0 576 512" fill="currentColor"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"></path></svg>
+  }];
+
+  const dataFiscal = [
+  { url: 'http://qr.afip.gob.ar/?qr=I4aQJ4ueyBFIyAo9MS79zg,,', title: 'SHERWOOD SAIE' },
+  { url: 'http://qr.afip.gob.ar/?qr=JCiBRjx_0hEetpS7eZXXTA,,', title: 'ANDREANI LOGISTICA SA' },
+  { url: 'http://qr.afip.gob.ar/?qr=PPqOkWFWJy1isAyJxv95tA,,', title: 'CORREO ANDREANI SA' }];
+
+  return (
+    <footer style={{ backgroundColor: '#272a2f' }}>
+      {/* Top section: logo + divider */}
+      <div style={{ maxWidth: 1536, margin: '0 auto', padding: isMobile ? '24px 16px 0' : '32px 64px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingBottom: 24 }}>
+          <img src="https://componentesui.blob.core.windows.net/recursos/logos-gla/isologo-195.png" alt="Andreani" style={{ height: 28, filter: 'brightness(0) invert(1)' }} />
+          <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 13, color: '#9e9e9e', margin: 0 }}>Buenos Aires, Argentina - San Pablo, Brasil</p>
+        </div>
+        <hr style={{ border: 'none', borderTop: '1px solid #3d4147', margin: 0 }} />
+      </div>
+      {/* Columns */}
+      <div style={{ maxWidth: 1536, margin: '0 auto', padding: isMobile ? '24px 16px' : '32px 64px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: isMobile ? 24 : 48, marginBottom: 32 }}>
+          {cols.map((c, i) =>
+          <div key={i}>
+              <h4 style={{ fontFamily: 'Rubik, sans-serif', fontWeight: 500, fontSize: 14, color: '#fff', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{c.t}</h4>
+              {c.items.map((it, ii) =>
+            it.url ?
+            <a key={ii} href={it.url} target={it.url.startsWith('mailto') ? '_self' : '_blank'} rel="noopener noreferrer"
+            style={{ display: 'block', fontFamily: 'Rubik, sans-serif', fontSize: 14, color: '#9e9e9e', margin: '0 0 10px', cursor: 'pointer', textDecoration: 'none', transition: 'color 0.2s' }}
+            onMouseEnter={(e) => e.target.style.color = '#fff'}
+            onMouseLeave={(e) => e.target.style.color = '#9e9e9e'}>
+                      {it.l}
+                    </a> :
+            <span key={ii} style={{ display: 'block', fontFamily: 'Rubik, sans-serif', fontSize: 14, color: '#9e9e9e', margin: '0 0 10px' }}>{it.l}</span>
+            )}
+              {/* Social icons solo en columna Asistencia */}
+              {i === 2 &&
+            <div style={{ display: 'flex', gap: 16, marginTop: 16 }}>
+                  {socialLinks.map((s, si) =>
+              <a key={si} href={s.url} target="_blank" rel="noopener noreferrer"
+              style={{ color: '#9e9e9e', textDecoration: 'none', transition: 'color 0.2s', display: 'flex', alignItems: 'center' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#9e9e9e'}>
+                      {s.icon}
+                    </a>
+              )}
+                </div>
+            }
+            </div>
+          )}
+        </div>
+        <hr style={{ border: 'none', borderTop: '1px solid #3d4147', margin: '0 0 24px' }} />
+        {/* Bottom: logos + data fiscal + copyright */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <img src="https://componentesui.blob.core.windows.net/recursos/logos-gla/isologo-195.png" alt="Andreani" style={{ height: 22, filter: 'brightness(0) invert(1)' }} />
+            <p style={{ fontFamily: 'Roboto, sans-serif', fontSize: 12, color: '#9e9e9e', margin: 0 }}>Buenos Aires, Argentina - San Pablo, Brasil</p>
+          </div>
+          <img src="assets/corporaciones.png" alt="Corporaciones" style={{ height: 22, filter: 'brightness(0) invert(0.6)' }} />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {dataFiscal.map((d, i) =>
+            <a key={i} href={d.url} target="_F960AFIPInfo" title={d.title}>
+                <img src="https://a.storyblok.com/f/63950/65x89/d7a9018282/data-fiscal.jpg" alt={d.title} style={{ height: 40, width: 'auto' }} />
+              </a>
+            )}
+          </div>
+        </div>
+        <hr style={{ border: 'none', borderTop: '1px solid #3d4147', margin: '0 0 16px' }} />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', justifyContent: 'space-between' }}>
+          <p style={{ fontFamily: 'Rubik, sans-serif', fontSize: 12, color: '#9e9e9e', margin: 0 }}>COPYRIGHT © 2026 <strong style={{ color: '#fff' }}>ANDREANI</strong>. Todos los derechos reservados.</p>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            {[
+            { l: 'Dirección General de Defensa y Protección al Consumidor', url: 'https://www.buenosaires.gob.ar/defensaconsumidor' },
+            { l: 'Política de Privacidad', url: 'https://www.andreani.com/politicas-de-privacidad' },
+            { l: 'Enacom', url: 'https://www.enacom.gob.ar' },
+            { l: 'Defensa de las y los Consumidores. Para reclamos ingrese aquí', url: 'https://www.argentina.gob.ar/produccion/defensaconsumidor/formulario' }].
+            map((lk, i) =>
+            <a key={i} href={lk.url} target="_blank" rel="noopener noreferrer"
+            style={{ fontFamily: 'Roboto, sans-serif', fontSize: 11, color: '#9e9e9e', textDecoration: 'none', transition: 'color 0.2s' }}
+            onMouseEnter={(e) => e.target.style.color = '#fff'}
+            onMouseLeave={(e) => e.target.style.color = '#9e9e9e'}>
+                {lk.l}
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </footer>);
+
+}
+
+/* ===== WHATSAPP ===== */
+function WhatsAppBtn() {
+  return (
+    <a href="https://link.andreani.com/HOXNqb" target="_blank" rel="noopener noreferrer"
+      style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1200, cursor: 'pointer', textDecoration: 'none', display: 'block' }}>
+      <img src="assets/saludo.gif" alt="Andi" style={{ width: 186, height: 100, display: 'block' }} />
+    </a>
+  );
+}
+
+/* ===== APP ===== */
+function App() {
+  const [view, setView] = React.useState('home');
+  const [tab, setTab] = React.useState('seguir');
+  const [tNum, setTNum] = React.useState('');
+  const [qData, setQData] = React.useState(null);
+
+  const nav = (v, t) => {setView(v);if (t) setTab(t);window.scrollTo({ top: 0, behavior: 'smooth' });};
+  const track = (n) => {setTNum(n);setView('tracking');window.scrollTo({ top: 0 });};
+  const quote = (d) => {setQData(d);setView('quote');window.scrollTo({ top: 0 });};
+  const back = () => {setView('home');window.scrollTo({ top: 0 });};
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header onNavigate={nav} />
+      <div style={{ marginTop: 64, flex: 1 }}>
+        <div key={view} style={{ opacity: 1 }}>
+          {view === 'home' && <><HeroSection activeTab={tab} setActiveTab={setTab} onTrack={track} onQuote={quote} /><QuickAccessCards onNavigate={nav} /><ServicesSection /><EstamosCircaSection onNavigate={nav} /><AwardBanner /><FAQSection /></>}
+          {view === 'tracking' && <TrackingResults trackingNumber={tNum} onBack={back} />}
+          {view === 'quote' && <QuoteResults quoteData={qData} onBack={back} />}
+          {view === 'sucursales' && <SucursalesView onBack={back} />}
+        </div>
+      </div>
+      <Footer />
+      <WhatsAppBtn />
+    </div>);
+
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

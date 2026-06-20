@@ -5,6 +5,7 @@ import { X, Star, MessageCircle, Mail, Globe, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { StoreWithRating } from '@/lib/types'
+import { safeUrl } from '@/lib/safe-url'
 
 interface Props {
   store: StoreWithRating | null
@@ -148,7 +149,7 @@ export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
                   )}
                   {store.website_url && (
                     <a
-                      href={store.website_url}
+                      href={safeUrl(store.website_url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => onTrack('website_click')}

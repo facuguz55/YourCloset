@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Star, MessageCircle, Mail, Globe, MapPin, ChevronLeft } from 'lucide-react'
 import StoreTracker from './StoreTracker'
 import type { StoreWithRating, Product } from '@/lib/types'
+import { safeUrl } from '@/lib/safe-url'
 
 interface Props {
   params: { slug: string }
@@ -112,7 +113,7 @@ export default async function StorePage({ params }: Props) {
             </a>
           )}
           {store.website_url && (
-            <a href={store.website_url} target="_blank" rel="noopener noreferrer"
+            <a href={safeUrl(store.website_url)} target="_blank" rel="noopener noreferrer"
               className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-[12px] active:scale-95 transition-transform"
               style={{ backgroundColor: '#F5F5F7', minHeight: '64px' }}>
               <Globe size={20} style={{ color: '#1D1D1F' }} />

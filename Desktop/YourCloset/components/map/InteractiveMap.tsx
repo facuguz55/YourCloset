@@ -24,6 +24,67 @@ function FlyToUser() {
   return null
 }
 
+function ZoomControls() {
+  const map = useMap()
+  const btnStyle: React.CSSProperties = {
+    width: 40, height: 40, borderRadius: 12,
+    background: 'rgba(255,255,255,0.92)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '0.5px solid rgba(0,0,0,0.08)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: 22, fontWeight: 300, color: '#1D1D1F', cursor: 'pointer',
+    userSelect: 'none',
+  }
+  return (
+    <div style={{ position: 'absolute', right: 12, top: 12, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <button style={btnStyle} onClick={() => map.zoomIn()}>+</button>
+      <button style={btnStyle} onClick={() => map.zoomOut()}>−</button>
+    </div>
+  )
+}
+
+function LocateButton() {
+  const map = useMap()
+  const [loading, setLoading] = useState(false)
+  function locate() {
+    setLoading(true)
+    navigator.geolocation?.getCurrentPosition(
+      ({ coords }) => {
+        map.flyTo([coords.latitude, coords.longitude], 16, { animate: true })
+        setLoading(false)
+      },
+      () => setLoading(false)
+    )
+  }
+  return (
+    <button
+      onClick={locate}
+      style={{
+        position: 'absolute', right: 12, bottom: 16, zIndex: 1000,
+        width: 44, height: 44, borderRadius: 14,
+        background: 'rgba(255,255,255,0.92)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '0.5px solid rgba(0,0,0,0.08)',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+      }}
+    >
+      {loading ? (
+        <div style={{ width: 18, height: 18, border: '2px solid #0071E3', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      ) : (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071E3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+          <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 export default function InteractiveMap() {
   const [stores, setStores] = useState<StoreWithRating[]>([])
   const [selectedStore, setSelectedStore] = useState<StoreWithRating | null>(null)
@@ -73,6 +134,8 @@ export default function InteractiveMap() {
           attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
         />
         <FlyToUser />
+        <ZoomControls />
+        <LocateButton />
         {stores.map((store) => (
           <Marker
             key={store.id}

@@ -92,7 +92,7 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        ) : products.length === 0 ? (
+        ) : !loading && products.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <span style={{ fontSize: '48px' }}>👗</span>
             <p className="mt-4 font-semibold" style={{ fontSize: '17px', color: '#1D1D1F' }}>

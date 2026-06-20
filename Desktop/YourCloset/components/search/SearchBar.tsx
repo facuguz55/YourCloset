@@ -1,6 +1,32 @@
 'use client'
 
-import { Search, SlidersHorizontal, X } from 'lucide-react'
+function SearchSVG() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#AEAEB2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
+    </svg>
+  )
+}
+
+function FilterSVG({ active }: { active?: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={active ? '#FFFFFF' : '#6E6E73'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+      <line x1="11" y1="18" x2="13" y2="18" />
+    </svg>
+  )
+}
+
+function XSvg() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#AEAEB2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  )
+}
 
 interface Props {
   value: string
@@ -20,11 +46,9 @@ export default function SearchBar({
   return (
     <div className="flex items-center gap-2">
       <div className="flex-1 relative">
-        <Search
-          size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-          style={{ color: '#AEAEB2' }}
-        />
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+          <SearchSVG />
+        </span>
         <input
           type="text"
           value={value}
@@ -47,12 +71,8 @@ export default function SearchBar({
           }}
         />
         {value && (
-          <button
-            onClick={() => onChange('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
-            style={{ color: '#AEAEB2' }}
-          >
-            <X size={16} />
+          <button onClick={() => onChange('')} className="absolute right-3 top-1/2 -translate-y-1/2">
+            <XSvg />
           </button>
         )}
       </div>
@@ -67,7 +87,7 @@ export default function SearchBar({
           color: filterActive ? '#FFFFFF' : '#6E6E73',
         }}
       >
-        <SlidersHorizontal size={18} />
+        <FilterSVG active={filterActive} />
       </button>
     </div>
   )

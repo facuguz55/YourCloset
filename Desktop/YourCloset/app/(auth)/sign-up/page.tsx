@@ -47,7 +47,14 @@ export default function SignUpPage() {
         emailRedirectTo: `${location.origin}/auth/callback`,
       },
     })
-    if (error) { setError(error.message); setLoading(false); return }
+    if (error) {
+      const msg = error.message
+      if (!msg || msg === '{}') setError('Ocurrió un error. Verificá tus datos e intentá de nuevo.')
+      else if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) setError('Este email ya está registrado. ¿Querés ingresar?')
+      else setError(msg)
+      setLoading(false)
+      return
+    }
     router.push('/home')
     router.refresh()
   }

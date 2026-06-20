@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { Search } from 'lucide-react'
 import ProductCard, { ProductCardSkeleton } from '@/components/search/ProductCard'
 import type { ProductWithStore } from '@/lib/types'
 
@@ -29,7 +28,17 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    fetchFeed(null)
+    // Verificar onboarding antes de cargar el feed
+    fetch('/api/user/style-profile')
+      .then((r) => r.json())
+      .then(({ data }) => {
+        if (data && data.onboarding_done === false) {
+          window.location.href = '/onboarding'
+          return
+        }
+        fetchFeed(null)
+      })
+      .catch(() => fetchFeed(null))
   }, [fetchFeed])
 
   useEffect(() => {
@@ -48,16 +57,16 @@ export default function HomePage() {
   }, [cursor, hasMore, loading, fetchFeed])
 
   return (
-    <div style={{ backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh' }}>
       {/* Header */}
       <div
-        className="sticky top-0 z-30 px-4 pt-safe-top"
+        className="sticky top-0 z-30 px-4"
         style={{
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.70) 100%)',
-          backdropFilter: 'blur(48px) saturate(200%) brightness(1.06)',
-          WebkitBackdropFilter: 'blur(48px) saturate(200%) brightness(1.06)',
-          borderBottom: '0.5px solid rgba(255,255,255,0.6)',
-          boxShadow: '0 1px 0 rgba(255,255,255,0.9) inset, 0 1px 12px rgba(0,0,0,0.05)',
+          background: 'rgba(255,255,255,0.45)',
+          backdropFilter: 'blur(48px) saturate(200%) brightness(1.08)',
+          WebkitBackdropFilter: 'blur(48px) saturate(200%) brightness(1.08)',
+          borderBottom: '0.5px solid rgba(255,255,255,0.65)',
+          boxShadow: '0 1px 0 rgba(255,255,255,0.95) inset, 0 1px 16px rgba(0,0,0,0.04)',
           paddingTop: 'max(16px, env(safe-area-inset-top))',
           paddingBottom: '12px',
         }}
@@ -72,13 +81,18 @@ export default function HomePage() {
           className="flex items-center gap-2 max-w-2xl mx-auto"
           style={{
             height: '44px',
-            borderRadius: '12px',
-            backgroundColor: '#F5F5F7',
+            borderRadius: '14px',
+            background: 'rgba(255,255,255,0.50)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '0.5px solid rgba(255,255,255,0.70)',
             padding: '0 12px',
           }}
         >
-          <Search size={16} style={{ color: '#AEAEB2' }} />
-          <span style={{ fontSize: '15px', color: '#AEAEB2' }}>Buscá camperas, vestidos...</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <span style={{ fontSize: '15px', color: '#8E8E93' }}>Buscá camperas, vestidos...</span>
         </Link>
       </div>
 

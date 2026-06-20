@@ -140,6 +140,7 @@ export default function StyleSettingsPage() {
   const [selectedPrice, setSelectedPrice] = useState('medio')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -165,14 +166,25 @@ export default function StyleSettingsPage() {
   async function handleSave() {
     if (selectedStyles.length === 0) return
     setSaving(true)
-    await fetch('/api/user/style-profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ estilos: selectedStyles, genero: selectedGender, precio_rango: selectedPrice }),
-    })
+    setSaveError(null)
+    try {
+      const res = await fetch('/api/user/style-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estilos: selectedStyles, genero: selectedGender, precio_rango: selectedPrice }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        setSaveError(body.error || `Error ${res.status} — revisá tu conexión`)
+        setSaving(false)
+        return
+      }
+      setSaved(true)
+      setTimeout(() => router.back(), 900)
+    } catch {
+      setSaveError('No se pudo conectar al servidor')
+    }
     setSaving(false)
-    setSaved(true)
-    setTimeout(() => router.back(), 800)
   }
 
   if (loading) {
@@ -212,42 +224,33 @@ export default function StyleSettingsPage() {
           <p className="mb-3 font-semibold" style={{ fontSize: '13px', color: 'rgba(29,29,31,0.5)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
             Estilos que te gustan
           </p>
-          <div className="grid grid-cols-3 gap-3">
-            {STYLES.map(({ value, label, icon, color }) => {
+          <div className="flex flex-wrap gap-2">
+            {STYLES.map(({ value, label, color }) => {
               const active = selectedStyles.includes(value)
-              const hex = color
               return (
                 <motion.button
                   key={value}
-                  whileTap={{ scale: 0.90 }}
+                  whileTap={{ scale: 0.92 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 22 }}
                   onClick={() => toggleStyle(value)}
-                  className="flex flex-col items-center gap-2 py-4 rounded-[18px] relative"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-full relative"
                   style={{
-                    background: active
-                      ? `linear-gradient(135deg, ${hex}28 0%, ${hex}12 100%)`
-                      : 'rgba(255,255,255,0.52)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    border: `1.5px solid ${active ? hex + '80' : 'rgba(255,255,255,0.8)'}`,
+                    background: active ? color : 'rgba(255,255,255,0.6)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    border: `1.5px solid ${active ? color : 'rgba(255,255,255,0.8)'}`,
                     boxShadow: active
-                      ? `0 2px 12px ${hex}25, 0 1px 0 rgba(255,255,255,0.8) inset`
-                      : '0 1px 0 rgba(255,255,255,0.9) inset, 0 2px 8px rgba(0,0,0,0.05)',
-                    color: active ? hex : '#8E8E93',
+                      ? `0 2px 10px ${color}40`
+                      : '0 1px 0 rgba(255,255,255,0.9) inset',
+                    color: active ? '#FFFFFF' : '#3C3C43',
                   }}
                 >
-                  {icon}
-                  <span style={{ fontSize: '11px', fontWeight: 600, lineHeight: 1.2, textAlign: 'center' }}>{label}</span>
                   {active && (
-                    <div
-                      className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
-                      style={{ background: hex }}
-                    >
-                      <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="2 6 5 9 10 3"/>
-                      </svg>
-                    </div>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="2 6 5 9 10 3"/>
+                    </svg>
                   )}
+                  <span style={{ fontSize: '13px', fontWeight: 600 }}>{label}</span>
                 </motion.button>
               )
             })}
@@ -319,6 +322,13 @@ export default function StyleSettingsPage() {
             })}
           </div>
         </section>
+
+        {saveError && (
+          <p className="text-center text-[13px] font-medium px-2 py-3 rounded-[12px]"
+            style={{ background: 'rgba(255,59,48,0.12)', color: '#FF3B30' }}>
+            {saveError}
+          </p>
+        )}
 
         {/* Save button */}
         <motion.button

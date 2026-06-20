@@ -58,10 +58,13 @@ export default function DashboardPage() {
     fetch(`/api/dashboard/analytics?days=${days}`)
       .then((r) => r.json())
       .then(({ data, code }) => {
-        if (code === 'NO_STORE') { router.replace('/dashboard/settings'); return }
+        if (!data || code === 'NO_STORE' || code === 'INTERNAL_ERROR' || code === 'UNAUTHORIZED') {
+          router.replace('/dashboard/settings')
+          return
+        }
         setAnalytics(data)
       })
-      .catch(() => {})
+      .catch(() => router.replace('/dashboard/settings'))
       .finally(() => setLoading(false))
   }, [days, router])
 

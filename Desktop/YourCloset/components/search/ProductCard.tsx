@@ -27,8 +27,11 @@ export default function ProductCard({ product }: Props) {
       className="block overflow-hidden active:scale-[0.98] transition-transform duration-150"
       style={{
         borderRadius: '16px',
-        backgroundColor: '#F5F5F7',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        background: 'rgba(255,255,255,0.60)',
+        backdropFilter: 'blur(24px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+        border: '0.5px solid rgba(255,255,255,0.75)',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.07), 0 1px 0 rgba(255,255,255,0.9) inset',
       }}
     >
       <div className="relative w-full" style={{ aspectRatio: '3/4' }}>
@@ -72,7 +75,13 @@ export default function ProductCard({ product }: Props) {
 
 export function ProductCardSkeleton() {
   return (
-    <div className="overflow-hidden" style={{ borderRadius: '16px', backgroundColor: '#F5F5F7' }}>
+    <div className="overflow-hidden" style={{
+      borderRadius: '16px',
+      background: 'rgba(255,255,255,0.55)',
+      backdropFilter: 'blur(24px) saturate(160%)',
+      WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+      border: '0.5px solid rgba(255,255,255,0.70)',
+    }}>
       <div className="w-full animate-pulse" style={{ aspectRatio: '3/4', backgroundColor: '#E8E8ED' }} />
       <div className="p-2.5 space-y-1.5">
         <div className="h-3 rounded-full animate-pulse w-2/3" style={{ backgroundColor: '#E8E8ED' }} />

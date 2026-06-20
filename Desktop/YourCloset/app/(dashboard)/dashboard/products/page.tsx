@@ -41,15 +41,18 @@ export default function ProductsPage() {
   useEffect(() => {
     fetch('/api/dashboard/analytics')
       .then((r) => r.json())
-      .then(({ data }) => {
-        if (!data?.store?.slug) return
+      .then(({ data, code }) => {
+        if (!data?.store?.slug || code === 'NO_STORE') {
+          window.location.href = '/dashboard/settings'
+          return
+        }
         const slug = data.store.slug
         setStoreSlug(slug)
         return fetch(`/api/stores/${slug}/products`)
           .then((r) => r.json())
           .then(({ data: products }) => setProducts(products ?? []))
       })
-      .catch(() => {})
+      .catch(() => { window.location.href = '/dashboard/settings' })
       .finally(() => setLoading(false))
   }, [])
 

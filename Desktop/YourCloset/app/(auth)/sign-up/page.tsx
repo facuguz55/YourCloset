@@ -24,12 +24,15 @@ function GoogleIcon() {
   )
 }
 
+const STORE_CODE = 'LOCAL2025'
+
 export default function SignUpPage() {
   const router = useRouter()
   const [role, setRole] = useState<Role>('user')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const [storeCode, setStoreCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,19 +42,31 @@ export default function SignUpPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    const { error } = await supabase.auth.signUp({
+    if (role === 'store_owner' && storeCode.trim().toUpperCase() !== STORE_CODE) {
+      setError('Código de local incorrecto. Pedíselo a YourCloset.')
+      setLoading(false)
+      return
+    }
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { role, full_name: name },
-        emailRedirectTo: `${location.origin}/auth/callback`,
       },
     })
     if (error) {
-      const msg = error.message
-      if (!msg || msg === '{}') setError('Ocurrió un error. Verificá tus datos e intentá de nuevo.')
-      else if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) setError('Este email ya está registrado. ¿Querés ingresar?')
-      else setError(msg)
+      console.error('signUp error:', error)
+      const msg = error.message || ''
+      if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) {
+        setError('Este email ya está registrado. Ingresá desde la pantalla de inicio.')
+      } else {
+        setError(msg || `Error ${error.status ?? ''}: ${error.name ?? 'desconocido'}`)
+      }
+      setLoading(false)
+      return
+    }
+    if (!data.session) {
+      setError('Confirmación de email requerida. Desactivala en Supabase → Auth → Email confirmations.')
       setLoading(false)
       return
     }
@@ -153,6 +168,21 @@ export default function SignUpPage() {
 
       {/* Email form */}
       <form onSubmit={handleEmailSignUp} className="space-y-2.5">
+        {role === 'store_owner' && (
+          <div className="flex items-center gap-2 px-4 rounded-[13px]"
+            style={{ height: '46px', background: 'rgba(0,113,227,0.08)', border: '1px solid rgba(0,113,227,0.25)' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input
+              type="text"
+              placeholder="Código de local (pedíselo a YourCloset)"
+              value={storeCode}
+              onChange={(e) => setStoreCode(e.target.value)}
+              required
+              className="flex-1 bg-transparent outline-none"
+              style={{ fontSize: '14px', color: '#0071E3' }}
+            />
+          </div>
+        )}
         {[
           { value: name, setter: setName, placeholder: 'Nombre completo', type: 'text', required: true },
           { value: email, setter: setEmail, placeholder: 'Email', type: 'email', required: true },

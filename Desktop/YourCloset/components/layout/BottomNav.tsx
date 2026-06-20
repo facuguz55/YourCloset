@@ -18,13 +18,16 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around"
       style={{
-        background: 'rgba(255,255,255,0.72)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        borderTop: '0.5px solid rgba(255,255,255,0.3)',
-        borderRadius: '24px 24px 0 0',
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.58) 100%)',
+        backdropFilter: 'blur(48px) saturate(220%) brightness(1.08)',
+        WebkitBackdropFilter: 'blur(48px) saturate(220%) brightness(1.08)',
+        borderTop: '1px solid rgba(255,255,255,0.65)',
+        borderLeft: '0.5px solid rgba(255,255,255,0.4)',
+        borderRight: '0.5px solid rgba(255,255,255,0.4)',
+        borderRadius: '28px 28px 0 0',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         minHeight: '64px',
+        boxShadow: '0 -1px 0 rgba(255,255,255,0.9) inset, 0 -8px 32px rgba(0,0,0,0.08)',
       }}
     >
       {NAV_ITEMS.map(({ href, icon: Icon, label }) => {

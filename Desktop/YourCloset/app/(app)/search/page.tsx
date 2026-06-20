@@ -58,10 +58,11 @@ export default function SearchPage() {
       <div
         className="sticky top-0 z-30 px-4"
         style={{
-          background: 'rgba(255,255,255,0.88)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: '0.5px solid #F5F5F7',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.70) 100%)',
+          backdropFilter: 'blur(48px) saturate(200%) brightness(1.06)',
+          WebkitBackdropFilter: 'blur(48px) saturate(200%) brightness(1.06)',
+          borderBottom: '0.5px solid rgba(255,255,255,0.6)',
+          boxShadow: '0 1px 0 rgba(255,255,255,0.9) inset, 0 1px 12px rgba(0,0,0,0.05)',
           paddingTop: 'max(16px, env(safe-area-inset-top))',
           paddingBottom: '12px',
         }}

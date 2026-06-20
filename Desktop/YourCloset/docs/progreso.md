@@ -1,5 +1,5 @@
 # YourCloset — Estado de Módulos
-> Actualizado: 2026-06-20 | Agente: Backend/DB
+> Actualizado: 2026-06-20 | Agente: Frontend
 
 ---
 
@@ -48,33 +48,67 @@
 
 ---
 
-## Módulos del MVP — Frontend ⏳
+## Módulos del MVP — Frontend ✅
 
-| Módulo | Estado | Agente |
-|--------|--------|--------|
-| **Auth — Sign In / Sign Up** | ⏳ Pendiente | Frontend |
-| **Onboarding — Encuesta de estilo** | ⏳ Pendiente | Frontend + UI |
-| **Home — Feed personalizado** | ⏳ Pendiente | Frontend |
-| **Buscador con filtros** | ⏳ Pendiente | Frontend |
-| **Mapa interactivo (Leaflet)** | ⏳ Pendiente | Integraciones |
-| **Perfil del local** | ⏳ Pendiente | Frontend |
-| **Panel de locales — Dashboard** | ⏳ Pendiente | Frontend |
-| **Panel de locales — Catálogo** | ⏳ Pendiente | Frontend |
-| **Panel de locales — Analíticas** | ⏳ Pendiente | Frontend |
-| **Sistema de valoraciones** | ⏳ Pendiente | Frontend |
-| **Mi Perfil (usuario)** | ⏳ Pendiente | Frontend |
+### Sistema de diseño
+
+| Archivo | Estado |
+|---------|--------|
+| tailwind.config.ts (tokens YourCloset) | ✅ |
+| app/globals.css (variables --color-*) | ✅ |
+
+### Componentes shared
+
+| Componente | Archivo | Estado |
+|-----------|---------|--------|
+| BottomNav (Liquid Glass) | components/layout/BottomNav.tsx | ✅ |
+| ProductCard (aspect 3:4, skeleton) | components/search/ProductCard.tsx | ✅ |
+| SearchBar | components/search/SearchBar.tsx | ✅ |
+| SearchFilters | components/search/SearchFilters.tsx | ✅ |
+| StoreBottomSheet (framer-motion) | components/map/StoreBottomSheet.tsx | ✅ |
+| InteractiveMap (Leaflet + react-leaflet) | components/map/InteractiveMap.tsx | ✅ |
+
+### Auth
+
+| Pantalla | Ruta | Estado |
+|---------|------|--------|
+| Layout Auth (centrado) | app/(auth)/layout.tsx | ✅ |
+| Sign In (email + Google) | app/(auth)/sign-in/page.tsx | ✅ |
+| Sign Up (email + Google + rol) | app/(auth)/sign-up/page.tsx | ✅ |
+| OAuth Callback | app/auth/callback/route.ts | ✅ |
+
+### App (usuario final)
+
+| Pantalla | Ruta | Estado |
+|---------|------|--------|
+| Layout App (con BottomNav) | app/(app)/layout.tsx | ✅ |
+| Onboarding (encuesta 3 pasos, no skippeable) | app/(app)/onboarding/page.tsx | ✅ |
+| Home (feed masonry + infinite scroll) | app/(app)/home/page.tsx | ✅ |
+| Búsqueda (SearchBar + Filters + resultados) | app/(app)/search/page.tsx | ✅ |
+| Perfil del local (público) | app/(app)/store/[slug]/page.tsx | ✅ |
+| Mi perfil | app/(app)/profile/page.tsx | ✅ |
+| Mapa | app/(app)/map/page.tsx | ✅ |
+
+### Dashboard (locales)
+
+| Pantalla | Ruta | Estado |
+|---------|------|--------|
+| Layout Dashboard (sidebar + header) | app/(dashboard)/layout.tsx | ✅ |
+| Overview / métricas | app/(dashboard)/dashboard/page.tsx | ✅ |
+| Gestión de catálogo + formulario | app/(dashboard)/dashboard/products/page.tsx | ✅ |
+| Configuración del local | app/(dashboard)/dashboard/settings/page.tsx | ✅ |
 
 ---
 
-## Notas para el Agente Frontend
+## Pendientes / Próximos pasos
 
-- Todos los endpoints retornan `{ data, meta? }` en éxito y `{ error, code }` en error
-- Auth: usar `lib/supabase/client.ts` en Client Components, `lib/supabase/server.ts` en Server Components
-- Tipos disponibles en `lib/types.ts`
-- Feed: `GET /api/user/feed?cursor=&limit=20` — soporta infinite scroll con cursor
-- Search: `POST /api/search/text` con body `{ query, category, style, gender, price_range, rating_min, order_by, limit }`
-- Track events: `POST /api/stores/[slug]/track` con `{ event_type, product_id? }` — fire and forget
-- Leaflet: importar siempre con `dynamic(() => import(...), { ssr: false })`
+| Módulo | Estado | Agente |
+|--------|--------|--------|
+| Leaflet CSS fix (importación en app global) | ⏳ | Frontend |
+| NEXT_PUBLIC_APP_URL en .env.local | ⏳ | Config |
+| Supabase Storage buckets (products, stores, avatars) | ⏳ | Integraciones |
+| Sistema de valoraciones (formulario modal) | ⏳ | Frontend |
+| Dashboard nav active state (usePathname) | ⏳ | Frontend |
 
 ## Fase 2 (fuera del MVP)
 
@@ -85,4 +119,4 @@
 
 ---
 
-*Siguiente paso: Agente Frontend construye layout base, rutas y componentes shared.*
+*Siguiente paso: Agente Integraciones configura Supabase Storage buckets y revisa la configuración de Leaflet. Luego, configurar variables de entorno en Vercel y hacer deploy.*

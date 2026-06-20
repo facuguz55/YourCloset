@@ -9,7 +9,7 @@
 ALTER TABLE products ADD COLUMN IF NOT EXISTS fts tsvector
   GENERATED ALWAYS AS (
     to_tsvector(
-      'spanish',
+      'spanish'::regconfig,
       coalesce(name, '') || ' ' ||
       coalesce(description, '') || ' ' ||
       coalesce(array_to_string(style_tags, ' '), '') || ' ' ||

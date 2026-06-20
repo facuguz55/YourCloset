@@ -32,7 +32,6 @@ export default function SignUpPage() {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
 
   const supabase = createClient()
 
@@ -49,8 +48,8 @@ export default function SignUpPage() {
       },
     })
     if (error) { setError(error.message); setLoading(false); return }
-    setSuccess(true)
-    setLoading(false)
+    router.push('/home')
+    router.refresh()
   }
 
   async function handleGoogleSignUp() {
@@ -59,25 +58,6 @@ export default function SignUpPage() {
       provider: 'google',
       options: { redirectTo: `${location.origin}/auth/callback`, queryParams: { role } },
     })
-  }
-
-  if (success) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="text-center space-y-4 py-4"
-      >
-        <div className="text-5xl">✉️</div>
-        <h2 className="font-bold" style={{ fontSize: '20px', color: '#1D1D1F' }}>Revisá tu email</h2>
-        <p style={{ fontSize: '15px', color: '#6E6E73' }}>
-          Te enviamos un link a <strong>{email}</strong>
-        </p>
-        <Link href="/sign-in" style={{ fontSize: '15px', color: '#0071E3', fontWeight: 600 }}>
-          Ir al ingreso
-        </Link>
-      </motion.div>
-    )
   }
 
   return (

@@ -1,6 +1,8 @@
 // Configuración de Prisma 7 — YourCloset
-// Las URLs de conexión van aquí (no en schema.prisma)
-import "dotenv/config";
+// Carga .env.local explícitamente (Next.js usa .env.local, dotenv por defecto lee .env)
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({

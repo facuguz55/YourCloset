@@ -94,6 +94,10 @@ export default function SettingsPage() {
     const body = {
       ...form,
       price_range: form.price_range || undefined,
+      website_url: form.website_url || undefined,
+      email: form.email || undefined,
+      cover_image_url: form.cover_image_url || undefined,
+      phone_whatsapp: form.phone_whatsapp || undefined,
       lat: -31.6333,
       lng: -60.7,
       legal_name: form.name,
@@ -107,8 +111,12 @@ export default function SettingsPage() {
     })
 
     if (!res.ok) {
-      const { error: err } = await res.json()
-      setError(err ?? 'Error al guardar')
+      try {
+        const { error: err } = await res.json()
+        setError(err ?? 'Error al guardar')
+      } catch {
+        setError(`Error ${res.status}: intentá de nuevo`)
+      }
       setSaving(false)
       return
     }

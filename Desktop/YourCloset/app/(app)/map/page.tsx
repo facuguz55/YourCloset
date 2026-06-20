@@ -24,7 +24,7 @@ function MapLoading() {
 
 export default function MapPage() {
   return (
-    <div style={{ height: '100dvh', overflow: 'hidden' }}>
+    <div style={{ height: 'calc(100dvh - 96px)', overflow: 'hidden' }}>
       <Suspense fallback={<MapLoading />}>
         <InteractiveMap />
       </Suspense>

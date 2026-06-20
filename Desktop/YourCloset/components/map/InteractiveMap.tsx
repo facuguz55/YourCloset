@@ -31,9 +31,9 @@ export default function InteractiveMap() {
 
   const defaultIcon = L.divIcon({
     className: '',
-    html: `<div style="width:36px;height:36px;border-radius:50%;background:#0071E3;border:3px solid #FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.24);font-size:18px;line-height:1;">🧥</div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:#0071E3;border:2.5px solid #FFFFFF;box-shadow:0 2px 6px rgba(0,113,227,0.45);"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
   })
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function InteractiveMap() {
   }
 
   return (
-    <div style={{ width: '100%', height: '100dvh', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <MapContainer
         center={SANTA_FE}
         zoom={13}

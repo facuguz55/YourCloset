@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, MessageCircle, Mail, Globe, Star, Package, ChevronRight } from 'lucide-react'
 
@@ -47,48 +48,27 @@ function StatCard({
 }
 
 export default function DashboardPage() {
+  const router = useRouter()
   const [analytics, setAnalytics] = useState<Analytics | null>(null)
   const [days, setDays] = useState(30)
   const [loading, setLoading] = useState(true)
-  const [noStore, setNoStore] = useState(false)
 
   useEffect(() => {
     setLoading(true)
     fetch(`/api/dashboard/analytics?days=${days}`)
       .then((r) => r.json())
       .then(({ data, code }) => {
-        if (code === 'NO_STORE') { setNoStore(true); return }
+        if (code === 'NO_STORE') { router.replace('/dashboard/settings'); return }
         setAnalytics(data)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [days])
+  }, [days, router])
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="w-8 h-8 border-2 border-[#0071E3] border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
-
-  if (noStore) {
-    return (
-      <div className="text-center py-16 space-y-4">
-        <span style={{ fontSize: '48px' }}>🏪</span>
-        <h2 className="font-bold" style={{ fontSize: '20px', color: '#1D1D1F' }}>
-          Todavía no tenés un local
-        </h2>
-        <p style={{ fontSize: '15px', color: '#6E6E73' }}>
-          Registrá tu local para empezar a aparecer en el mapa y el feed.
-        </p>
-        <Link
-          href="/dashboard/settings"
-          className="inline-block px-6 py-3 rounded-[12px] font-semibold"
-          style={{ backgroundColor: '#0071E3', color: '#FFFFFF', fontSize: '15px' }}
-        >
-          Crear mi local
-        </Link>
       </div>
     )
   }

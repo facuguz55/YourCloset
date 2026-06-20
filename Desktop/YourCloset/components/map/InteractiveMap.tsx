@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import StoreBottomSheet from './StoreBottomSheet'
@@ -9,18 +9,34 @@ import type { StoreWithRating } from '@/lib/types'
 
 const SANTA_FE: [number, number] = [-31.6333, -60.7]
 
-function FlyToUser() {
+function UserLocationDot({ position }: { position: [number, number] }) {
+  const dotIcon = L.divIcon({
+    className: '',
+    html: `<div style="position:relative;width:20px;height:20px;display:flex;align-items:center;justify-content:center;">
+      <div style="position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(0,113,227,0.25);animation:pulse-ring 2s ease-out infinite;"></div>
+      <div style="width:12px;height:12px;border-radius:50%;background:#0071E3;border:2.5px solid #FFFFFF;box-shadow:0 0 0 1px rgba(0,113,227,0.3),0 2px 6px rgba(0,113,227,0.5);position:relative;z-index:1;"></div>
+    </div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  })
+  return <Marker position={position} icon={dotIcon} />
+}
+
+function LocationTracker({ onLocation }: { onLocation: (pos: [number, number]) => void }) {
   const map = useMap()
   useEffect(() => {
     let cancelled = false
     navigator.geolocation?.getCurrentPosition(
       ({ coords }) => {
-        if (!cancelled) map.flyTo([coords.latitude, coords.longitude], 15, { animate: true })
+        if (cancelled) return
+        const pos: [number, number] = [coords.latitude, coords.longitude]
+        onLocation(pos)
+        map.flyTo(pos, 15, { animate: true })
       },
       () => {}
     )
     return () => { cancelled = true }
-  }, [map])
+  }, [map, onLocation])
   return null
 }
 
@@ -45,14 +61,16 @@ function ZoomControls() {
   )
 }
 
-function LocateButton() {
+function LocateButton({ onLocate }: { onLocate: () => void }) {
   const map = useMap()
   const [loading, setLoading] = useState(false)
   function locate() {
     setLoading(true)
     navigator.geolocation?.getCurrentPosition(
       ({ coords }) => {
-        map.flyTo([coords.latitude, coords.longitude], 16, { animate: true })
+        const pos: [number, number] = [coords.latitude, coords.longitude]
+        map.flyTo(pos, 16, { animate: true })
+        onLocate()
         setLoading(false)
       },
       () => setLoading(false)
@@ -75,10 +93,9 @@ function LocateButton() {
       {loading ? (
         <div style={{ width: 18, height: 18, border: '2px solid #0071E3', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       ) : (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071E3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071E3" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="3" />
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-          <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
         </svg>
       )}
     </button>
@@ -88,13 +105,14 @@ function LocateButton() {
 export default function InteractiveMap() {
   const [stores, setStores] = useState<StoreWithRating[]>([])
   const [selectedStore, setSelectedStore] = useState<StoreWithRating | null>(null)
+  const [userPos, setUserPos] = useState<[number, number] | null>(null)
   const mapRef = useRef<L.Map | null>(null)
 
-  const defaultIcon = L.divIcon({
+  const storeIcon = L.divIcon({
     className: '',
-    html: `<div style="width:14px;height:14px;border-radius:50%;background:#0071E3;border:2.5px solid #FFFFFF;box-shadow:0 2px 6px rgba(0,113,227,0.45);"></div>`,
-    iconSize: [14, 14],
-    iconAnchor: [7, 7],
+    html: `<div style="width:12px;height:12px;border-radius:50%;background:#0071E3;border:2px solid #FFFFFF;box-shadow:0 1px 4px rgba(0,113,227,0.5);"></div>`,
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
   })
 
   useEffect(() => {
@@ -106,9 +124,7 @@ export default function InteractiveMap() {
 
   function handleMarkerClick(store: StoreWithRating) {
     setSelectedStore(store)
-    if (mapRef.current) {
-      mapRef.current.flyTo([store.lat, store.lng], 16, { animate: true })
-    }
+    if (mapRef.current) mapRef.current.flyTo([store.lat, store.lng], 16, { animate: true })
   }
 
   function handleTrack(eventType: string) {
@@ -121,38 +137,50 @@ export default function InteractiveMap() {
   }
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <MapContainer
-        center={SANTA_FE}
-        zoom={13}
-        style={{ width: '100%', height: '100%' }}
-        ref={mapRef}
-        zoomControl={false}
-      >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
-        />
-        <FlyToUser />
-        <ZoomControls />
-        <LocateButton />
-        {stores.map((store) => (
-          <Marker
-            key={store.id}
-            position={[store.lat, store.lng]}
-            icon={defaultIcon}
-            eventHandlers={{ click: () => handleMarkerClick(store) }}
-          >
-            <Popup>{store.name}</Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+    <>
+      <style>{`
+        @keyframes pulse-ring {
+          0%   { transform: scale(0.5); opacity: 0.8; }
+          100% { transform: scale(2.2); opacity: 0; }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+      <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+        <MapContainer
+          center={SANTA_FE}
+          zoom={13}
+          style={{ width: '100%', height: '100%' }}
+          ref={mapRef}
+          zoomControl={false}
+        >
+          <TileLayer
+            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            attribution='© OpenStreetMap contributors © CARTO'
+          />
+          <LocationTracker onLocation={setUserPos} />
+          <ZoomControls />
+          <LocateButton onLocate={() => {}} />
+          {userPos && <UserLocationDot position={userPos} />}
+          {stores.map((store) => (
+            <Marker
+              key={store.id}
+              position={[store.lat, store.lng]}
+              icon={storeIcon}
+              eventHandlers={{ click: () => handleMarkerClick(store) }}
+            >
+              <Popup>{store.name}</Popup>
+            </Marker>
+          ))}
+        </MapContainer>
 
-      <StoreBottomSheet
-        store={selectedStore}
-        onClose={() => setSelectedStore(null)}
-        onTrack={handleTrack}
-      />
-    </div>
+        <StoreBottomSheet
+          store={selectedStore}
+          onClose={() => setSelectedStore(null)}
+          onTrack={handleTrack}
+        />
+      </div>
+    </>
   )
 }

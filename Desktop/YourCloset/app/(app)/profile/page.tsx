@@ -2,205 +2,126 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
-// ── SVG Components ──────────────────────────────────────────────────────────
+// ── SVG icons ────────────────────────────────────────────────────────────────
 
-function AvatarSVG({ size = 80 }: { size?: number }) {
+function AvatarSVG({ size = 72 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
-      <circle cx="40" cy="40" r="40" fill="#E5E5EA" />
-      <circle cx="40" cy="32" r="13" fill="#C7C7CC" />
-      <path d="M12 74 Q13 54 40 54 Q67 54 68 74" fill="#C7C7CC" />
+      <circle cx="40" cy="40" r="40" fill="rgba(0,113,227,0.12)" />
+      <circle cx="40" cy="32" r="13" fill="rgba(0,113,227,0.35)" />
+      <path d="M12 74 Q13 54 40 54 Q67 54 68 74" fill="rgba(0,113,227,0.35)" />
     </svg>
   )
 }
 
-function ChevronRightSVG() {
+function ChevronSVG({ color = '#AEAEB2' }: { color?: string }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#AEAEB2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="m9 18 6-6-6-6" />
     </svg>
   )
 }
 
-function EditSVG() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
-  )
-}
-
-function LogOutSVG() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <polyline points="16 17 21 12 16 7" />
-      <line x1="21" y1="12" x2="9" y2="12" />
-    </svg>
-  )
-}
-
-function StoreSVG() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  )
-}
-
-function CheckSVG() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  )
-}
-
-// ── Style & preference data ──────────────────────────────────────────────────
-
-function StyleIcon({ value }: { value: string }) {
-  const icons: Record<string, JSX.Element> = {
-    streetwear: (
+const NAV_ROWS = [
+  {
+    icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-        <path d="M12 3C9 3 6 5 6 8h12c0-3-3-5-6-5z" />
-        <rect x="4" y="8" width="16" height="2" rx="1" />
-        <path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9" />
+        <path d="M20 7l-4-4H8L4 7l3 2V20h10V9l3-2z"/>
+        <path d="M8 3c0 2 1.5 3 4 3s4-1 4-3"/>
       </svg>
     ),
-    casual: (
+    label: 'Tu estilo', sub: 'Personalizá tu feed', href: '/profile/style', color: '#0071E3',
+  },
+  {
+    icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-        <path d="M20 7l-4-4H8L4 7l3 2V20h10V9l3-2z" />
-        <path d="M8 3c0 2 1.5 3 4 3s4-1 4-3" />
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
     ),
-    formal: (
+    label: 'Explorar prendas', sub: 'Buscá lo que querés', href: '/search', color: '#34C759',
+  },
+  {
+    icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-        <path d="M9 3L6 7l6 2 6-2-3-4" />
-        <path d="M12 9v12" />
-        <path d="M9 12l3 2 3-2" />
-        <path d="M5 7v13h14V7" />
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
     ),
-    sport: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-      </svg>
-    ),
-    bohemio: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M12 2a5 5 0 0 1 0 10 5 5 0 0 1 0-10z" opacity=".3" />
-        <path d="M12 9c1.5-2 4-3 4-5" />
-        <path d="M12 9c-1.5-2-4-3-4-5" />
-        <path d="M12 15c1.5 2 4 3 4 5" />
-        <path d="M12 15c-1.5 2-4 3-4 5" />
-      </svg>
-    ),
-    minimalista: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-        <line x1="5" y1="12" x2="19" y2="12" />
-        <line x1="5" y1="8" x2="14" y2="8" />
-        <line x1="5" y1="16" x2="10" y2="16" />
-      </svg>
-    ),
-  }
-  return icons[value] ?? null
-}
-
-const STYLES = [
-  { value: 'streetwear', label: 'Streetwear' },
-  { value: 'casual', label: 'Casual' },
-  { value: 'formal', label: 'Formal' },
-  { value: 'sport', label: 'Sport' },
-  { value: 'bohemio', label: 'Bohemio' },
-  { value: 'minimalista', label: 'Minimalista' },
+    label: 'Mapa de locales', sub: 'Ver la ciudad', href: '/map', color: '#FF9500',
+  },
 ]
 
-const GENDERS = [
-  { value: 'femenino', label: 'Mujer' },
-  { value: 'masculino', label: 'Hombre' },
-  { value: 'unisex', label: 'Unisex' },
-  { value: 'sin_preferencia', label: 'Sin preferencia' },
-]
-
-const PRICES = [
-  { value: 'economico', label: 'Económico' },
-  { value: 'medio', label: 'Intermedio' },
-  { value: 'premium', label: 'Premium' },
+const STORE_ROWS = [
+  {
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    ),
+    label: 'Mi local', sub: 'Gestionar mi tienda', href: '/dashboard', color: '#AF52DE',
+  },
 ]
 
 // ── Skeleton ─────────────────────────────────────────────────────────────────
 
-function ProfileSkeleton() {
+function ProfileSkeleton({ dark }: { dark: boolean }) {
+  const bg = dark ? '#1C1C1E' : '#F5F5F7'
+  const card = dark ? '#2C2C2E' : '#FFFFFF'
+  const pulse = dark ? '#3A3A3C' : '#E5E5EA'
   return (
-    <div className="min-h-screen animate-pulse" style={{ backgroundColor: '#F5F5F7' }}>
-      <div className="px-4 pt-5 pb-4" style={{ backgroundColor: '#FFFFFF' }}>
-        <div className="h-7 w-28 rounded-lg" style={{ backgroundColor: '#E5E5EA' }} />
-      </div>
-      <div className="px-4 py-6 flex items-center gap-4" style={{ backgroundColor: '#FFFFFF', marginBottom: 8 }}>
-        <div className="w-20 h-20 rounded-full" style={{ backgroundColor: '#E5E5EA' }} />
-        <div className="space-y-2">
-          <div className="h-5 w-32 rounded-lg" style={{ backgroundColor: '#E5E5EA' }} />
-          <div className="h-4 w-44 rounded-lg" style={{ backgroundColor: '#F5F5F7' }} />
-        </div>
-      </div>
-      <div className="mx-4 mb-4 h-40 rounded-[16px]" style={{ backgroundColor: '#FFFFFF' }} />
-      <div className="mx-4 mb-4 h-24 rounded-[16px]" style={{ backgroundColor: '#FFFFFF' }} />
+    <div className="min-h-screen animate-pulse" style={{ background: dark ? 'linear-gradient(160deg,#0d1117 0%,#1a1a2e 50%,#16213e 100%)' : 'linear-gradient(160deg,#e8f0fe 0%,#f5f0ff 50%,#fce8ff 100%)' }}>
+      <div className="h-52 mx-4 mt-6 rounded-[24px]" style={{ background: card }} />
+      <div className="h-32 mx-4 mt-3 rounded-[24px]" style={{ background: card }} />
     </div>
   )
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-type StyleProfile = {
-  estilos?: string[]
-  genero?: string
-  precio_rango?: string
+function useDarkMode() {
+  const [dark, setDark] = useState(false)
+  useEffect(() => {
+    const stored = localStorage.getItem('yc-theme')
+    const isDark = stored === 'dark'
+    setDark(isDark)
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
+  }, [])
+  function toggle() {
+    const next = !dark
+    setDark(next)
+    localStorage.setItem('yc-theme', next ? 'dark' : 'light')
+    document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
+  }
+  return { dark, toggle }
 }
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
   const router = useRouter()
+  const { dark, toggle } = useDarkMode()
   const [user, setUser] = useState<User | null>(null)
-  const [styleProfile, setStyleProfile] = useState<StyleProfile>({})
+  const [styleSummary, setStyleSummary] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
-
-  // Edit states
   const [editingName, setEditingName] = useState(false)
   const [nameVal, setNameVal] = useState('')
   const [savingName, setSavingName] = useState(false)
-
-  // Style editor
-  const [selectedStyles, setSelectedStyles] = useState<string[]>([])
-  const [selectedGender, setSelectedGender] = useState('sin_preferencia')
-  const [selectedPrice, setSelectedPrice] = useState('medio')
-  const [styleChanged, setStyleChanged] = useState(false)
-  const [savingStyle, setSavingStyle] = useState(false)
-
   const supabase = createClient()
 
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
-      setNameVal((user?.user_metadata?.full_name as string) || user?.email?.split('@')[0] || '')
-      if (user) {
-        const res = await fetch('/api/user/style-profile')
-        if (res.ok) {
-          const { data } = await res.json()
-          if (data?.style_profile) {
-            const sp = data.style_profile as StyleProfile
-            setStyleProfile(sp)
-            setSelectedStyles(sp.estilos ?? [])
-            setSelectedGender(sp.genero ?? 'sin_preferencia')
-            setSelectedPrice(sp.precio_rango ?? 'medio')
-          }
-        }
+      setNameVal((user?.user_metadata?.full_name as string) || '')
+      const res = await fetch('/api/user/style-profile')
+      if (res.ok) {
+        const { data } = await res.json()
+        setStyleSummary(data?.style_profile?.estilos ?? [])
       }
       setLoading(false)
     }
@@ -215,228 +136,209 @@ export default function ProfilePage() {
     setSavingName(false)
   }
 
-  function toggleStyle(val: string) {
-    setSelectedStyles((prev) => {
-      const next = prev.includes(val) ? prev.filter((s) => s !== val) : [...prev, val]
-      setStyleChanged(true)
-      return next
-    })
-  }
-
-  async function handleSaveStyle() {
-    if (selectedStyles.length === 0) return
-    setSavingStyle(true)
-    await fetch('/api/user/style-profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ estilos: selectedStyles, genero: selectedGender, precio_rango: selectedPrice }),
-    })
-    setStyleChanged(false)
-    setSavingStyle(false)
-  }
-
   async function handleSignOut() {
     await supabase.auth.signOut()
     router.push('/sign-in')
-    router.refresh()
   }
 
-  if (loading) return <ProfileSkeleton />
+  if (loading) return <ProfileSkeleton dark={dark} />
 
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined
   const name = (user?.user_metadata?.full_name as string) || user?.email?.split('@')[0] || 'Usuario'
   const email = user?.email ?? ''
   const isStoreOwner = (user?.user_metadata?.role as string) === 'store_owner'
 
+  // Theme tokens
+  const bg = dark
+    ? 'linear-gradient(160deg,#0d1117 0%,#1a1a2e 50%,#16213e 100%)'
+    : 'linear-gradient(160deg,#e8f0fe 0%,#f5f0ff 50%,#fce8ff 100%)'
+  const cardBg = dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.72)'
+  const cardBorder = dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.80)'
+  const cardShadow = dark
+    ? '0 2px 0 rgba(255,255,255,0.05) inset, 0 8px 32px rgba(0,0,0,0.4)'
+    : '0 2px 0 rgba(255,255,255,0.9) inset, 0 8px 32px rgba(0,0,0,0.08)'
+  const textPrimary = dark ? '#F5F5F7' : '#1D1D1F'
+  const textSecondary = dark ? '#AEAEB2' : '#6E6E73'
+  const divider = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
+
+  const glass: React.CSSProperties = {
+    background: cardBg,
+    backdropFilter: 'blur(40px) saturate(180%) brightness(1.05)',
+    WebkitBackdropFilter: 'blur(40px) saturate(180%) brightness(1.05)',
+    border: `1px solid ${cardBorder}`,
+    boxShadow: cardShadow,
+    borderRadius: '24px',
+  }
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F7' }}>
+    <div className="min-h-screen" style={{ background: bg }}>
       {/* Header */}
       <div
-        className="px-4"
-        style={{ paddingTop: 'max(20px, env(safe-area-inset-top))', paddingBottom: '16px', backgroundColor: '#FFFFFF' }}
+        className="sticky top-0 z-10 px-5 flex items-center justify-between"
+        style={{
+          height: '56px',
+          paddingTop: 'env(safe-area-inset-top)',
+          background: dark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)',
+          backdropFilter: 'blur(40px)',
+          WebkitBackdropFilter: 'blur(40px)',
+          borderBottom: `0.5px solid ${cardBorder}`,
+        }}
       >
-        <h1 className="font-bold" style={{ fontSize: '24px', color: '#1D1D1F' }}>Mi perfil</h1>
-      </div>
-
-      {/* Avatar + info + edit name */}
-      <div
-        className="px-4 py-5 flex items-center gap-4"
-        style={{ backgroundColor: '#FFFFFF', borderBottom: '0.5px solid #F2F2F7', marginBottom: '8px' }}
-      >
-        <div className="relative w-20 h-20 rounded-full overflow-hidden flex-none">
-          {avatarUrl
-            ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
-            : <AvatarSVG size={80} />}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          {editingName ? (
-            <div className="flex items-center gap-2">
-              <input
-                autoFocus
-                value={nameVal}
-                onChange={(e) => setNameVal(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName() }}
-                className="flex-1 outline-none font-semibold border-b-2 bg-transparent"
-                style={{ fontSize: '17px', color: '#1D1D1F', borderColor: '#0071E3' }}
-              />
-              <button
-                onClick={handleSaveName}
-                disabled={savingName}
-                className="px-3 py-1 rounded-[8px] text-white text-[13px] font-semibold"
-                style={{ backgroundColor: '#0071E3' }}
-              >
-                {savingName ? '...' : 'OK'}
-              </button>
-              <button onClick={() => setEditingName(false)} style={{ color: '#AEAEB2', fontSize: '13px' }}>
-                Cancelar
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setEditingName(true)}
-              className="flex items-center gap-1.5 group"
-            >
-              <span className="font-bold truncate" style={{ fontSize: '20px', color: '#1D1D1F' }}>{name}</span>
-              <span style={{ color: '#AEAEB2' }} className="opacity-60 group-hover:opacity-100 transition-opacity">
-                <EditSVG />
-              </span>
-            </button>
-          )}
-          <p className="truncate mt-0.5" style={{ fontSize: '13px', color: '#6E6E73' }}>{email}</p>
-        </div>
-      </div>
-
-      {/* Store owner section */}
-      {isStoreOwner && (
-        <div
-          className="mx-4 mb-3 p-5 rounded-[16px] flex items-center justify-between"
-          style={{ backgroundColor: '#FFFFFF' }}
+        <h1 className="font-bold" style={{ fontSize: '20px', color: textPrimary }}>Mi perfil</h1>
+        {/* Dark mode toggle */}
+        <motion.button
+          whileTap={{ scale: 0.88 }}
+          onClick={toggle}
+          className="flex items-center justify-center"
+          style={{
+            width: 36, height: 22, borderRadius: 11,
+            background: dark ? '#0071E3' : '#D1D1D6',
+            transition: 'background 0.25s',
+            position: 'relative',
+          }}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ backgroundColor: '#EBF4FF', color: '#0071E3' }}>
-              <StoreSVG />
+          <motion.div
+            layout
+            style={{
+              width: 18, height: 18, borderRadius: '50%', background: '#FFFFFF',
+              position: 'absolute',
+              left: dark ? 'calc(100% - 20px)' : '2px',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+              transition: 'left 0.25s',
+            }}
+          />
+        </motion.button>
+      </div>
+
+      <div className="px-4 pt-5 pb-28 space-y-3 max-w-lg mx-auto">
+
+        {/* Avatar card */}
+        <div style={{ ...glass, padding: '24px 20px' }}>
+          <div className="flex items-center gap-4">
+            <div className="relative w-[72px] h-[72px] rounded-full overflow-hidden flex-none"
+              style={{ border: '2.5px solid rgba(255,255,255,0.6)', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}>
+              {avatarUrl
+                ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+                : <AvatarSVG size={72} />}
             </div>
-            <div>
-              <p className="font-semibold" style={{ fontSize: '15px', color: '#1D1D1F' }}>Mi local</p>
-              <p style={{ fontSize: '13px', color: '#6E6E73' }}>Crear o gestionar tu tienda</p>
+            <div className="flex-1 min-w-0">
+              {editingName ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    autoFocus
+                    value={nameVal}
+                    onChange={(e) => setNameVal(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName() }}
+                    className="flex-1 bg-transparent outline-none border-b-2 font-semibold"
+                    style={{ fontSize: '17px', color: textPrimary, borderColor: '#0071E3' }}
+                  />
+                  <button onClick={handleSaveName} disabled={savingName}
+                    className="px-2.5 py-1 rounded-[8px] text-white text-[12px] font-bold"
+                    style={{ background: '#0071E3' }}>
+                    {savingName ? '...' : 'OK'}
+                  </button>
+                  <button onClick={() => setEditingName(false)} style={{ color: textSecondary, fontSize: '12px' }}>✕</button>
+                </div>
+              ) : (
+                <button onClick={() => setEditingName(true)} className="flex items-center gap-1.5">
+                  <span className="font-bold truncate" style={{ fontSize: '20px', color: textPrimary }}>{name}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={textSecondary} strokeWidth="2" strokeLinecap="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/>
+                  </svg>
+                </button>
+              )}
+              <p className="truncate mt-0.5" style={{ fontSize: '13px', color: textSecondary }}>{email}</p>
+              {styleSummary.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {styleSummary.slice(0, 3).map((s) => (
+                    <span key={s} className="px-2 py-0.5 rounded-full text-[11px] font-medium capitalize"
+                      style={{ background: 'rgba(0,113,227,0.15)', color: '#0071E3' }}>
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-          <a href="/dashboard" className="flex items-center gap-1 font-semibold" style={{ fontSize: '13px', color: '#0071E3' }}>
-            Gestionar <ChevronRightSVG />
-          </a>
-        </div>
-      )}
-
-      {/* Tu estilo */}
-      <div className="mx-4 mb-3 p-5 rounded-[16px]" style={{ backgroundColor: '#FFFFFF' }}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold" style={{ fontSize: '17px', color: '#1D1D1F' }}>Tu estilo</h2>
-          <AnimatePresence>
-            {styleChanged && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                onClick={handleSaveStyle}
-                disabled={savingStyle || selectedStyles.length === 0}
-                className="px-4 py-1.5 rounded-[10px] text-white text-[13px] font-semibold"
-                style={{ backgroundColor: '#0071E3' }}
-              >
-                {savingStyle ? 'Guardando...' : 'Guardar'}
-              </motion.button>
-            )}
-          </AnimatePresence>
         </div>
 
-        {/* Estilos */}
-        <p className="mb-2" style={{ fontSize: '12px', color: '#AEAEB2', fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Estilos</p>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {STYLES.map(({ value, label }) => {
-            const active = selectedStyles.includes(value)
-            return (
-              <motion.button
-                key={value}
-                whileTap={{ scale: 0.94 }}
-                onClick={() => toggleStyle(value)}
-                className="flex flex-col items-center gap-1.5 py-3 rounded-[14px] transition-colors relative"
-                style={{
-                  backgroundColor: active ? '#EBF4FF' : '#F5F5F7',
-                  border: `1.5px solid ${active ? '#0071E3' : 'transparent'}`,
-                  color: active ? '#0071E3' : '#6E6E73',
-                }}
-              >
-                {active && (
-                  <div className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0071E3', color: '#fff' }}>
-                    <CheckSVG />
-                  </div>
-                )}
-                <StyleIcon value={value} />
-                <span style={{ fontSize: '11px', fontWeight: 600 }}>{label}</span>
-              </motion.button>
-            )
-          })}
-        </div>
+        {/* Store owner banner */}
+        {isStoreOwner && (
+          <motion.a
+            href="/dashboard"
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-3 px-5 py-4 rounded-[20px]"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0,113,227,0.85) 0%, rgba(0,85,184,0.85) 100%)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              boxShadow: '0 4px 20px rgba(0,113,227,0.35)',
+              display: 'flex',
+            }}
+          >
+            <div className="w-10 h-10 rounded-[12px] flex items-center justify-center flex-none" style={{ background: 'rgba(255,255,255,0.2)' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-white" style={{ fontSize: '15px' }}>Panel de mi local</p>
+              <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Gestionar prendas y estadísticas</p>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6"/></svg>
+          </motion.a>
+        )}
 
-        {/* Género */}
-        <p className="mb-2" style={{ fontSize: '12px', color: '#AEAEB2', fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Género</p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {GENDERS.map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => { setSelectedGender(value); setStyleChanged(true) }}
-              className="px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors"
+        {/* Nav rows */}
+        <div style={{ ...glass, padding: '4px 0', overflow: 'hidden' }}>
+          {[...NAV_ROWS, ...(isStoreOwner ? [] : [])].map((row, i, arr) => (
+            <motion.a
+              key={row.href}
+              href={row.href}
+              whileTap={{ scale: 0.98, background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
+              className="flex items-center gap-4 px-5"
               style={{
-                backgroundColor: selectedGender === value ? '#0071E3' : '#F5F5F7',
-                color: selectedGender === value ? '#FFFFFF' : '#6E6E73',
+                height: '62px',
+                borderBottom: i < arr.length - 1 ? `0.5px solid ${divider}` : 'none',
+                display: 'flex',
               }}
             >
-              {label}
-            </button>
+              <div className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-none"
+                style={{ background: `${row.color}18`, color: row.color }}>
+                {row.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium" style={{ fontSize: '15px', color: textPrimary }}>{row.label}</p>
+                <p style={{ fontSize: '12px', color: textSecondary }}>{row.sub}</p>
+              </div>
+              <ChevronSVG color={textSecondary} />
+            </motion.a>
           ))}
         </div>
 
-        {/* Precio */}
-        <p className="mb-2" style={{ fontSize: '12px', color: '#AEAEB2', fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Precio</p>
-        <div className="flex gap-2">
-          {PRICES.map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => { setSelectedPrice(value); setStyleChanged(true) }}
-              className="flex-1 py-2 rounded-[10px] text-[13px] font-medium transition-colors"
-              style={{
-                backgroundColor: selectedPrice === value ? '#0071E3' : '#F5F5F7',
-                color: selectedPrice === value ? '#FFFFFF' : '#6E6E73',
-              }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Links */}
-      <div className="mx-4 mb-3 rounded-[16px] overflow-hidden" style={{ backgroundColor: '#FFFFFF' }}>
-        <a href="/search" className="flex items-center justify-between px-5 h-[52px]" style={{ borderBottom: '0.5px solid #F2F2F7' }}>
-          <span style={{ fontSize: '15px', color: '#1D1D1F' }}>Explorar prendas</span>
-          <ChevronRightSVG />
-        </a>
-        <a href="/map" className="flex items-center justify-between px-5 h-[52px]">
-          <span style={{ fontSize: '15px', color: '#1D1D1F' }}>Ver mapa de locales</span>
-          <ChevronRightSVG />
-        </a>
-      </div>
-
-      {/* Sign out */}
-      <div className="mx-4 mb-6">
-        <button
+        {/* Sign out */}
+        <motion.button
+          whileTap={{ scale: 0.97 }}
           onClick={handleSignOut}
-          className="w-full flex items-center justify-center gap-2 h-[52px] rounded-[16px] active:scale-[0.98] transition-transform"
-          style={{ backgroundColor: '#FFFFFF' }}
+          className="w-full flex items-center justify-center gap-2 rounded-[20px]"
+          style={{
+            ...glass,
+            height: '52px',
+            color: '#FF3B30',
+            fontSize: '15px',
+            fontWeight: 600,
+          }}
         >
-          <LogOutSVG />
-          <span style={{ fontSize: '15px', color: '#FF3B30', fontWeight: 600 }}>Cerrar sesión</span>
-        </button>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" strokeWidth="2" strokeLinecap="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Cerrar sesión
+        </motion.button>
       </div>
     </div>
   )

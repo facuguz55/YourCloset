@@ -9,27 +9,17 @@ import type { StoreWithRating } from '@/lib/types'
 
 const SANTA_FE: [number, number] = [-31.6333, -60.7]
 
-// Fix leaflet default icon
-const defaultIcon = L.divIcon({
-  className: '',
-  html: `<div style="
-    width:36px;height:36px;border-radius:50%;
-    background:#0071E3;border:3px solid #FFFFFF;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 2px 8px rgba(0,0,0,0.24);
-    font-size:18px;line-height:1;
-  ">🧥</div>`,
-  iconSize: [36, 36],
-  iconAnchor: [18, 36],
-})
-
 function FlyToUser() {
   const map = useMap()
   useEffect(() => {
+    let cancelled = false
     navigator.geolocation?.getCurrentPosition(
-      ({ coords }) => map.flyTo([coords.latitude, coords.longitude], 15, { animate: true }),
+      ({ coords }) => {
+        if (!cancelled) map.flyTo([coords.latitude, coords.longitude], 15, { animate: true })
+      },
       () => {}
     )
+    return () => { cancelled = true }
   }, [map])
   return null
 }
@@ -38,6 +28,13 @@ export default function InteractiveMap() {
   const [stores, setStores] = useState<StoreWithRating[]>([])
   const [selectedStore, setSelectedStore] = useState<StoreWithRating | null>(null)
   const mapRef = useRef<L.Map | null>(null)
+
+  const defaultIcon = L.divIcon({
+    className: '',
+    html: `<div style="width:36px;height:36px;border-radius:50%;background:#0071E3;border:3px solid #FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.24);font-size:18px;line-height:1;">🧥</div>`,
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+  })
 
   useEffect(() => {
     fetch('/api/stores?limit=100')

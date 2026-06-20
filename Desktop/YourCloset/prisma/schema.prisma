@@ -1,0 +1,220 @@
+// YourCloset — Schema Prisma
+// Fuente de verdad: prompt-maestro.md Sección 8
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// La tabla users extiende auth.users de Supabase Auth.
+// El id es el UUID generado por Supabase (auth.uid()).
+// Un trigger PostgreSQL crea la fila en public.users al registrarse.
+// El rol se guarda en auth.users user_metadata.role y se lee desde el JWT.
+model User {
+  id              String   @id
+  email           String   @unique
+  name            String?
+  avatar_url      String?
+  style_profile   Json?
+  onboarding_done Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  saved_products SavedProduct[]
+  saved_outfits  SavedOutfit[]
+  saved_stores   SavedStore[]
+  ratings        StoreRating[]
+  outfits        Outfit[]
+  search_history SearchHistory[]
+  owned_stores   Store[]
+
+  @@map("users")
+}
+
+model Store {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String?
+  owner_id    String
+  owner       User    @relation(fields: [owner_id], references: [id])
+
+  // Datos legales (solo visibles por admin)
+  legal_name String
+  cuit       String
+
+  // Contacto
+  phone_whatsapp String?
+  email          String?
+  website_url    String?
+
+  // Ubicación
+  address String
+  city    String  @default("Santa Fe")
+  lat     Float
+  lng     Float
+
+  // Horarios (JSON flexible: { lun: "9-18", mar: "9-18", ... })
+  hours Json?
+
+  // Identidad de estilo
+  style_tags   String[]
+  gender_focus String[]
+  price_range  String
+  target_age   String?
+
+  // Media
+  cover_image_url String?
+  logo_url        String?
+
+  // Estado
+  is_active   Boolean @default(true)
+  is_verified Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  products  Product[]
+  ratings   StoreRating[]
+  analytics StoreAnalytics[]
+  saved_by  SavedStore[]
+
+  @@map("stores")
+}
+
+model Product {
+  id       String @id @default(cuid())
+  store_id String
+  store    Store  @relation(fields: [store_id], references: [id])
+
+  name        String
+  description String?
+  price       Float?
+  price_range String?
+
+  // Clasificación
+  category        String
+  style_tags      String[]
+  gender          String
+  sizes_available String[]
+  colors          String[]
+
+  // Media
+  image_urls String[]
+  video_url  String?
+
+  // Metadata de IA (Fase 2 — generado por GPT-4o al subir la prenda)
+  ai_description String?
+  ai_tags        Json?
+
+  is_featured Boolean @default(false)
+  is_active   Boolean @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  saved_by SavedProduct[]
+
+  @@map("products")
+}
+
+model StyleTag {
+  id    String  @id @default(cuid())
+  name  String  @unique
+  emoji String?
+  type  String  // estilo | genero | precio | edad
+
+  @@map("style_tags")
+}
+
+model StoreRating {
+  id       String @id @default(cuid())
+  store_id String
+  store    Store  @relation(fields: [store_id], references: [id])
+  user_id  String
+  user     User   @relation(fields: [user_id], references: [id])
+
+  stars         Int
+  positive_tags String[]
+  negative_tags String[]
+
+  created_at DateTime @default(now())
+
+  @@unique([store_id, user_id])
+  @@map("store_ratings")
+}
+
+// Fase 2: outfits generados por IA con GPT-4o
+model Outfit {
+  id      String @id @default(cuid())
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  name     String?
+  items    Json
+  occasion String
+
+  created_at DateTime @default(now())
+
+  saved_by SavedOutfit[]
+
+  @@map("outfits")
+}
+
+model SavedProduct {
+  user_id    String
+  product_id String
+  user       User    @relation(fields: [user_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
+  created_at DateTime @default(now())
+
+  @@id([user_id, product_id])
+  @@map("saved_products")
+}
+
+model SavedOutfit {
+  user_id    String
+  outfit_id  String
+  user       User   @relation(fields: [user_id], references: [id])
+  outfit     Outfit @relation(fields: [outfit_id], references: [id])
+  created_at DateTime @default(now())
+
+  @@id([user_id, outfit_id])
+  @@map("saved_outfits")
+}
+
+model SavedStore {
+  user_id    String
+  store_id   String
+  user       User  @relation(fields: [user_id], references: [id])
+  store      Store @relation(fields: [store_id], references: [id])
+  created_at DateTime @default(now())
+
+  @@id([user_id, store_id])
+  @@map("saved_stores")
+}
+
+model StoreAnalytics {
+  id         String   @id @default(cuid())
+  store_id   String
+  store      Store    @relation(fields: [store_id], references: [id])
+  event_type String   // profile_view | whatsapp_click | email_click | website_click | product_view
+  product_id String?
+  user_id    String?
+  created_at DateTime @default(now())
+
+  @@map("store_analytics")
+}
+
+model SearchHistory {
+  id         String   @id @default(cuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  query      String?
+  query_type String   // text | image | voice
+  created_at DateTime @default(now())
+
+  @@map("search_history")
+}

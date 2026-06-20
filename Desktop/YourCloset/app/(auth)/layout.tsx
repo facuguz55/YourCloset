@@ -4,30 +4,26 @@ import { motion } from 'framer-motion'
 
 const BLOBS = [
   {
-    color: 'radial-gradient(ellipse at center, rgba(0,113,227,0.45) 0%, transparent 70%)',
+    color: 'radial-gradient(ellipse at center, rgba(196,218,255,0.70) 0%, transparent 70%)',
     size: 600,
-    initial: { x: -80, y: -120 },
     animate: { x: ['-80px', '60px', '-40px', '-80px'], y: ['-120px', '40px', '-60px', '-120px'] },
     duration: 14,
   },
   {
-    color: 'radial-gradient(ellipse at center, rgba(175,82,222,0.35) 0%, transparent 70%)',
+    color: 'radial-gradient(ellipse at center, rgba(220,204,255,0.55) 0%, transparent 70%)',
     size: 500,
-    initial: { x: 200, y: 80 },
     animate: { x: ['200px', '80px', '260px', '200px'], y: ['80px', '-60px', '140px', '80px'] },
     duration: 18,
   },
   {
-    color: 'radial-gradient(ellipse at center, rgba(255,149,0,0.28) 0%, transparent 70%)',
+    color: 'radial-gradient(ellipse at center, rgba(255,218,196,0.55) 0%, transparent 70%)',
     size: 450,
-    initial: { x: 60, y: 260 },
     animate: { x: ['60px', '-80px', '120px', '60px'], y: ['260px', '180px', '300px', '260px'] },
     duration: 16,
   },
   {
-    color: 'radial-gradient(ellipse at center, rgba(52,199,89,0.22) 0%, transparent 70%)',
+    color: 'radial-gradient(ellipse at center, rgba(196,242,214,0.50) 0%, transparent 70%)',
     size: 380,
-    initial: { x: -120, y: 180 },
     animate: { x: ['-120px', '40px', '-60px', '-120px'], y: ['180px', '280px', '100px', '180px'] },
     duration: 20,
   },
@@ -37,7 +33,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div
       className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden"
-      style={{ backgroundColor: '#F0F4FF' }}
+      style={{ backgroundColor: '#FAFAFA' }}
     >
       {/* Animated background blobs */}
       {BLOBS.map((blob, i) => (

@@ -9,8 +9,8 @@ import { createClient } from '@/lib/supabase/client'
 type Role = 'user' | 'store_owner'
 
 const ROLES: { value: Role; label: string; sub: string }[] = [
-  { value: 'user', label: '🛍️ Comprador', sub: 'Explorá locales' },
-  { value: 'store_owner', label: '🏪 Soy un local', sub: 'Mostrá tu negocio' },
+  { value: 'user', label: 'Comprador', sub: 'Explorá locales' },
+  { value: 'store_owner', label: 'Soy un local', sub: 'Mostrá tu negocio' },
 ]
 
 function GoogleIcon() {

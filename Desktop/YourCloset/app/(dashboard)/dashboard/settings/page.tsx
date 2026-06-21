@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import { Plus, X } from 'lucide-react'
+import CoverCropper from '@/components/store/CoverCropper'
 
 const STYLE_OPTIONS = ['streetwear', 'casual', 'formal', 'sport', 'bohemio', 'minimalista']
 const GENDER_OPTIONS = ['masculino', 'femenino', 'unisex']
@@ -34,6 +35,8 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -68,9 +71,18 @@ export default function SettingsPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  async function uploadCover(file: File) {
+  function openCropper(file: File) {
+    const url = URL.createObjectURL(file)
+    setCropSrc(url)
+    // limpiar el input para que se pueda volver a elegir el mismo archivo
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  async function uploadCroppedBlob(blob: Blob) {
+    setCropSrc(null)
     setUploading(true)
     setError(null)
+    const file = new File([blob], 'portada.jpg', { type: 'image/jpeg' })
     const fd = new FormData()
     fd.append('file', file)
     fd.append('bucket', 'stores')
@@ -142,6 +154,17 @@ export default function SettingsPage() {
   }
 
   return (
+    <>
+    {cropSrc && (
+      <CoverCropper
+        imageSrc={cropSrc}
+        onCrop={uploadCroppedBlob}
+        onCancel={() => {
+          URL.revokeObjectURL(cropSrc)
+          setCropSrc(null)
+        }}
+      />
+    )}
     <div className="space-y-4">
       <h2 className="font-bold" style={{ fontSize: '22px', color: '#1D1D1F' }}>
         {storeSlug ? 'Configuración del local' : 'Crear tu local'}
@@ -151,32 +174,51 @@ export default function SettingsPage() {
         {/* Cover image */}
         <div className="rounded-[16px] overflow-hidden p-5 space-y-3" style={{ backgroundColor: '#FFFFFF' }}>
           <p className="font-semibold" style={{ fontSize: '17px', color: '#1D1D1F' }}>Foto de portada</p>
+          {/* Input oculto compartido */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) openCropper(f) }}
+          />
+
           {form.cover_image_url ? (
-            <div className="relative w-full rounded-[12px] overflow-hidden" style={{ height: '140px' }}>
-              <Image src={form.cover_image_url} alt="portada" fill className="object-cover" />
+            <div className="space-y-2">
+              <div className="relative w-full rounded-[12px] overflow-hidden" style={{ height: '140px' }}>
+                <Image src={form.cover_image_url} alt="portada" fill className="object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, cover_image_url: '' }))}
+                  className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'rgba(0,0,0,0.55)' }}
+                >
+                  <X size={14} color="white" />
+                </button>
+              </div>
               <button
                 type="button"
-                onClick={() => setForm((f) => ({ ...f, cover_image_url: '' }))}
-                className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full py-2 rounded-[10px] text-[13px] font-medium active:scale-[0.98] transition-transform"
+                style={{ backgroundColor: '#F5F5F7', color: '#1D1D1F' }}
               >
-                <X size={14} color="white" />
+                Cambiar y recortar foto
               </button>
             </div>
           ) : (
             <label
               className="flex flex-col items-center justify-center cursor-pointer"
               style={{ height: '100px', borderRadius: '12px', backgroundColor: '#F5F5F7', border: '2px dashed #D2D2D7' }}
+              onClick={(e) => { e.preventDefault(); fileInputRef.current?.click() }}
             >
               {uploading ? (
                 <div className="w-6 h-6 border-2 border-[#0071E3] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   <Plus size={24} style={{ color: '#AEAEB2' }} />
-                  <span style={{ fontSize: '13px', color: '#AEAEB2' }}>Subir foto de portada</span>
+                  <span style={{ fontSize: '13px', color: '#AEAEB2' }}>Subir y recortar foto de portada</span>
                 </>
               )}
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadCover(f) }} />
             </label>
           )}
         </div>
@@ -286,5 +328,6 @@ export default function SettingsPage() {
         </button>
       </form>
     </div>
+    </>
   )
 }

@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Plus, Trash2, Star, X } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import type { Product } from '@/lib/types'
 
 const CATEGORIES = ['campera', 'remera', 'pantalon', 'vestido', 'calzado', 'accesorio'] as const
@@ -36,8 +35,6 @@ export default function ProductsPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const supabase = createClient()
-
   useEffect(() => {
     fetch('/api/dashboard/analytics')
       .then((r) => r.json())
@@ -56,23 +53,20 @@ export default function ProductsPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  async function uploadImage(file: File): Promise<string | null> {
-    setUploading(true)
-    const ext = file.name.split('.').pop()
-    const path = `products/${Date.now()}.${ext}`
-    const { error } = await supabase.storage.from('products').upload(path, file, { upsert: false })
-    if (error) { setUploading(false); return null }
-    const { data } = supabase.storage.from('products').getPublicUrl(path)
-    setUploading(false)
-    return data.publicUrl
-  }
-
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > 5 * 1024 * 1024) { setError('La imagen no puede superar 5 MB.'); return }
-    const url = await uploadImage(file)
-    if (url) setForm((f) => ({ ...f, image_url: url }))
+    if (file.size > 8 * 1024 * 1024) { setError('La imagen no puede superar 8 MB.'); return }
+    setUploading(true)
+    setError(null)
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('bucket', 'products')
+    const res = await fetch('/api/upload', { method: 'POST', body: fd })
+    const json = await res.json()
+    setUploading(false)
+    if (!res.ok || !json.url) { setError(json.error ?? 'Error al subir la imagen'); return }
+    setForm((f) => ({ ...f, image_url: json.url }))
   }
 
   async function handleSubmit(e: React.FormEvent) {

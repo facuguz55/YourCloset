@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Plus, X } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 
 const STYLE_OPTIONS = ['streetwear', 'casual', 'formal', 'sport', 'bohemio', 'minimalista']
 const GENDER_OPTIONS = ['masculino', 'femenino', 'unisex']
@@ -38,8 +37,6 @@ export default function SettingsPage() {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const supabase = createClient()
-
   useEffect(() => {
     fetch('/api/dashboard/analytics')
       .then((r) => r.json())
@@ -73,13 +70,15 @@ export default function SettingsPage() {
 
   async function uploadCover(file: File) {
     setUploading(true)
-    const ext = file.name.split('.').pop()
-    const path = `covers/${Date.now()}.${ext}`
-    const { error } = await supabase.storage.from('stores').upload(path, file, { upsert: false })
-    if (error) { setUploading(false); return }
-    const { data } = supabase.storage.from('stores').getPublicUrl(path)
-    setForm((f) => ({ ...f, cover_image_url: data.publicUrl }))
+    setError(null)
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('bucket', 'stores')
+    const res = await fetch('/api/upload', { method: 'POST', body: fd })
+    const json = await res.json()
     setUploading(false)
+    if (!res.ok || !json.url) { setError(json.error ?? 'Error al subir la imagen'); return }
+    setForm((f) => ({ ...f, cover_image_url: json.url }))
   }
 
   async function handleSubmit(e: React.FormEvent) {

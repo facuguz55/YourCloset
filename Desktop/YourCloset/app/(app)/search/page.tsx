@@ -54,14 +54,11 @@ export default function SearchPage() {
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length
 
-  const headerBg = dark
-    ? 'rgba(6,6,16,0.65)'
-    : 'rgba(255,255,255,0.52)'
-  const headerBorder = dark ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.68)'
-  const headerShadow = dark
-    ? '0 1px 0 rgba(255,255,255,0.04) inset, 0 2px 20px rgba(0,0,0,0.3)'
-    : '0 1px 0 rgba(255,255,255,0.92) inset, 0 1px 12px rgba(0,0,0,0.04)'
-  const textPrimary = dark ? '#F5F5F7' : '#1D1D1F'
+  // Apple HIG: neutral dark / neutral light
+  const headerBg = dark ? 'rgba(0,0,0,0.85)' : 'rgba(242,242,247,0.85)'
+  const headerBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)'
+  const headerShadow = dark ? '0 0.5px 0 rgba(255,255,255,0.06)' : '0 0.5px 0 rgba(0,0,0,0.12)'
+  const textPrimary = dark ? '#FFFFFF' : '#000000'
   const textSecondary = dark ? '#8E8E93' : '#6E6E73'
   const accentColor = dark ? '#0A84FF' : '#0071E3'
 
@@ -72,8 +69,8 @@ export default function SearchPage() {
         className="sticky top-0 z-30 px-4"
         style={{
           background: headerBg,
-          backdropFilter: 'blur(52px) saturate(200%) brightness(1.06)',
-          WebkitBackdropFilter: 'blur(52px) saturate(200%) brightness(1.06)',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
           borderBottom: `0.5px solid ${headerBorder}`,
           boxShadow: headerShadow,
           paddingTop: 'max(16px, env(safe-area-inset-top))',

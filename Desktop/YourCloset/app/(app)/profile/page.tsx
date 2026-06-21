@@ -70,13 +70,11 @@ const STORE_ROWS = [
 // ── Skeleton ─────────────────────────────────────────────────────────────────
 
 function ProfileSkeleton({ dark }: { dark: boolean }) {
-  const bg = dark ? '#1C1C1E' : '#F5F5F7'
-  const card = dark ? '#2C2C2E' : '#FFFFFF'
-  const pulse = dark ? '#3A3A3C' : '#E5E5EA'
+  const card = dark ? '#1C1C1E' : '#FFFFFF'
   return (
-    <div className="min-h-screen animate-pulse" style={{ background: dark ? 'linear-gradient(160deg,#0d1117 0%,#1a1a2e 50%,#16213e 100%)' : 'linear-gradient(160deg,#e8f0fe 0%,#f5f0ff 50%,#fce8ff 100%)' }}>
-      <div className="h-52 mx-4 mt-6 rounded-[24px]" style={{ background: card }} />
-      <div className="h-32 mx-4 mt-3 rounded-[24px]" style={{ background: card }} />
+    <div className="min-h-screen animate-pulse" style={{ backgroundColor: dark ? '#000000' : '#F2F2F7' }}>
+      <div className="h-52 mx-4 mt-6 rounded-[20px]" style={{ backgroundColor: card }} />
+      <div className="h-32 mx-4 mt-3 rounded-[20px]" style={{ backgroundColor: card }} />
     </div>
   )
 }
@@ -148,39 +146,32 @@ export default function ProfilePage() {
   const email = user?.email ?? ''
   const isStoreOwner = (user?.user_metadata?.role as string) === 'store_owner'
 
-  // Theme tokens
-  const bg = dark
-    ? 'linear-gradient(160deg,#0d1117 0%,#1a1a2e 50%,#16213e 100%)'
-    : 'linear-gradient(160deg,#e8f0fe 0%,#f5f0ff 50%,#fce8ff 100%)'
-  const cardBg = dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.72)'
-  const cardBorder = dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.80)'
-  const cardShadow = dark
-    ? '0 2px 0 rgba(255,255,255,0.05) inset, 0 8px 32px rgba(0,0,0,0.4)'
-    : '0 2px 0 rgba(255,255,255,0.9) inset, 0 8px 32px rgba(0,0,0,0.08)'
-  const textPrimary = dark ? '#F5F5F7' : '#1D1D1F'
-  const textSecondary = dark ? '#AEAEB2' : '#6E6E73'
-  const divider = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
+  // Apple HIG tokens: sin gradientes de color, grises neutros
+  const cardBg = dark ? '#1C1C1E' : '#FFFFFF'
+  const cardBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
+  const cardShadow = dark ? 'none' : '0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)'
+  const textPrimary = dark ? '#FFFFFF' : '#000000'
+  const textSecondary = dark ? '#8E8E93' : '#6E6E73'
+  const divider = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'
 
   const glass: React.CSSProperties = {
-    background: cardBg,
-    backdropFilter: 'blur(40px) saturate(180%) brightness(1.05)',
-    WebkitBackdropFilter: 'blur(40px) saturate(180%) brightness(1.05)',
-    border: `1px solid ${cardBorder}`,
+    backgroundColor: cardBg,
+    border: `0.5px solid ${cardBorder}`,
     boxShadow: cardShadow,
-    borderRadius: '24px',
+    borderRadius: '20px',
   }
 
   return (
-    <div className="min-h-screen" style={{ background: bg }}>
+    <div className="min-h-screen" style={{ backgroundColor: dark ? '#000000' : '#F2F2F7' }}>
       {/* Header */}
       <div
         className="sticky top-0 z-10 px-5 flex items-center justify-between"
         style={{
           height: '56px',
           paddingTop: 'env(safe-area-inset-top)',
-          background: dark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)',
-          backdropFilter: 'blur(40px)',
-          WebkitBackdropFilter: 'blur(40px)',
+          background: dark ? 'rgba(0,0,0,0.85)' : 'rgba(242,242,247,0.85)',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
           borderBottom: `0.5px solid ${cardBorder}`,
         }}
       >
@@ -192,7 +183,7 @@ export default function ProfilePage() {
           className="flex items-center justify-center"
           style={{
             width: 36, height: 22, borderRadius: 11,
-            background: dark ? '#0071E3' : '#D1D1D6',
+            background: dark ? '#0A84FF' : '#D1D1D6',
             transition: 'background 0.25s',
             position: 'relative',
           }}

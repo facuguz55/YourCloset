@@ -22,18 +22,15 @@ export default function ProductCard({ product, dark = false }: Props) {
     ? 'Premium'
     : null
 
-  const cardBg = dark
-    ? 'rgba(255,255,255,0.07)'
-    : 'rgba(255,255,255,0.62)'
-  const cardBorder = dark
-    ? 'rgba(255,255,255,0.12)'
-    : 'rgba(255,255,255,0.78)'
+  // Apple HIG: light = blanco puro, dark = #1C1C1E (secondarySystemBackground)
+  const cardBg = dark ? '#1C1C1E' : '#FFFFFF'
+  const cardBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
   const cardShadow = dark
-    ? '0 2px 16px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.05) inset'
-    : '0 2px 12px rgba(0,0,0,0.07), 0 1px 0 rgba(255,255,255,0.92) inset'
-  const skeletonBg = dark ? '#2C2C2E' : '#E8E8ED'
-  const storeName = dark ? '#8E8E93' : '#6E6E73'
-  const productName = dark ? '#F5F5F7' : '#1D1D1F'
+    ? 'none'
+    : '0 1px 4px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05)'
+  const skeletonBg = dark ? '#2C2C2E' : '#E5E5EA'
+  const storeName = dark ? '#636366' : '#8E8E93'
+  const productName = dark ? '#FFFFFF' : '#1D1D1F'
   const priceColor = dark ? '#0A84FF' : '#0071E3'
 
   return (
@@ -41,10 +38,8 @@ export default function ProductCard({ product, dark = false }: Props) {
       href={`/store/${product.store.slug}`}
       className="block overflow-hidden active:scale-[0.97] transition-transform duration-150"
       style={{
-        borderRadius: '18px',
-        background: cardBg,
-        backdropFilter: 'blur(28px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(28px) saturate(160%)',
+        borderRadius: '16px',
+        backgroundColor: cardBg,
         border: `0.5px solid ${cardBorder}`,
         boxShadow: cardShadow,
         WebkitTapHighlightColor: 'transparent',
@@ -68,12 +63,12 @@ export default function ProductCard({ product, dark = false }: Props) {
             className="w-full h-full flex items-center justify-center"
             style={{ backgroundColor: skeletonBg }}
           >
-            <span className="text-[11px]" style={{ color: '#AEAEB2' }}>Sin imagen</span>
+            <span className="text-[11px]" style={{ color: '#8E8E93' }}>Sin imagen</span>
           </div>
         )}
       </div>
       <div className="p-3">
-        <p className="text-[11px] font-medium truncate" style={{ color: storeName, letterSpacing: '0.01em' }}>
+        <p className="text-[11px] font-medium truncate uppercase tracking-wider" style={{ color: storeName }}>
           {product.store.name}
         </p>
         <p className="text-[13px] font-semibold truncate mt-0.5" style={{ color: productName }}>
@@ -90,18 +85,17 @@ export default function ProductCard({ product, dark = false }: Props) {
 }
 
 export function ProductCardSkeleton({ dark = false }: { dark?: boolean }) {
-  const cardBg = dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.55)'
-  const cardBorder = dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.72)'
-  const skeletonBg = dark ? '#2C2C2E' : '#E8E8ED'
+  // Apple: skeletons = systemFill grays
+  const cardBg = dark ? '#1C1C1E' : '#FFFFFF'
+  const cardBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
+  const skeletonBg = dark ? '#2C2C2E' : '#E5E5EA'
 
   return (
     <div
       className="overflow-hidden"
       style={{
-        borderRadius: '18px',
-        background: cardBg,
-        backdropFilter: 'blur(28px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(28px) saturate(160%)',
+        borderRadius: '16px',
+        backgroundColor: cardBg,
         border: `0.5px solid ${cardBorder}`,
       }}
     >

@@ -17,28 +17,34 @@ export default function BottomNav() {
   const pathname = usePathname()
   const dark = useDarkMode()
 
+  // Apple HIG: dark glass = #1C1C1E con blur, light glass = blanco con blur
   const navBg = dark
-    ? 'linear-gradient(135deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.06) 100%)'
-    : 'linear-gradient(135deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.38) 100%)'
+    ? 'rgba(28, 28, 30, 0.82)'
+    : 'rgba(242, 242, 247, 0.82)'
 
-  const navBorder = dark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.65)'
+  const navBorder = dark
+    ? 'rgba(255,255,255,0.10)'
+    : 'rgba(0,0,0,0.10)'
 
   const navShadow = dark
-    ? '0 2px 0 rgba(255,255,255,0.06) inset, 0 -0.5px 0 rgba(255,255,255,0.04) inset, 0 12px 48px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.4)'
-    : '0 2px 0 rgba(255,255,255,0.88) inset, 0 -0.5px 0 rgba(255,255,255,0.40) inset, 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05)'
+    ? '0 1px 0 rgba(255,255,255,0.07) inset, 0 -1px 0 rgba(255,255,255,0.04) inset, 0 8px 32px rgba(0,0,0,0.6)'
+    : '0 1px 0 rgba(255,255,255,0.95) inset, 0 8px 24px rgba(0,0,0,0.10), 0 1px 0 rgba(0,0,0,0.06)'
 
+  // Pill activa: más claro que el nav en dark, más blanco en light
   const pillBg = dark
-    ? 'linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.08) 100%)'
-    : 'linear-gradient(135deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.48) 100%)'
+    ? 'rgba(58, 58, 60, 0.90)'
+    : 'rgba(255,255,255,0.90)'
 
-  const pillBorder = dark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.85)'
+  const pillBorder = dark
+    ? 'rgba(255,255,255,0.14)'
+    : 'rgba(0,0,0,0.08)'
 
   const pillShadow = dark
-    ? '0 1px 0 rgba(255,255,255,0.10) inset, 0 2px 10px rgba(0,0,0,0.3)'
-    : '0 1px 0 rgba(255,255,255,0.95) inset, 0 2px 8px rgba(0,0,0,0.05)'
+    ? '0 1px 0 rgba(255,255,255,0.08) inset, 0 2px 8px rgba(0,0,0,0.4)'
+    : '0 1px 0 rgba(255,255,255,1) inset, 0 2px 6px rgba(0,0,0,0.08)'
 
   const accentColor = dark ? '#0A84FF' : '#0071E3'
-  const inactiveColor = dark ? 'rgba(174,174,178,0.65)' : 'rgba(110,110,115,0.72)'
+  const inactiveColor = dark ? '#636366' : '#8E8E93'
 
   return (
     <div
@@ -49,12 +55,12 @@ export default function BottomNav() {
         className="flex items-center justify-around w-full max-w-sm"
         style={{
           background: navBg,
-          backdropFilter: 'blur(48px) saturate(200%) brightness(1.10)',
-          WebkitBackdropFilter: 'blur(48px) saturate(200%) brightness(1.10)',
-          border: `1px solid ${navBorder}`,
-          borderRadius: '30px',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+          border: `0.5px solid ${navBorder}`,
+          borderRadius: '28px',
           boxShadow: navShadow,
-          height: '66px',
+          height: '64px',
           padding: '0 6px',
         }}
       >
@@ -69,7 +75,7 @@ export default function BottomNav() {
             >
               <motion.div
                 className="flex flex-col items-center justify-center gap-0.5 w-full py-2"
-                whileTap={{ scale: 0.78 }}
+                whileTap={{ scale: 0.80 }}
                 transition={{ type: 'spring', stiffness: 600, damping: 24 }}
               >
                 {isActive && (
@@ -77,13 +83,13 @@ export default function BottomNav() {
                     layoutId="nav-pill"
                     className="absolute inset-x-0.5"
                     style={{
-                      height: '50px',
-                      borderRadius: '22px',
+                      height: '48px',
+                      borderRadius: '20px',
                       background: pillBg,
                       boxShadow: pillShadow,
                       border: `0.5px solid ${pillBorder}`,
                     }}
-                    transition={{ type: 'spring', stiffness: 540, damping: 38, mass: 0.65 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 36, mass: 0.7 }}
                   />
                 )}
                 <motion.div
@@ -94,11 +100,11 @@ export default function BottomNav() {
                   <Icon
                     size={22}
                     style={{ color: isActive ? accentColor : inactiveColor }}
-                    strokeWidth={isActive ? 2.5 : 1.75}
+                    strokeWidth={isActive ? 2.5 : 1.8}
                   />
                 </motion.div>
                 <motion.span
-                  animate={{ opacity: isActive ? 1 : 0.6 }}
+                  animate={{ opacity: isActive ? 1 : 0.65 }}
                   className="relative z-10 font-medium"
                   style={{
                     fontSize: '10px',

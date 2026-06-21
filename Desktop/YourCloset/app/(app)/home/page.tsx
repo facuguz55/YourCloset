@@ -46,46 +46,42 @@ export default function HomePage() {
     if (!hasMore || loading) return
     observerRef.current?.disconnect()
     observerRef.current = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && cursor) fetchFeed(cursor)
-      },
+      ([entry]) => { if (entry.isIntersecting && cursor) fetchFeed(cursor) },
       { rootMargin: '200px' }
     )
     if (sentinelRef.current) observerRef.current.observe(sentinelRef.current)
     return () => observerRef.current?.disconnect()
   }, [cursor, hasMore, loading, fetchFeed])
 
-  // Theme tokens
+  // Apple HIG tokens
+  // Header: blur sobre el fondo de la app (gris neutro / negro)
   const headerBg = dark
-    ? 'rgba(6,6,16,0.65)'
-    : 'rgba(255,255,255,0.48)'
-  const headerBorder = dark
-    ? 'rgba(255,255,255,0.09)'
-    : 'rgba(255,255,255,0.70)'
+    ? 'rgba(0, 0, 0, 0.85)'
+    : 'rgba(242, 242, 247, 0.85)'
+  const headerBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)'
   const headerShadow = dark
-    ? '0 1px 0 rgba(255,255,255,0.04) inset, 0 2px 20px rgba(0,0,0,0.3)'
-    : '0 1px 0 rgba(255,255,255,0.95) inset, 0 1px 16px rgba(0,0,0,0.04)'
-  const titleColor = dark ? '#F5F5F7' : '#1D1D1F'
-  const searchBg = dark
-    ? 'rgba(255,255,255,0.09)'
-    : 'rgba(255,255,255,0.55)'
-  const searchBorder = dark
-    ? 'rgba(255,255,255,0.13)'
-    : 'rgba(255,255,255,0.75)'
-  const searchColor = dark ? 'rgba(174,174,178,0.65)' : '#8E8E93'
-  const bodyTextPrimary = dark ? '#F5F5F7' : '#1D1D1F'
+    ? '0 0.5px 0 rgba(255,255,255,0.06)'
+    : '0 0.5px 0 rgba(0,0,0,0.12)'
+
+  // Search bar: fill secundario de Apple
+  const searchBg = dark ? '#1C1C1E' : '#FFFFFF'
+  const searchBorder = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
+  const searchColor = dark ? '#636366' : '#8E8E93'
+
+  const titleColor = dark ? '#FFFFFF' : '#000000'
+  const bodyTextPrimary = dark ? '#FFFFFF' : '#000000'
   const bodyTextSecondary = dark ? '#8E8E93' : '#6E6E73'
   const accentColor = dark ? '#0A84FF' : '#0071E3'
 
   return (
     <div style={{ minHeight: '100vh' }}>
-      {/* Header */}
+      {/* Header — liquid glass neutro */}
       <div
         className="sticky top-0 z-30 px-4"
         style={{
           background: headerBg,
-          backdropFilter: 'blur(52px) saturate(200%) brightness(1.06)',
-          WebkitBackdropFilter: 'blur(52px) saturate(200%) brightness(1.06)',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
           borderBottom: `0.5px solid ${headerBorder}`,
           boxShadow: headerShadow,
           paddingTop: 'max(16px, env(safe-area-inset-top))',
@@ -93,24 +89,27 @@ export default function HomePage() {
         }}
       >
         <div className="flex items-center justify-between mb-3 max-w-2xl mx-auto">
-          <h1 className="font-bold" style={{ fontSize: '24px', color: titleColor, letterSpacing: '-0.5px' }}>
+          <h1
+            className="font-bold"
+            style={{ fontSize: '28px', color: titleColor, letterSpacing: '-0.5px' }}
+          >
             YourCloset
           </h1>
         </div>
+
+        {/* Search bar — tipo Spotlight de Apple */}
         <Link
           href="/search"
-          className="flex items-center gap-2 max-w-2xl mx-auto"
+          className="flex items-center gap-2.5 max-w-2xl mx-auto"
           style={{
-            height: '44px',
-            borderRadius: '14px',
-            background: searchBg,
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            height: '36px',
+            borderRadius: '10px',
+            backgroundColor: searchBg,
             border: `0.5px solid ${searchBorder}`,
-            padding: '0 14px',
+            padding: '0 12px',
           }}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={searchColor} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={searchColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <span style={{ fontSize: '15px', color: searchColor }}>Buscá camperas, vestidos...</span>
@@ -120,9 +119,9 @@ export default function HomePage() {
       {/* Feed */}
       <div className="px-4 pt-4 max-w-2xl mx-auto">
         {loading && products.length === 0 ? (
-          <div className="columns-2 gap-3">
+          <div className="columns-2 gap-2.5">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="mb-3 break-inside-avoid">
+              <div key={i} className="mb-2.5 break-inside-avoid">
                 <ProductCardSkeleton dark={dark} />
               </div>
             ))}
@@ -146,17 +145,17 @@ export default function HomePage() {
           </div>
         ) : (
           <>
-            <div className="columns-2 gap-3">
+            <div className="columns-2 gap-2.5">
               {products.map((p) => (
-                <div key={p.id} className="mb-3 break-inside-avoid">
+                <div key={p.id} className="mb-2.5 break-inside-avoid">
                   <ProductCard product={p} dark={dark} />
                 </div>
               ))}
             </div>
             {loading && (
-              <div className="columns-2 gap-3 mt-3">
+              <div className="columns-2 gap-2.5 mt-2.5">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="mb-3 break-inside-avoid">
+                  <div key={i} className="mb-2.5 break-inside-avoid">
                     <ProductCardSkeleton dark={dark} />
                   </div>
                 ))}

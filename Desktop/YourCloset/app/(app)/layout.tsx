@@ -23,8 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div
       className="min-h-screen"
       style={{
-        // Apple HIG: dark = #000000 puro (OLED), light = #F2F2F7 (systemGroupedBackground)
-        backgroundColor: dark ? '#000000' : '#F2F2F7',
+        backgroundColor: 'var(--color-background)',
         paddingBottom: '96px',
         minHeight: '100dvh',
       }}

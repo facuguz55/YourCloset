@@ -1,5 +1,5 @@
 # YourCloset — Estado de Módulos
-> Actualizado: 2026-06-20 | Sesión: fix Prisma + dark mode Apple style
+> Actualizado: 2026-06-21 | Sesión: modal valoraciones + dark mode store/mapa
 
 ---
 
@@ -106,10 +106,10 @@
 
 | Módulo | Estado | Notas |
 |--------|--------|-------|
-| Supabase Storage buckets (products, stores, avatars) | ⏳ | Crear en Supabase Dashboard |
-| Sistema de valoraciones (formulario modal) | ⏳ | API route lista, falta UI |
-| Store page dark mode | ⏳ | Pantalla pública del local |
-| Map page dark mode | ⏳ | Mapa + bottom sheet |
+| Supabase Storage buckets (products, stores, avatars) | ✅ | Configurado en Supabase Dashboard |
+| Sistema de valoraciones (formulario modal) | ✅ | RatingButton.tsx — estrellas + tags + submit |
+| Store page dark mode | ✅ | Layout usa var(--color-background) |
+| Map page dark mode | ✅ | Leaflet overrides CSS en globals.css |
 | Deploy Vercel | ⏳ | Variables de entorno pendientes |
 
 ## Fase 2 (fuera del MVP)

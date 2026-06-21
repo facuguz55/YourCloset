@@ -101,6 +101,38 @@
   }
 }
 
+/* ── Leaflet dark mode overrides ─────────────────────────── */
+[data-theme="dark"] .leaflet-popup-content-wrapper {
+  background: #1C1C1E;
+  color: #FFFFFF;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
+[data-theme="dark"] .leaflet-popup-tip {
+  background: #1C1C1E;
+}
+[data-theme="dark"] .leaflet-popup-close-button {
+  color: #8E8E93 !important;
+}
+[data-theme="dark"] .leaflet-control-attribution {
+  background: rgba(28,28,30,0.8) !important;
+  color: #636366 !important;
+  backdrop-filter: blur(12px);
+}
+[data-theme="dark"] .leaflet-control-attribution a {
+  color: #636366 !important;
+}
+[data-theme="dark"] .leaflet-bar {
+  border-color: rgba(255,255,255,0.12) !important;
+}
+[data-theme="dark"] .leaflet-bar a {
+  background-color: #1C1C1E !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+[data-theme="dark"] .leaflet-bar a:hover {
+  background-color: #2C2C2E !important;
+}
+
 /* ── Liquid Glass utilities ───────────────────────────────── */
 @layer utilities {
   /* iOS 26 Liquid Glass: blur + specular inset en borde superior */

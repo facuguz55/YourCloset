@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Star, MessageCircle, Mail, Globe, MapPin, ChevronLeft } from 'lucide-react'
 import StoreTracker from './StoreTracker'
+import RatingButton from '@/components/store/RatingButton'
 import type { StoreWithRating, Product } from '@/lib/types'
 import { safeUrl } from '@/lib/safe-url'
 
@@ -129,6 +130,9 @@ export default async function StorePage({ params }: Props) {
             </a>
           )}
         </div>
+
+        {/* Valorar */}
+        <RatingButton slug={params.slug} />
 
         <div className="h-px" style={{ backgroundColor: 'var(--color-border)' }} />
 

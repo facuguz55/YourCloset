@@ -4,12 +4,14 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import SearchBar from '@/components/search/SearchBar'
 import SearchFilters from '@/components/search/SearchFilters'
 import ProductCard, { ProductCardSkeleton } from '@/components/search/ProductCard'
+import { useDarkMode } from '@/lib/hooks/useDarkMode'
 import type { SearchFilters as Filters, ProductWithStore } from '@/lib/types'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const EMPTY_FILTERS: Filters = {}
 
 export default function SearchPage() {
+  const dark = useDarkMode()
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
   const [pendingFilters, setPendingFilters] = useState<Filters>(EMPTY_FILTERS)
@@ -52,17 +54,28 @@ export default function SearchPage() {
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length
 
+  const headerBg = dark
+    ? 'rgba(6,6,16,0.65)'
+    : 'rgba(255,255,255,0.52)'
+  const headerBorder = dark ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.68)'
+  const headerShadow = dark
+    ? '0 1px 0 rgba(255,255,255,0.04) inset, 0 2px 20px rgba(0,0,0,0.3)'
+    : '0 1px 0 rgba(255,255,255,0.92) inset, 0 1px 12px rgba(0,0,0,0.04)'
+  const textPrimary = dark ? '#F5F5F7' : '#1D1D1F'
+  const textSecondary = dark ? '#8E8E93' : '#6E6E73'
+  const accentColor = dark ? '#0A84FF' : '#0071E3'
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="min-h-screen">
       {/* Header */}
       <div
         className="sticky top-0 z-30 px-4"
         style={{
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.70) 100%)',
-          backdropFilter: 'blur(48px) saturate(200%) brightness(1.06)',
-          WebkitBackdropFilter: 'blur(48px) saturate(200%) brightness(1.06)',
-          borderBottom: '0.5px solid rgba(255,255,255,0.6)',
-          boxShadow: '0 1px 0 rgba(255,255,255,0.9) inset, 0 1px 12px rgba(0,0,0,0.05)',
+          background: headerBg,
+          backdropFilter: 'blur(52px) saturate(200%) brightness(1.06)',
+          WebkitBackdropFilter: 'blur(52px) saturate(200%) brightness(1.06)',
+          borderBottom: `0.5px solid ${headerBorder}`,
+          boxShadow: headerShadow,
           paddingTop: 'max(16px, env(safe-area-inset-top))',
           paddingBottom: '12px',
         }}
@@ -78,12 +91,12 @@ export default function SearchPage() {
         />
         {activeFilterCount > 0 && (
           <div className="flex items-center gap-2 mt-2">
-            <span style={{ fontSize: '13px', color: '#6E6E73' }}>
+            <span style={{ fontSize: '13px', color: textSecondary }}>
               {activeFilterCount} filtro{activeFilterCount > 1 ? 's' : ''} activo{activeFilterCount > 1 ? 's' : ''}
             </span>
             <button
               onClick={handleClearFilters}
-              style={{ fontSize: '13px', color: '#0071E3', fontWeight: 600 }}
+              style={{ fontSize: '13px', color: accentColor, fontWeight: 600 }}
             >
               Limpiar
             </button>
@@ -96,10 +109,10 @@ export default function SearchPage() {
         {!searched && !query && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <span style={{ fontSize: '48px' }}>🔍</span>
-            <p className="mt-4 font-semibold" style={{ fontSize: '17px', color: '#1D1D1F' }}>
+            <p className="mt-4 font-semibold" style={{ fontSize: '17px', color: textPrimary }}>
               Buscá lo que querés usar
             </p>
-            <p className="mt-1" style={{ fontSize: '15px', color: '#6E6E73' }}>
+            <p className="mt-1" style={{ fontSize: '15px', color: textSecondary }}>
               Escribí "campera", "vestido" o cualquier prenda que te guste.
             </p>
           </div>
@@ -109,7 +122,7 @@ export default function SearchPage() {
           <div className="columns-2 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="mb-3 break-inside-avoid">
-                <ProductCardSkeleton />
+                <ProductCardSkeleton dark={dark} />
               </div>
             ))}
           </div>
@@ -118,10 +131,10 @@ export default function SearchPage() {
         {!loading && searched && results.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <span style={{ fontSize: '48px' }}>🤷</span>
-            <p className="mt-4 font-semibold" style={{ fontSize: '17px', color: '#1D1D1F' }}>
+            <p className="mt-4 font-semibold" style={{ fontSize: '17px', color: textPrimary }}>
               Sin resultados
             </p>
-            <p className="mt-1 max-w-xs" style={{ fontSize: '15px', color: '#6E6E73' }}>
+            <p className="mt-1 max-w-xs" style={{ fontSize: '15px', color: textSecondary }}>
               No encontramos prendas con esos filtros. Probá con otros términos o ampliá la búsqueda.
             </p>
           </div>
@@ -129,13 +142,13 @@ export default function SearchPage() {
 
         {!loading && results.length > 0 && (
           <>
-            <p className="text-[13px] mb-3" style={{ color: '#6E6E73' }}>
+            <p className="text-[13px] mb-3" style={{ color: textSecondary }}>
               {results.length} resultado{results.length !== 1 ? 's' : ''}
             </p>
             <div className="columns-2 gap-3">
               {results.map((p) => (
                 <div key={p.id} className="mb-3 break-inside-avoid">
-                  <ProductCard product={p} />
+                  <ProductCard product={p} dark={dark} />
                 </div>
               ))}
             </div>

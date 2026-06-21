@@ -12,8 +12,8 @@
 
 @layer base {
   :root {
-    /* YourCloset design tokens */
-    --color-background: #FFFFFF;
+    /* ── YourCloset design tokens — light mode ── */
+    --color-background: #FAFAFA;
     --color-surface: #F5F5F7;
     --color-surface-elevated: #FFFFFF;
     --color-text-primary: #1D1D1F;
@@ -25,9 +25,9 @@
     --color-success: #34C759;
     --color-error: #FF3B30;
     --color-glass-bg: rgba(255,255,255,0.72);
-    --color-glass-border: rgba(255,255,255,0.3);
+    --color-glass-border: rgba(255,255,255,0.80);
 
-    /* shadcn/ui CSS variables */
+    /* shadcn/ui */
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
@@ -49,11 +49,67 @@
     --radius: 0.625rem;
   }
 
+  /* ── Dark mode tokens ── */
+  [data-theme="dark"] {
+    --color-background: #060610;
+    --color-surface: #1C1C1E;
+    --color-surface-elevated: #2C2C2E;
+    --color-text-primary: #F5F5F7;
+    --color-text-secondary: #AEAEB2;
+    --color-text-tertiary: #6E6E73;
+    --color-accent: #0A84FF;
+    --color-accent-hover: #409CFF;
+    --color-border: rgba(255,255,255,0.15);
+    --color-success: #30D158;
+    --color-error: #FF453A;
+    --color-glass-bg: rgba(255,255,255,0.08);
+    --color-glass-border: rgba(255,255,255,0.13);
+
+    --background: oklch(0.08 0.01 265);
+    --foreground: oklch(0.96 0 0);
+    --card: oklch(0.12 0.01 265);
+    --card-foreground: oklch(0.96 0 0);
+    --muted: oklch(0.15 0.01 265);
+    --muted-foreground: oklch(0.65 0 0);
+    --border: oklch(0.25 0.01 265);
+  }
+
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'kern' 1;
+    /* SF Pro stack — Apple system font */
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   }
+
+  /* Momentum scrolling en iOS */
+  .overflow-y-auto,
+  .overflow-y-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ── Liquid Glass utilities ───────────────────────────────── */
+@layer utilities {
+  .glass {
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid var(--color-glass-border);
+  }
+
+  /* Ocultar scrollbar (mantener funcionalidad) */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }

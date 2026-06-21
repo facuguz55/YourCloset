@@ -1,10 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { createClient } from '@/lib/supabase/server'
+import { randomUUID } from 'crypto'
 
 const ALLOWED_BUCKETS = ['products', 'stores', 'avatars'] as const
 const MAX_SIZE = 8 * 1024 * 1024 // 8 MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+
+// MIME → extensión: única fuente de verdad, no se usa file.name ni file.type
+const MIME_TO_EXT: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png':  'png',
+  'image/webp': 'webp',
+  'image/gif':  'gif',
+}
+
+// Detecta el MIME real por magic bytes — evita path traversal y content-type spoofing
+function detectMime(buf: Buffer): string | null {
+  if (buf.length < 12) return null
+  // JPEG: FF D8 FF
+  if (buf[0] === 0xFF && buf[1] === 0xD8 && buf[2] === 0xFF) return 'image/jpeg'
+  // PNG: 89 50 4E 47 0D 0A 1A 0A
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4E && buf[3] === 0x47) return 'image/png'
+  // GIF: 47 49 46 38
+  if (buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x38) return 'image/gif'
+  // WebP: RIFF....WEBP
+  if (
+    buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
+    buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50
+  ) return 'image/webp'
+  return null
+}
 
 export async function POST(req: NextRequest) {
   // Verificar sesión
@@ -23,17 +48,22 @@ export async function POST(req: NextRequest) {
   if (file.size > MAX_SIZE) {
     return NextResponse.json({ error: 'El archivo no puede superar 8 MB' }, { status: 400 })
   }
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    return NextResponse.json({ error: 'Solo se permiten imágenes (jpg, png, webp, gif)' }, { status: 400 })
+
+  const buffer = Buffer.from(await file.arrayBuffer())
+
+  // Detectar MIME real por magic bytes — no confiamos en file.type ni file.name
+  const detectedMime = detectMime(buffer)
+  if (!detectedMime || !(detectedMime in MIME_TO_EXT)) {
+    return NextResponse.json({ error: 'Solo se permiten imágenes (jpg, png, webp, gif)' }, { status: 415 })
   }
 
-  const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
-  const path = `${user.id}/${Date.now()}.${ext}`
-  const buffer = Buffer.from(await file.arrayBuffer())
+  // Ruta completamente sin input del usuario: UUID + extensión derivada del MIME real
+  const ext = MIME_TO_EXT[detectedMime]
+  const path = `${user.id}/${randomUUID()}.${ext}`
 
   const admin = createServiceClient()
   const { error } = await admin.storage.from(bucket).upload(path, buffer, {
-    contentType: file.type,
+    contentType: detectedMime, // MIME verificado por magic bytes, no file.type
     upsert: false,
   })
 

@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { randomUUID } from 'crypto'
+
+// Admin client con service_role_key: bypasea RLS completamente
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+}
 
 const ALLOWED_BUCKETS = ['products', 'stores', 'avatars'] as const
 const MAX_SIZE = 8 * 1024 * 1024 // 8 MB
@@ -61,7 +70,7 @@ export async function POST(req: NextRequest) {
   const ext = MIME_TO_EXT[detectedMime]
   const path = `${user.id}/${randomUUID()}.${ext}`
 
-  const admin = createServiceClient()
+  const admin = getAdminClient()
   const { error } = await admin.storage.from(bucket).upload(path, buffer, {
     contentType: detectedMime, // MIME verificado por magic bytes, no file.type
     upsert: false,
@@ -71,6 +80,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  const { data } = admin.storage.from(bucket).getPublicUrl(path)
+  const { data } = getAdminClient().storage.from(bucket).getPublicUrl(path)
   return NextResponse.json({ url: data.publicUrl })
 }

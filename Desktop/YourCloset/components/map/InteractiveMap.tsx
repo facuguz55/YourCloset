@@ -1,10 +1,11 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import StoreBottomSheet from './StoreBottomSheet'
+import { useDarkMode } from '@/lib/hooks/useDarkMode'
 import type { StoreWithRating } from '@/lib/types'
 
 const SANTA_FE: [number, number] = [-31.6333, -60.7]
@@ -40,17 +41,23 @@ function LocationTracker({ onLocation }: { onLocation: (pos: [number, number]) =
   return null
 }
 
-function ZoomControls() {
+function ZoomControls({ dark }: { dark: boolean }) {
   const map = useMap()
+  const btnBg = dark ? 'rgba(28,28,30,0.88)' : 'rgba(255,255,255,0.92)'
+  const btnBorder = dark ? '0.5px solid rgba(255,255,255,0.12)' : '0.5px solid rgba(0,0,0,0.08)'
+  const btnColor = dark ? '#FFFFFF' : '#1D1D1F'
+  const btnShadow = dark
+    ? 'inset 0 1.5px 0 rgba(255,255,255,0.18), 0 2px 10px rgba(0,0,0,0.5)'
+    : 'inset 0 1.5px 0 rgba(255,255,255,0.9), 0 2px 8px rgba(0,0,0,0.12)'
   const btnStyle: React.CSSProperties = {
     width: 40, height: 40, borderRadius: 12,
-    background: 'rgba(255,255,255,0.92)',
+    background: btnBg,
     backdropFilter: 'blur(20px)',
     WebkitBackdropFilter: 'blur(20px)',
-    border: '0.5px solid rgba(0,0,0,0.08)',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+    border: btnBorder,
+    boxShadow: btnShadow,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: 22, fontWeight: 300, color: '#1D1D1F', cursor: 'pointer',
+    fontSize: 22, fontWeight: 300, color: btnColor, cursor: 'pointer',
     userSelect: 'none',
   }
   return (
@@ -61,7 +68,7 @@ function ZoomControls() {
   )
 }
 
-function LocateButton({ onLocate }: { onLocate: () => void }) {
+function LocateButton({ dark, onLocate }: { dark: boolean; onLocate: () => void }) {
   const map = useMap()
   const [loading, setLoading] = useState(false)
   function locate() {
@@ -76,24 +83,29 @@ function LocateButton({ onLocate }: { onLocate: () => void }) {
       () => setLoading(false)
     )
   }
+  const btnBg = dark ? 'rgba(28,28,30,0.88)' : 'rgba(255,255,255,0.92)'
+  const btnBorder = dark ? '0.5px solid rgba(255,255,255,0.12)' : '0.5px solid rgba(0,0,0,0.08)'
+  const btnShadow = dark
+    ? 'inset 0 1.5px 0 rgba(255,255,255,0.18), 0 2px 12px rgba(0,0,0,0.5)'
+    : 'inset 0 1.5px 0 rgba(255,255,255,0.9), 0 2px 12px rgba(0,0,0,0.15)'
   return (
     <button
       onClick={locate}
       style={{
         position: 'absolute', right: 12, bottom: 16, zIndex: 1000,
         width: 44, height: 44, borderRadius: 14,
-        background: 'rgba(255,255,255,0.92)',
+        background: btnBg,
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '0.5px solid rgba(0,0,0,0.08)',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+        border: btnBorder,
+        boxShadow: btnShadow,
         display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
       }}
     >
       {loading ? (
-        <div style={{ width: 18, height: 18, border: '2px solid #0071E3', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: 18, height: 18, border: '2px solid #0A84FF', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       ) : (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071E3" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="3" />
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
         </svg>
@@ -103,6 +115,7 @@ function LocateButton({ onLocate }: { onLocate: () => void }) {
 }
 
 export default function InteractiveMap() {
+  const dark = useDarkMode()
   const [stores, setStores] = useState<StoreWithRating[]>([])
   const [selectedStore, setSelectedStore] = useState<StoreWithRating | null>(null)
   const [userPos, setUserPos] = useState<[number, number] | null>(null)
@@ -110,7 +123,7 @@ export default function InteractiveMap() {
 
   const storeIcon = L.divIcon({
     className: '',
-    html: `<div style="width:12px;height:12px;border-radius:50%;background:#0071E3;border:2px solid #FFFFFF;box-shadow:0 1px 4px rgba(0,113,227,0.5);"></div>`,
+    html: `<div style="width:12px;height:12px;border-radius:50%;background:#0A84FF;border:2px solid #FFFFFF;box-shadow:0 1px 4px rgba(10,132,255,0.5);"></div>`,
     iconSize: [12, 12],
     iconAnchor: [6, 6],
   })
@@ -136,6 +149,11 @@ export default function InteractiveMap() {
     }).catch(() => {})
   }
 
+  // CartoDB dark vs light tiles
+  const tileUrl = dark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+
   return (
     <>
       <style>{`
@@ -156,12 +174,13 @@ export default function InteractiveMap() {
           zoomControl={false}
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            key={tileUrl}
+            url={tileUrl}
             attribution='© OpenStreetMap contributors © CARTO'
           />
           <LocationTracker onLocation={setUserPos} />
-          <ZoomControls />
-          <LocateButton onLocate={() => {}} />
+          <ZoomControls dark={dark} />
+          <LocateButton dark={dark} onLocate={() => {}} />
           {userPos && <UserLocationDot position={userPos} />}
           {stores.map((store) => (
             <Marker

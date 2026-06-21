@@ -169,10 +169,13 @@ export default function ProfilePage() {
         style={{
           height: '56px',
           paddingTop: 'env(safe-area-inset-top)',
-          background: dark ? 'rgba(0,0,0,0.85)' : 'rgba(242,242,247,0.85)',
-          backdropFilter: 'blur(40px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+          background: dark ? 'rgba(10,10,12,0.82)' : 'rgba(248,248,252,0.82)',
+          backdropFilter: 'blur(48px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(48px) saturate(200%)',
           borderBottom: `0.5px solid ${cardBorder}`,
+          boxShadow: dark
+            ? 'inset 0 -1px 0 rgba(255,255,255,0.07), 0 4px 32px rgba(0,0,0,0.35)'
+            : 'inset 0 -1px 0 rgba(255,255,255,0.60), 0 4px 20px rgba(0,0,0,0.06)',
         }}
       >
         <h1 className="font-bold" style={{ fontSize: '20px', color: textPrimary }}>Mi perfil</h1>

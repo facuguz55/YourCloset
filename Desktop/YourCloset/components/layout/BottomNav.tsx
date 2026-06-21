@@ -17,31 +17,32 @@ export default function BottomNav() {
   const pathname = usePathname()
   const dark = useDarkMode()
 
-  // Apple HIG: dark glass = #1C1C1E con blur, light glass = blanco con blur
+  // iOS 26 Liquid Glass: specular highlight en borde superior = rasgo definitorio
   const navBg = dark
-    ? 'rgba(28, 28, 30, 0.82)'
-    : 'rgba(242, 242, 247, 0.82)'
+    ? 'rgba(22, 22, 24, 0.78)'
+    : 'rgba(248, 248, 252, 0.78)'
 
   const navBorder = dark
-    ? 'rgba(255,255,255,0.10)'
-    : 'rgba(0,0,0,0.10)'
-
-  const navShadow = dark
-    ? '0 1px 0 rgba(255,255,255,0.07) inset, 0 -1px 0 rgba(255,255,255,0.04) inset, 0 8px 32px rgba(0,0,0,0.6)'
-    : '0 1px 0 rgba(255,255,255,0.95) inset, 0 8px 24px rgba(0,0,0,0.10), 0 1px 0 rgba(0,0,0,0.06)'
-
-  // Pill activa: más claro que el nav en dark, más blanco en light
-  const pillBg = dark
-    ? 'rgba(58, 58, 60, 0.90)'
-    : 'rgba(255,255,255,0.90)'
-
-  const pillBorder = dark
-    ? 'rgba(255,255,255,0.14)'
+    ? 'rgba(255,255,255,0.12)'
     : 'rgba(0,0,0,0.08)'
 
+  // El inset superior (1.5px blanco) ES el specular de liquid glass
+  const navShadow = dark
+    ? 'inset 0 1.5px 0 rgba(255,255,255,0.38), inset 0 -0.5px 0 rgba(255,255,255,0.05), 0 -4px 48px rgba(0,0,0,0.55), 0 0 0 0.5px rgba(255,255,255,0.10)'
+    : 'inset 0 1.5px 0 rgba(255,255,255,0.92), inset 0 -0.5px 0 rgba(0,0,0,0.04), 0 -2px 24px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.06)'
+
+  // Pill activa: glass elevado con su propio specular
+  const pillBg = dark
+    ? 'rgba(52, 52, 56, 0.88)'
+    : 'rgba(255,255,255,0.92)'
+
+  const pillBorder = dark
+    ? 'rgba(255,255,255,0.16)'
+    : 'rgba(0,0,0,0.06)'
+
   const pillShadow = dark
-    ? '0 1px 0 rgba(255,255,255,0.08) inset, 0 2px 8px rgba(0,0,0,0.4)'
-    : '0 1px 0 rgba(255,255,255,1) inset, 0 2px 6px rgba(0,0,0,0.08)'
+    ? 'inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 10px rgba(0,0,0,0.45)'
+    : 'inset 0 1px 0 rgba(255,255,255,1), 0 2px 8px rgba(0,0,0,0.10)'
 
   const accentColor = dark ? '#0A84FF' : '#0071E3'
   const inactiveColor = dark ? '#636366' : '#8E8E93'
@@ -55,8 +56,8 @@ export default function BottomNav() {
         className="flex items-center justify-around w-full max-w-sm"
         style={{
           background: navBg,
-          backdropFilter: 'blur(40px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+          backdropFilter: 'blur(48px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(48px) saturate(200%)',
           border: `0.5px solid ${navBorder}`,
           borderRadius: '28px',
           boxShadow: navShadow,

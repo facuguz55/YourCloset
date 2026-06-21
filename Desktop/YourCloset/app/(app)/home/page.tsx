@@ -53,15 +53,14 @@ export default function HomePage() {
     return () => observerRef.current?.disconnect()
   }, [cursor, hasMore, loading, fetchFeed])
 
-  // Apple HIG tokens
-  // Header: blur sobre el fondo de la app (gris neutro / negro)
+  // iOS 26 Liquid Glass: blur + specular en borde inferior del header
   const headerBg = dark
-    ? 'rgba(0, 0, 0, 0.85)'
-    : 'rgba(242, 242, 247, 0.85)'
-  const headerBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)'
+    ? 'rgba(10, 10, 12, 0.82)'
+    : 'rgba(248, 248, 252, 0.82)'
+  const headerBorder = dark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)'
   const headerShadow = dark
-    ? '0 0.5px 0 rgba(255,255,255,0.06)'
-    : '0 0.5px 0 rgba(0,0,0,0.12)'
+    ? 'inset 0 -1px 0 rgba(255,255,255,0.07), 0 4px 32px rgba(0,0,0,0.35)'
+    : 'inset 0 -1px 0 rgba(255,255,255,0.60), 0 4px 20px rgba(0,0,0,0.06)'
 
   // Search bar: fill secundario de Apple
   const searchBg = dark ? '#1C1C1E' : '#FFFFFF'
@@ -80,8 +79,8 @@ export default function HomePage() {
         className="sticky top-0 z-30 px-4"
         style={{
           background: headerBg,
-          backdropFilter: 'blur(40px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+          backdropFilter: 'blur(48px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(48px) saturate(200%)',
           borderBottom: `0.5px solid ${headerBorder}`,
           boxShadow: headerShadow,
           paddingTop: 'max(16px, env(safe-area-inset-top))',

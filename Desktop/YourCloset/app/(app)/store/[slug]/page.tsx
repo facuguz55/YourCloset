@@ -31,14 +31,22 @@ export default async function StorePage({ params }: Props) {
   const rest = products.filter((p: Product) => !p.is_featured)
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
       <StoreTracker slug={params.slug} />
 
-      {/* Back button */}
-      <div className="sticky top-0 z-20 flex items-center px-4 py-3"
-        style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+      {/* Back button — glass header con CSS variables auto dark/light */}
+      <div
+        className="sticky top-0 z-20 flex items-center px-4"
+        style={{
+          height: '52px',
+          background: 'var(--color-glass-bg)',
+          backdropFilter: 'blur(48px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(48px) saturate(200%)',
+          borderBottom: '0.5px solid var(--color-glass-border)',
+          boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.2)',
+        }}
       >
-        <Link href="/home" className="flex items-center gap-1" style={{ color: '#0071E3' }}>
+        <Link href="/home" className="flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
           <ChevronLeft size={20} />
           <span style={{ fontSize: '15px', fontWeight: 600 }}>Volver</span>
         </Link>
@@ -50,7 +58,7 @@ export default async function StorePage({ params }: Props) {
           <Image src={store.cover_image_url} alt={store.name} fill className="object-cover" />
         </div>
       ) : (
-        <div className="w-full flex items-center justify-center" style={{ height: '120px', backgroundColor: '#F5F5F7' }}>
+        <div className="w-full flex items-center justify-center" style={{ height: '120px', backgroundColor: 'var(--color-surface)' }}>
           <span style={{ fontSize: '48px' }}>👗</span>
         </div>
       )}
@@ -58,13 +66,13 @@ export default async function StorePage({ params }: Props) {
       <div className="px-4 py-5 max-w-2xl mx-auto space-y-5">
         {/* Header */}
         <div>
-          <h1 className="font-bold" style={{ fontSize: '28px', color: '#1D1D1F' }}>{store.name}</h1>
+          <h1 className="font-bold" style={{ fontSize: '28px', color: 'var(--color-text-primary)' }}>{store.name}</h1>
           {store.description && (
-            <p className="mt-1" style={{ fontSize: '15px', color: '#6E6E73' }}>{store.description}</p>
+            <p className="mt-1" style={{ fontSize: '15px', color: 'var(--color-text-secondary)' }}>{store.description}</p>
           )}
           <div className="flex items-center gap-2 mt-2">
-            <MapPin size={14} style={{ color: '#6E6E73' }} />
-            <span style={{ fontSize: '13px', color: '#6E6E73' }}>{store.address}, {store.city}</span>
+            <MapPin size={14} style={{ color: 'var(--color-text-secondary)' }} />
+            <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>{store.address}, {store.city}</span>
           </div>
         </div>
 
@@ -76,9 +84,9 @@ export default async function StorePage({ params }: Props) {
                 <Star key={i} size={16} fill={i <= Math.round(store._avg_rating!) ? '#FF9500' : 'none'} style={{ color: '#FF9500' }} />
               ))}
             </div>
-            <span className="font-semibold" style={{ fontSize: '15px', color: '#1D1D1F' }}>{store._avg_rating!.toFixed(1)}</span>
+            <span className="font-semibold" style={{ fontSize: '15px', color: 'var(--color-text-primary)' }}>{store._avg_rating!.toFixed(1)}</span>
             {store._rating_count !== undefined && (
-              <span style={{ fontSize: '13px', color: '#6E6E73' }}>({store._rating_count} valoraciones)</span>
+              <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>({store._rating_count} valoraciones)</span>
             )}
           </div>
         )}
@@ -87,7 +95,7 @@ export default async function StorePage({ params }: Props) {
         {store.style_tags?.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {store.style_tags.map((tag: string) => (
-              <span key={tag} className="px-3 py-1.5 rounded-full capitalize" style={{ backgroundColor: '#F5F5F7', fontSize: '13px', color: '#6E6E73', fontWeight: 500 }}>
+              <span key={tag} className="px-3 py-1.5 rounded-full capitalize" style={{ backgroundColor: 'var(--color-surface)', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
                 {tag}
               </span>
             ))}
@@ -107,27 +115,27 @@ export default async function StorePage({ params }: Props) {
           {store.email && (
             <a href={`mailto:${store.email}`}
               className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-[12px] active:scale-95 transition-transform"
-              style={{ backgroundColor: '#F5F5F7', minHeight: '64px' }}>
-              <Mail size={20} style={{ color: '#1D1D1F' }} />
-              <span className="font-semibold" style={{ fontSize: '12px', color: '#1D1D1F' }}>Email</span>
+              style={{ backgroundColor: 'var(--color-surface)', minHeight: '64px' }}>
+              <Mail size={20} style={{ color: 'var(--color-text-primary)' }} />
+              <span className="font-semibold" style={{ fontSize: '12px', color: 'var(--color-text-primary)' }}>Email</span>
             </a>
           )}
           {store.website_url && (
             <a href={safeUrl(store.website_url)} target="_blank" rel="noopener noreferrer"
               className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-[12px] active:scale-95 transition-transform"
-              style={{ backgroundColor: '#F5F5F7', minHeight: '64px' }}>
-              <Globe size={20} style={{ color: '#1D1D1F' }} />
-              <span className="font-semibold" style={{ fontSize: '12px', color: '#1D1D1F' }}>Tienda web</span>
+              style={{ backgroundColor: 'var(--color-surface)', minHeight: '64px' }}>
+              <Globe size={20} style={{ color: 'var(--color-text-primary)' }} />
+              <span className="font-semibold" style={{ fontSize: '12px', color: 'var(--color-text-primary)' }}>Tienda web</span>
             </a>
           )}
         </div>
 
-        <div className="h-px" style={{ backgroundColor: '#F5F5F7' }} />
+        <div className="h-px" style={{ backgroundColor: 'var(--color-border)' }} />
 
         {/* Featured products */}
         {featured.length > 0 && (
           <div>
-            <h2 className="font-semibold mb-3" style={{ fontSize: '20px', color: '#1D1D1F' }}>Prendas destacadas</h2>
+            <h2 className="font-semibold mb-3" style={{ fontSize: '20px', color: 'var(--color-text-primary)' }}>Prendas destacadas</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {featured.map((p: Product) => (
                 <ProductItem key={p.id} product={p} />
@@ -139,7 +147,7 @@ export default async function StorePage({ params }: Props) {
         {/* All products */}
         {rest.length > 0 && (
           <div>
-            <h2 className="font-semibold mb-3" style={{ fontSize: '20px', color: '#1D1D1F' }}>
+            <h2 className="font-semibold mb-3" style={{ fontSize: '20px', color: 'var(--color-text-primary)' }}>
               {featured.length > 0 ? 'Más prendas' : 'Catálogo'}
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -153,7 +161,7 @@ export default async function StorePage({ params }: Props) {
         {products.length === 0 && (
           <div className="flex flex-col items-center py-12 text-center">
             <span style={{ fontSize: '40px' }}>🛍️</span>
-            <p className="mt-3 font-medium" style={{ fontSize: '15px', color: '#6E6E73' }}>Este local todavía no cargó su catálogo.</p>
+            <p className="mt-3 font-medium" style={{ fontSize: '15px', color: 'var(--color-text-secondary)' }}>Este local todavía no cargó su catálogo.</p>
           </div>
         )}
       </div>
@@ -164,20 +172,20 @@ export default async function StorePage({ params }: Props) {
 function ProductItem({ product }: { product: Product }) {
   const imageUrl = product.image_urls?.[0]
   return (
-    <div className="overflow-hidden" style={{ borderRadius: '12px', backgroundColor: '#F5F5F7' }}>
+    <div className="overflow-hidden" style={{ borderRadius: '12px', backgroundColor: 'var(--color-surface)' }}>
       <div className="relative w-full" style={{ aspectRatio: '3/4' }}>
         {imageUrl ? (
           <Image src={imageUrl} alt={product.name} fill className="object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#E8E8ED' }}>
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-surface-elevated)' }}>
             <span style={{ fontSize: '24px' }}>👗</span>
           </div>
         )}
       </div>
       <div className="p-2.5">
-        <p className="font-semibold truncate" style={{ fontSize: '13px', color: '#1D1D1F' }}>{product.name}</p>
+        <p className="font-semibold truncate" style={{ fontSize: '13px', color: 'var(--color-text-primary)' }}>{product.name}</p>
         {product.price && (
-          <p className="mt-0.5" style={{ fontSize: '12px', color: '#0071E3', fontWeight: 600 }}>
+          <p className="mt-0.5" style={{ fontSize: '12px', color: 'var(--color-accent)', fontWeight: 600 }}>
             ${product.price.toLocaleString('es-AR')}
           </p>
         )}

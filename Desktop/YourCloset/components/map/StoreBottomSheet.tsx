@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { StoreWithRating } from '@/lib/types'
 import { safeUrl } from '@/lib/safe-url'
+import { useDarkMode } from '@/lib/hooks/useDarkMode'
 
 interface Props {
   store: StoreWithRating | null
@@ -14,24 +15,38 @@ interface Props {
 }
 
 export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
+  const dark = useDarkMode()
+
+  const sheetBg = dark ? '#1C1C1E' : '#FFFFFF'
+  const textPrimary = dark ? '#FFFFFF' : '#1D1D1F'
+  const textSecondary = dark ? '#8E8E93' : '#6E6E73'
+  const surface = dark ? '#2C2C2E' : '#F5F5F7'
+  const handleColor = dark ? '#3A3A3C' : '#D2D2D7'
+  const closeIconColor = dark ? '#636366' : '#6E6E73'
+  const accentColor = dark ? '#0A84FF' : '#0071E3'
+  const sheetShadow = dark
+    ? 'inset 0 1.5px 0 rgba(255,255,255,0.12), 0 -8px 48px rgba(0,0,0,0.7)'
+    : 'inset 0 1.5px 0 rgba(255,255,255,0.85), 0 -4px 32px rgba(0,0,0,0.14)'
+
   return (
     <AnimatePresence>
       {store && (
         <>
           <motion.div
             className="fixed inset-0 z-40"
-            style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+            style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
           />
           <motion.div
-            className="fixed bottom-0 left-0 right-0 z-50 bg-white overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-50 overflow-hidden"
             style={{
+              backgroundColor: sheetBg,
               borderRadius: '24px 24px 0 0',
               maxHeight: '75vh',
-              boxShadow: '0 -2px 32px rgba(0,0,0,0.16)',
+              boxShadow: sheetShadow,
             }}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -47,18 +62,13 @@ export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
             <div className="overflow-y-auto" style={{ maxHeight: '75vh' }}>
               {/* Handle */}
               <div className="flex justify-center pt-3 pb-1">
-                <div className="w-10 h-1 rounded-full" style={{ backgroundColor: '#D2D2D7' }} />
+                <div className="w-10 h-1 rounded-full" style={{ backgroundColor: handleColor }} />
               </div>
 
               {/* Cover image */}
               {store.cover_image_url && (
                 <div className="relative w-full" style={{ height: '160px' }}>
-                  <Image
-                    src={store.cover_image_url}
-                    alt={store.name}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={store.cover_image_url} alt={store.name} fill className="object-cover" />
                 </div>
               )}
 
@@ -66,19 +76,19 @@ export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
                 {/* Header */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-[20px] font-bold truncate" style={{ color: '#1D1D1F' }}>
+                    <h2 className="text-[20px] font-bold truncate" style={{ color: textPrimary }}>
                       {store.name}
                     </h2>
-                    <p className="text-[13px] mt-0.5" style={{ color: '#6E6E73' }}>
+                    <p className="text-[13px] mt-0.5" style={{ color: textSecondary }}>
                       {store.address}, {store.city}
                     </p>
                   </div>
                   <button
                     onClick={onClose}
                     className="flex-none flex items-center justify-center w-8 h-8 rounded-full"
-                    style={{ backgroundColor: '#F5F5F7' }}
+                    style={{ backgroundColor: surface }}
                   >
-                    <X size={16} style={{ color: '#6E6E73' }} />
+                    <X size={16} style={{ color: closeIconColor }} />
                   </button>
                 </div>
 
@@ -95,11 +105,11 @@ export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
                         />
                       ))}
                     </div>
-                    <span className="text-[13px] font-medium" style={{ color: '#1D1D1F' }}>
+                    <span className="text-[13px] font-medium" style={{ color: textPrimary }}>
                       {store._avg_rating!.toFixed(1)}
                     </span>
                     {store._rating_count !== undefined && (
-                      <span className="text-[13px]" style={{ color: '#6E6E73' }}>
+                      <span className="text-[13px]" style={{ color: textSecondary }}>
                         ({store._rating_count} valoraciones)
                       </span>
                     )}
@@ -113,7 +123,7 @@ export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
                       <span
                         key={tag}
                         className="px-2.5 py-1 rounded-full text-[11px] font-medium capitalize"
-                        style={{ backgroundColor: '#F5F5F7', color: '#6E6E73' }}
+                        style={{ backgroundColor: surface, color: textSecondary }}
                       >
                         {tag}
                       </span>
@@ -141,10 +151,10 @@ export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
                       href={`mailto:${store.email}`}
                       onClick={() => onTrack('email_click')}
                       className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-[12px] transition-colors active:scale-95"
-                      style={{ backgroundColor: '#F5F5F7', minHeight: '44px' }}
+                      style={{ backgroundColor: surface, minHeight: '44px' }}
                     >
-                      <Mail size={18} style={{ color: '#1D1D1F' }} />
-                      <span className="text-[11px] font-semibold" style={{ color: '#1D1D1F' }}>Email</span>
+                      <Mail size={18} style={{ color: textPrimary }} />
+                      <span className="text-[11px] font-semibold" style={{ color: textPrimary }}>Email</span>
                     </a>
                   )}
                   {store.website_url && (
@@ -154,10 +164,10 @@ export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
                       rel="noopener noreferrer"
                       onClick={() => onTrack('website_click')}
                       className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-[12px] transition-colors active:scale-95"
-                      style={{ backgroundColor: '#F5F5F7', minHeight: '44px' }}
+                      style={{ backgroundColor: surface, minHeight: '44px' }}
                     >
-                      <Globe size={18} style={{ color: '#1D1D1F' }} />
-                      <span className="text-[11px] font-semibold" style={{ color: '#1D1D1F' }}>Tienda</span>
+                      <Globe size={18} style={{ color: textPrimary }} />
+                      <span className="text-[11px] font-semibold" style={{ color: textPrimary }}>Tienda</span>
                     </a>
                   )}
                 </div>
@@ -166,7 +176,7 @@ export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
                 <Link
                   href={`/store/${store.slug}`}
                   className="flex items-center justify-between w-full py-3.5 px-4 rounded-[12px] transition-colors active:scale-[0.99]"
-                  style={{ backgroundColor: '#0071E3' }}
+                  style={{ backgroundColor: accentColor }}
                 >
                   <span className="text-[15px] font-semibold text-white">Ver perfil completo</span>
                   <ChevronRight size={18} color="#FFFFFF" />

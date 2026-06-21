@@ -1,5 +1,5 @@
 # YourCloset — Estado de Módulos
-> Actualizado: 2026-06-20 | Agente: Frontend
+> Actualizado: 2026-06-20 | Sesión: fix Prisma + dark mode Apple style
 
 ---
 
@@ -11,6 +11,7 @@
 | shadcn/ui inicializado | ✅ |
 | Dependencias instaladas | ✅ |
 | prisma/schema.prisma (11 modelos) | ✅ |
+| prisma/schema.prisma engineType="library" (fix Prisma 7) | ✅ |
 | prisma generate | ✅ |
 | supabase/migrations/000_schema.sql | ✅ Ejecutado en Supabase |
 | supabase/migrations/001_auth_trigger.sql | ✅ Ejecutado en Supabase |
@@ -44,6 +45,7 @@
 | lib/supabase/client.ts | ✅ |
 | lib/types.ts | ✅ |
 | lib/slug.ts | ✅ |
+| lib/hooks/useDarkMode.ts | ✅ |
 | middleware.ts (protección de rutas) | ✅ |
 
 ---
@@ -55,14 +57,14 @@
 | Archivo | Estado |
 |---------|--------|
 | tailwind.config.ts (tokens YourCloset) | ✅ |
-| app/globals.css (variables --color-*) | ✅ |
+| app/globals.css (dark mode CSS vars + SF Pro + liquid glass) | ✅ |
 
 ### Componentes shared
 
 | Componente | Archivo | Estado |
 |-----------|---------|--------|
-| BottomNav (Liquid Glass) | components/layout/BottomNav.tsx | ✅ |
-| ProductCard (aspect 3:4, skeleton) | components/search/ProductCard.tsx | ✅ |
+| BottomNav (Liquid Glass + dark mode real) | components/layout/BottomNav.tsx | ✅ |
+| ProductCard (dark mode + glass) | components/search/ProductCard.tsx | ✅ |
 | SearchBar | components/search/SearchBar.tsx | ✅ |
 | SearchFilters | components/search/SearchFilters.tsx | ✅ |
 | StoreBottomSheet (framer-motion) | components/map/StoreBottomSheet.tsx | ✅ |
@@ -72,7 +74,7 @@
 
 | Pantalla | Ruta | Estado |
 |---------|------|--------|
-| Layout Auth (centrado) | app/(auth)/layout.tsx | ✅ |
+| Layout Auth (blobs animados + liquid glass) | app/(auth)/layout.tsx | ✅ |
 | Sign In (email + Google) | app/(auth)/sign-in/page.tsx | ✅ |
 | Sign Up (email + Google + rol) | app/(auth)/sign-up/page.tsx | ✅ |
 | OAuth Callback | app/auth/callback/route.ts | ✅ |
@@ -81,19 +83,19 @@
 
 | Pantalla | Ruta | Estado |
 |---------|------|--------|
-| Layout App (con BottomNav) | app/(app)/layout.tsx | ✅ |
+| Layout App (gradiente radial + dark mode) | app/(app)/layout.tsx | ✅ |
 | Onboarding (encuesta 3 pasos, no skippeable) | app/(app)/onboarding/page.tsx | ✅ |
-| Home (feed masonry + infinite scroll) | app/(app)/home/page.tsx | ✅ |
-| Búsqueda (SearchBar + Filters + resultados) | app/(app)/search/page.tsx | ✅ |
+| Home (feed masonry + infinite scroll + dark) | app/(app)/home/page.tsx | ✅ |
+| Búsqueda (dark mode + cards dark) | app/(app)/search/page.tsx | ✅ |
 | Perfil del local (público) | app/(app)/store/[slug]/page.tsx | ✅ |
-| Mi perfil | app/(app)/profile/page.tsx | ✅ |
+| Mi perfil (dark mode completo + toggle) | app/(app)/profile/page.tsx | ✅ |
 | Mapa | app/(app)/map/page.tsx | ✅ |
 
 ### Dashboard (locales)
 
 | Pantalla | Ruta | Estado |
 |---------|------|--------|
-| Layout Dashboard (sidebar + header) | app/(dashboard)/layout.tsx | ✅ |
+| Layout Dashboard (nav active state ✅) | app/(dashboard)/layout.tsx | ✅ |
 | Overview / métricas | app/(dashboard)/dashboard/page.tsx | ✅ |
 | Gestión de catálogo + formulario | app/(dashboard)/dashboard/products/page.tsx | ✅ |
 | Configuración del local | app/(dashboard)/dashboard/settings/page.tsx | ✅ |
@@ -102,13 +104,13 @@
 
 ## Pendientes / Próximos pasos
 
-| Módulo | Estado | Agente |
-|--------|--------|--------|
-| Leaflet CSS fix (importación en app global) | ⏳ | Frontend |
-| NEXT_PUBLIC_APP_URL en .env.local | ⏳ | Config |
-| Supabase Storage buckets (products, stores, avatars) | ⏳ | Integraciones |
-| Sistema de valoraciones (formulario modal) | ⏳ | Frontend |
-| Dashboard nav active state (usePathname) | ⏳ | Frontend |
+| Módulo | Estado | Notas |
+|--------|--------|-------|
+| Supabase Storage buckets (products, stores, avatars) | ⏳ | Crear en Supabase Dashboard |
+| Sistema de valoraciones (formulario modal) | ⏳ | API route lista, falta UI |
+| Store page dark mode | ⏳ | Pantalla pública del local |
+| Map page dark mode | ⏳ | Mapa + bottom sheet |
+| Deploy Vercel | ⏳ | Variables de entorno pendientes |
 
 ## Fase 2 (fuera del MVP)
 
@@ -119,4 +121,4 @@
 
 ---
 
-*Siguiente paso: Agente Integraciones configura Supabase Storage buckets y revisa la configuración de Leaflet. Luego, configurar variables de entorno en Vercel y hacer deploy.*
+*Siguiente paso: configurar Supabase Storage buckets, agregar modal de valoraciones, y hacer deploy en Vercel con variables de entorno.*

@@ -20,7 +20,11 @@ export async function GET(request: NextRequest) {
   let query = admin.from('users').select('*', { count: 'exact' })
 
   if (search) {
-    query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`)
+    // Sanitizar para prevenir inyeccion de filtros PostgREST
+    const safeSearch = search.replace(/[^A-Za-z0-9 @._-]/g, '').slice(0, 100)
+    if (safeSearch) {
+      query = query.ilike('email', `%${safeSearch}%`)
+    }
   }
   if (onboarding === 'done') query = query.eq('onboarding_done', true)
   if (onboarding === 'pending') query = query.eq('onboarding_done', false)

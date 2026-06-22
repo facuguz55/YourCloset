@@ -41,7 +41,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const role = (user.user_metadata?.role as string) ?? 'user'
+  // app_metadata es solo editable por admin/service-role, user_metadata puede ser modificado por el usuario
+  const role = (user.app_metadata?.role as string) ?? (user.user_metadata?.role as string) ?? 'user'
 
   // Capa 3: rutas de Founders solo admin, redirige silenciosamente a /home
   if (FOUNDER_ROUTES.some((r) => pathname.startsWith(r))) {

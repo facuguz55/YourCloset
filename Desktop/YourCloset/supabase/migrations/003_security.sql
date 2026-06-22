@@ -39,10 +39,11 @@ CREATE POLICY "admins can read access log"
   ON admin_access_log FOR SELECT
   USING (auth.jwt() ->> 'role' = 'admin');
 
--- Inserción libre (el middleware hace el insert con service_role bypass)
-CREATE POLICY "service role can insert access log"
+-- El service_role bypasses RLS automáticamente — no necesitamos política permisiva
+-- Solo los admins autenticados pueden insertar (el middleware usa service_role que bypasses RLS)
+CREATE POLICY "admins can insert access log"
   ON admin_access_log FOR INSERT
-  WITH CHECK (true);
+  WITH CHECK ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin' OR (auth.jwt() ->> 'role') = 'admin');
 
 -- RLS en rate_limits
 ALTER TABLE rate_limits ENABLE ROW LEVEL SECURITY;

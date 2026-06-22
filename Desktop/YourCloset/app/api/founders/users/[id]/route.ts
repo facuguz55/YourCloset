@@ -15,9 +15,18 @@ export async function PUT(
   const { action, role } = body
 
   if (action === 'change_role' && role) {
-    // Actualizar rol en auth.users.user_metadata via admin auth API
+    const ALLOWED_ROLES = ['user', 'store_owner', 'admin']
+    if (!ALLOWED_ROLES.includes(role)) {
+      return NextResponse.json({ error: 'Rol invalido', code: 'BAD_REQUEST' }, { status: 400 })
+    }
+    // El admin no puede cambiar su propio rol
+    const caller = authResult as { id: string }
+    if (params.id === caller.id) {
+      return NextResponse.json({ error: 'No podes cambiar tu propio rol', code: 'FORBIDDEN' }, { status: 403 })
+    }
+    // Usar app_metadata (solo editable por service-role) en lugar de user_metadata
     const { error } = await admin.auth.admin.updateUserById(params.id, {
-      user_metadata: { role },
+      app_metadata: { role },
     })
     if (error) {
       return NextResponse.json({ error: error.message, code: 'AUTH_ERROR' }, { status: 500 })

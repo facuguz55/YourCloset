@@ -148,3 +148,49 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
+
+/* ── Accesibilidad ─────────────────────────────────────────── */
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  [data-theme="dark"] .glass {
+    background: rgba(28, 28, 30, 0.97);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #000000;
+    --color-text-secondary: #1D1D1F;
+  }
+  [data-theme="dark"] {
+    --color-border: #FFFFFF;
+    --color-text-secondary: #F5F5F7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Tokens CSS como custom properties para Tailwind ──────── */
+@layer utilities {
+  .text-color-primary { color: var(--color-text-primary); }
+  .text-color-secondary { color: var(--color-text-secondary); }
+  .text-color-tertiary { color: var(--color-text-tertiary); }
+  .bg-color-background { background-color: var(--color-background); }
+  .bg-color-surface { background-color: var(--color-surface); }
+  .bg-color-surface-elevated { background-color: var(--color-surface-elevated); }
+  .border-color-border { border-color: var(--color-border); }
+  .text-color-accent { color: var(--color-accent); }
+  .bg-color-accent { background-color: var(--color-accent); }
+}

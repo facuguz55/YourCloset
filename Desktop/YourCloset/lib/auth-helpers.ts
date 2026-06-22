@@ -32,7 +32,9 @@ export async function verifyAdminRole(supabase: SupabaseClient): Promise<
     return NextResponse.json({ error: 'No autenticado', code: 'UNAUTHORIZED' }, { status: 401 })
   }
 
-  if (user.user_metadata?.role !== 'admin') {
+  // app_metadata solo editable por service-role — más seguro que user_metadata
+  const role = (user.app_metadata?.role as string) ?? (user.user_metadata?.role as string) ?? 'user'
+  if (role !== 'admin') {
     return NextResponse.json({ error: 'Acceso denegado', code: 'FORBIDDEN' }, { status: 403 })
   }
 

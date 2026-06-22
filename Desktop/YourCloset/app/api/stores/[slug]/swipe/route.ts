@@ -25,6 +25,17 @@ export async function POST(
 
   if (!store) return NextResponse.json({ error: 'Local no encontrado', code: 'NOT_FOUND' }, { status: 404 })
 
+  // Validar que el product_id pertenece al local — previene analytics poisoning
+  const { data: product } = await admin
+    .from('products')
+    .select('id')
+    .eq('id', product_id)
+    .eq('store_id', store.id)
+    .eq('is_active', true)
+    .maybeSingle()
+
+  if (!product) return NextResponse.json({ error: 'Prenda no encontrada', code: 'NOT_FOUND' }, { status: 404 })
+
   const eventType = direction === 'right' ? 'swipe_right' : 'swipe_left'
 
   // Registrar evento analytics

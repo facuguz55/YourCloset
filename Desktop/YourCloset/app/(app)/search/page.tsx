@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Search as SearchIcon, SlidersHorizontal, X, Frown } from 'lucide-react'
+import { Search as SearchIcon, X, Frown } from 'lucide-react'
 import SearchBar from '@/components/search/SearchBar'
 import SearchFilters from '@/components/search/SearchFilters'
 import ProductCard, { ProductCardSkeleton } from '@/components/search/ProductCard'
@@ -143,7 +143,7 @@ export default function SearchPage() {
               Buscá lo que querés usar
             </p>
             <p className="mt-1" style={{ fontSize: '15px', color: textSecondary }}>
-              Escribí "campera", "vestido" o cualquier prenda que te guste.
+              {`Escribí "campera", "vestido" o cualquier prenda que te guste.`}
             </p>
           </div>
         )}

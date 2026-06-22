@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Plus, Trash2, Star, X, Copy, Package, AlertCircle } from 'lucide-react'
+import { toast } from 'sonner'
 import { useStore } from '@/app/(dashboard)/store-context'
 import { useDarkMode } from '@/lib/hooks/useDarkMode'
 import type { Product } from '@/lib/types'
@@ -46,7 +47,6 @@ export default function ProductsPage() {
   const textPrimary = dark ? '#FFFFFF' : '#1D1D1F'
   const textSecondary = dark ? '#8E8E93' : '#6E6E73'
   const accentColor = dark ? '#0A84FF' : '#0071E3'
-  const divider = dark ? 'rgba(255,255,255,0.08)' : '#F5F5F7'
 
   useEffect(() => {
     if (store === undefined) return
@@ -68,8 +68,14 @@ export default function ProductsPage() {
     const res = await fetch('/api/upload', { method: 'POST', body: fd })
     const json = await res.json()
     setUploading(false)
-    if (!res.ok || !json.url) { setError(json.error ?? 'Error al subir'); return }
+    if (!res.ok || !json.url) {
+      setError(json.error ?? 'Error al subir')
+      if (res.status === 401) { toast.error('Tu sesión expiró. Iniciá sesión de nuevo.') }
+      else { toast.error('No se pudo subir la imagen.') }
+      return
+    }
     setForm((f) => ({ ...f, image_url: json.url }))
+    toast.success('Foto subida correctamente.')
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -95,16 +101,22 @@ export default function ProductsPage() {
         is_featured: form.is_featured,
       }),
     })
-    if (!res.ok) { const { error: err } = await res.json(); setError(err); setSaving(false); return }
+    if (!res.ok) { const { error: err } = await res.json(); setError(err); setSaving(false); toast.error('No se pudo guardar la prenda.'); return }
     const { data: newProduct } = await res.json()
     setProducts((p) => [newProduct, ...p])
     setForm(EMPTY_FORM); setShowForm(false); setSaving(false)
+    toast.success('Prenda subida correctamente.')
   }
 
   async function handleDelete(productId: string) {
     if (!store?.slug || !confirm('Eliminar esta prenda?')) return
-    await fetch(`/api/stores/${store.slug}/products/${productId}`, { method: 'DELETE' })
-    setProducts((p) => p.filter((x) => x.id !== productId))
+    const res = await fetch(`/api/stores/${store.slug}/products/${productId}`, { method: 'DELETE' })
+    if (res.ok) {
+      setProducts((p) => p.filter((x) => x.id !== productId))
+      toast.success('Prenda eliminada.')
+    } else {
+      toast.error('No se pudo eliminar. Intentá de nuevo.')
+    }
   }
 
   async function handleToggleStock(productId: string, current: boolean) {
@@ -143,6 +155,9 @@ export default function ProductsPage() {
     if (res.ok) {
       const { data: newProduct } = await res.json()
       setProducts((p) => [newProduct, ...p])
+      toast.success('Prenda duplicada.')
+    } else {
+      toast.error('No se pudo duplicar. Intentá de nuevo.')
     }
     setDuplicating(null)
   }

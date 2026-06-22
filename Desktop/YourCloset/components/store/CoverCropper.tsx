@@ -53,11 +53,9 @@ export default function CoverCropper({ imageSrc, onCrop, onCancel }: Props) {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const [processing, setProcessing] = useState(false)
 
-  const sheetBg = dark ? '#1C1C1E' : '#FFFFFF'
   const textPrimary = dark ? '#FFFFFF' : '#1D1D1F'
   const textSecondary = dark ? '#8E8E93' : '#6E6E73'
   const surface = dark ? '#2C2C2E' : '#F5F5F7'
-  const handleColor = dark ? '#3A3A3C' : '#D2D2D7'
   const accentColor = dark ? '#0A84FF' : '#0071E3'
 
   const onCropComplete = useCallback((_: Area, pixels: Area) => {

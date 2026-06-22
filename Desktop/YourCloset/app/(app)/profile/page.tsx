@@ -25,7 +25,6 @@ function AvatarPlaceholder({ size = 72 }: { size?: number }) {
 function SavedProductCard({ product, dark }: { product: ProductWithStore; dark: boolean }) {
   const img = product.image_urls?.[0]
   const skeletonBg = dark ? '#2C2C2E' : '#E5E5EA'
-  const cardBg = dark ? '#1C1C1E' : '#FFFFFF'
   const textPrimary = dark ? '#FFFFFF' : '#1D1D1F'
   const textSecondary = dark ? '#8E8E93' : '#8E8E93'
 
@@ -208,7 +207,7 @@ export default function ProfilePage() {
               <div className="relative w-[72px] h-[72px] rounded-full overflow-hidden flex-none"
                 style={{ border: '2.5px solid rgba(255,255,255,0.6)', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}>
                 {avatarUrl
-                  ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+                  ? <Image src={avatarUrl} alt={name} fill sizes="72px" className="object-cover" />
                   : <AvatarPlaceholder size={72} />}
               </div>
               <div className="flex-1 min-w-0">

@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Bookmark } from 'lucide-react'
+import { toast } from 'sonner'
 import type { ProductWithStore } from '@/lib/types'
 
 interface Props {
@@ -47,11 +48,17 @@ export default function ProductCard({ product, dark = false, initialSaved = fals
       if (res.ok) {
         const { data } = await res.json()
         setSaved(data.saved)
+        toast.success(data.saved ? 'Guardado en tu lista' : 'Quitado de guardados')
+      } else if (res.status === 401) {
+        setSaved((prev) => !prev)
+        toast.error('Tu sesión expiró. Iniciá sesión de nuevo.')
       } else {
-        setSaved((prev) => !prev) // revertir
+        setSaved((prev) => !prev)
+        toast.error('No se pudo guardar. Intentá de nuevo.')
       }
     } catch {
       setSaved((prev) => !prev)
+      toast.error('Error de red. Revisá tu conexión.')
     } finally {
       setSaving(false)
     }

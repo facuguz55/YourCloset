@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
   // Agregar conteo de productos por store
   const storeIds = data?.map((s) => s.id) ?? []
-  let productCounts: Record<string, number> = {}
+  const productCounts: Record<string, number> = {}
   if (storeIds.length > 0) {
     const { data: products } = await admin
       .from('products')

@@ -33,7 +33,6 @@ export default function FoundersUsersPage() {
   const bg2 = dark ? '#2C2C2E' : '#F5F5F7'
   const textPrimary = dark ? '#FFFFFF' : '#1D1D1F'
   const textSecondary = dark ? '#8E8E93' : '#6E6E73'
-  const accentColor = dark ? '#0A84FF' : '#0071E3'
   const divider = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
 
   const load = useCallback(async () => {

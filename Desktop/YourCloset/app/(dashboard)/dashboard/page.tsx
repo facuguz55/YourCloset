@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { Eye, MessageCircle, Mail, Globe, Star, Package, ChevronRight, QrCode, TrendingUp } from 'lucide-react'
+import { Eye, MessageCircle, Mail, Globe, Star, Package, ChevronRight, QrCode, TrendingUp, Copy } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { toast } from 'sonner'
 import { useDarkMode } from '@/lib/hooks/useDarkMode'
 
 const QRCodeSVG = dynamic(() => import('qrcode.react').then((m) => m.QRCodeSVG), { ssr: false })
@@ -62,6 +63,17 @@ function QRModal({ url, name, dark, onClose }: { url: string; name: string; dark
   const bg = dark ? '#1C1C1E' : '#FFFFFF'
   const textPrimary = dark ? '#FFFFFF' : '#1D1D1F'
   const textSecondary = dark ? '#8E8E93' : '#6E6E73'
+  const accentColor = dark ? '#0A84FF' : '#0071E3'
+
+  async function handleCopyLink() {
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success('Link copiado al portapapeles.')
+    } catch {
+      toast.error('No se pudo copiar el link.')
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
       <div className="p-8 rounded-[24px] flex flex-col items-center gap-5 w-full max-w-xs" style={{ backgroundColor: bg }} onClick={(e) => e.stopPropagation()}>
@@ -73,6 +85,14 @@ function QRModal({ url, name, dark, onClose }: { url: string; name: string; dark
           <p className="font-semibold" style={{ fontSize: '15px', color: textPrimary }}>{name}</p>
           <p className="mt-1" style={{ fontSize: '12px', color: textSecondary }}>Compartí este código para que te encuentren</p>
         </div>
+        <button
+          onClick={handleCopyLink}
+          className="w-full h-[44px] rounded-[12px] font-semibold flex items-center justify-center gap-2"
+          style={{ backgroundColor: accentColor, color: '#FFFFFF', fontSize: '15px' }}
+        >
+          <Copy size={16} strokeWidth={1.5} />
+          Copiar link
+        </button>
         <button onClick={onClose} className="w-full h-[44px] rounded-[12px] font-semibold" style={{ backgroundColor: dark ? '#2C2C2E' : '#F5F5F7', color: dark ? '#AEAEB2' : '#1D1D1F', fontSize: '15px' }}>
           Cerrar
         </button>

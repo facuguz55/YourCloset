@@ -102,13 +102,18 @@ export default function SettingsPage() {
     const method = storeSlug ? 'PUT' : 'POST'
     const url = storeSlug ? `/api/stores/${storeSlug}` : '/api/stores'
 
-    const body = {
-      ...form,
-      price_range: form.price_range || undefined,
-      website_url: form.website_url || undefined,
-      email: form.email || undefined,
-      cover_image_url: form.cover_image_url || undefined,
+    const body: Record<string, unknown> = {
+      name: form.name,
+      description: form.description || undefined,
+      address: form.address,
+      city: form.city || 'Santa Fe',
       phone_whatsapp: form.phone_whatsapp || undefined,
+      email: form.email || undefined,
+      website_url: form.website_url || undefined,
+      cover_image_url: form.cover_image_url || undefined,
+      style_tags: form.style_tags,
+      gender_focus: form.gender_focus,
+      price_range: form.price_range || undefined,
       lat: -31.6333,
       lng: -60.7,
       legal_name: form.name,
@@ -123,8 +128,8 @@ export default function SettingsPage() {
 
     if (!res.ok) {
       try {
-        const { error: err } = await res.json()
-        setError(err ?? 'Error al guardar')
+        const json = await res.json()
+        setError(json.error ?? `Error ${res.status}: intentá de nuevo`)
       } catch {
         setError(`Error ${res.status}: intentá de nuevo`)
       }

@@ -27,9 +27,9 @@ const CreateStoreSchema = z.object({
   lat: z.number(),
   lng: z.number(),
   hours: z.record(z.string(), z.string()).optional(),
-  style_tags: z.array(z.string()).min(1),
-  gender_focus: z.array(z.string()).min(1),
-  price_range: z.enum(['economico', 'medio', 'premium']),
+  style_tags: z.array(z.string()).default([]),
+  gender_focus: z.array(z.string()).default([]),
+  price_range: z.enum(['economico', 'medio', 'premium']).optional(),
   target_age: z.string().optional(),
   cover_image_url: z.string().url().optional(),
   logo_url: z.string().url().optional(),
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     const slug = await generateUniqueSlug(data.name)
-    const { hours, ...rest } = data
+    const { hours, price_range, ...rest } = data
 
     const store = await prisma.store.create({
       data: {
@@ -141,6 +141,7 @@ export async function POST(request: NextRequest) {
         slug,
         owner_id: user.id,
         city: 'Santa Fe',
+        price_range: price_range ?? 'economico',
         ...(hours && { hours: hours as Prisma.InputJsonValue }),
       },
     })

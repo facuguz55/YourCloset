@@ -122,6 +122,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = CreateStoreSchema.parse(body)
 
+    // Garantizar que el usuario existe en public.users (por si el trigger falló)
+    await prisma.user.upsert({
+      where: { id: user.id },
+      update: {},
+      create: {
+        id: user.id,
+        email: user.email!,
+        name: (user.user_metadata?.name as string | undefined) ?? null,
+      },
+    })
+
     const existing = await prisma.store.findFirst({
       where: { owner_id: user.id, is_active: true },
     })
@@ -155,8 +166,9 @@ export async function POST(request: NextRequest) {
       )
     }
     console.error('[POST /api/stores]', err)
+    const msg = process.env.NODE_ENV === 'development' && err instanceof Error ? err.message : 'Error interno'
     return NextResponse.json<ApiError>(
-      { error: 'Error interno', code: 'INTERNAL_ERROR' },
+      { error: msg, code: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }

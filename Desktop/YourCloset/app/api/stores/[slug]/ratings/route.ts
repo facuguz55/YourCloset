@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { admin } from '@/lib/supabase/admin'
 import type { ApiSuccess, ApiError } from '@/lib/types'
 
 const POSITIVE_TAGS = ['buena_atencion', 'gran_variedad', 'buen_precio', 'estilo_unico', 'facil_ubicar'] as const
@@ -15,7 +15,6 @@ const RatingSchema = z.object({
 
 type Params = { params: { slug: string } }
 
-// POST /api/stores/[slug]/ratings — valorar un local (una vez por usuario)
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     const supabase = createClient()
@@ -27,10 +26,13 @@ export async function POST(request: NextRequest, { params }: Params) {
       )
     }
 
-    const store = await prisma.store.findUnique({
-      where: { slug: params.slug, is_active: true },
-      select: { id: true },
-    })
+    const { data: store } = await admin
+      .from('stores')
+      .select('id')
+      .eq('slug', params.slug)
+      .eq('is_active', true)
+      .maybeSingle()
+
     if (!store) {
       return NextResponse.json<ApiError>(
         { error: 'Local no encontrado', code: 'NOT_FOUND' },
@@ -39,23 +41,45 @@ export async function POST(request: NextRequest, { params }: Params) {
     }
 
     const body = await request.json()
-    const data = RatingSchema.parse(body)
+    const parsed = RatingSchema.parse(body)
 
-    const rating = await prisma.storeRating.upsert({
-      where: { store_id_user_id: { store_id: store.id, user_id: user.id } },
-      create: {
-        store_id: store.id,
-        user_id: user.id,
-        stars: data.stars,
-        positive_tags: data.positive_tags as string[],
-        negative_tags: data.negative_tags as string[],
-      },
-      update: {
-        stars: data.stars,
-        positive_tags: data.positive_tags as string[],
-        negative_tags: data.negative_tags as string[],
-      },
-    })
+    const { data: existing } = await admin
+      .from('store_ratings')
+      .select('id')
+      .eq('store_id', store.id)
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    let rating
+    if (existing) {
+      const { data, error } = await admin
+        .from('store_ratings')
+        .update({
+          stars: parsed.stars,
+          positive_tags: parsed.positive_tags as string[],
+          negative_tags: parsed.negative_tags as string[],
+        })
+        .eq('id', existing.id)
+        .select()
+        .single()
+      if (error) throw error
+      rating = data
+    } else {
+      const { data, error } = await admin
+        .from('store_ratings')
+        .insert({
+          id: crypto.randomUUID(),
+          store_id: store.id,
+          user_id: user.id,
+          stars: parsed.stars,
+          positive_tags: parsed.positive_tags as string[],
+          negative_tags: parsed.negative_tags as string[],
+        })
+        .select()
+        .single()
+      if (error) throw error
+      rating = data
+    }
 
     return NextResponse.json<ApiSuccess<typeof rating>>({ data: rating }, { status: 201 })
   } catch (err) {

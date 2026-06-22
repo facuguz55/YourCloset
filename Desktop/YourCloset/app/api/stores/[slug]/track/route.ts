@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
-import type { ApiSuccess, ApiError } from '@/lib/types'
+import { admin } from '@/lib/supabase/admin'
+import type { ApiSuccess } from '@/lib/types'
 
 const TrackSchema = z.object({
   event_type: z.enum([
@@ -17,33 +17,33 @@ const TrackSchema = z.object({
 
 type Params = { params: { slug: string } }
 
-// POST /api/stores/[slug]/track — registrar evento de analytics (fire and forget)
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    const store = await prisma.store.findUnique({
-      where: { slug: params.slug, is_active: true },
-      select: { id: true },
-    })
+    const { data: store } = await admin
+      .from('stores')
+      .select('id')
+      .eq('slug', params.slug)
+      .eq('is_active', true)
+      .maybeSingle()
+
     if (!store) return NextResponse.json({ data: null })
 
     const body = await request.json()
     const data = TrackSchema.parse(body)
 
-    await prisma.storeAnalytics.create({
-      data: {
-        store_id: store.id,
-        event_type: data.event_type,
-        product_id: data.product_id,
-        user_id: user?.id,
-      },
+    await admin.from('store_analytics').insert({
+      id: crypto.randomUUID(),
+      store_id: store.id,
+      event_type: data.event_type,
+      product_id: data.product_id ?? null,
+      user_id: user?.id ?? null,
     })
 
     return NextResponse.json<ApiSuccess<null>>({ data: null })
   } catch (err) {
-    // No bloqueamos la UX si el tracking falla
     console.error('[POST /api/stores/[slug]/track]', err)
     return NextResponse.json({ data: null })
   }

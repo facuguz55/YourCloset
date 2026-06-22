@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { admin } from '@/lib/supabase/admin'
 import type { ApiSuccess, ApiError } from '@/lib/types'
 
 const UpdateProductSchema = z.object({
@@ -22,7 +22,6 @@ const UpdateProductSchema = z.object({
 
 type Params = { params: { slug: string; id: string } }
 
-// PUT /api/stores/[slug]/products/[id] — editar prenda
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     const supabase = createClient()
@@ -34,7 +33,12 @@ export async function PUT(request: NextRequest, { params }: Params) {
       )
     }
 
-    const store = await prisma.store.findUnique({ where: { slug: params.slug } })
+    const { data: store } = await admin
+      .from('stores')
+      .select('id, owner_id')
+      .eq('slug', params.slug)
+      .maybeSingle()
+
     if (!store) {
       return NextResponse.json<ApiError>(
         { error: 'Local no encontrado', code: 'NOT_FOUND' },
@@ -50,9 +54,13 @@ export async function PUT(request: NextRequest, { params }: Params) {
       )
     }
 
-    const product = await prisma.product.findFirst({
-      where: { id: params.id, store_id: store.id },
-    })
+    const { data: product } = await admin
+      .from('products')
+      .select('id, is_featured')
+      .eq('id', params.id)
+      .eq('store_id', store.id)
+      .maybeSingle()
+
     if (!product) {
       return NextResponse.json<ApiError>(
         { error: 'Prenda no encontrada', code: 'NOT_FOUND' },
@@ -64,10 +72,14 @@ export async function PUT(request: NextRequest, { params }: Params) {
     const data = UpdateProductSchema.parse(body)
 
     if (data.is_featured === true && !product.is_featured) {
-      const featuredCount = await prisma.product.count({
-        where: { store_id: store.id, is_featured: true, is_active: true },
-      })
-      if (featuredCount >= 6) {
+      const { count } = await admin
+        .from('products')
+        .select('id', { count: 'exact', head: true })
+        .eq('store_id', store.id)
+        .eq('is_featured', true)
+        .eq('is_active', true)
+
+      if ((count ?? 0) >= 6) {
         return NextResponse.json<ApiError>(
           { error: 'Máximo 6 prendas destacadas', code: 'FEATURED_LIMIT' },
           { status: 422 }
@@ -75,10 +87,14 @@ export async function PUT(request: NextRequest, { params }: Params) {
       }
     }
 
-    const updated = await prisma.product.update({
-      where: { id: params.id },
-      data,
-    })
+    const { data: updated, error } = await admin
+      .from('products')
+      .update(data)
+      .eq('id', params.id)
+      .select()
+      .single()
+
+    if (error) throw error
 
     return NextResponse.json<ApiSuccess<typeof updated>>({ data: updated })
   } catch (err) {
@@ -96,7 +112,6 @@ export async function PUT(request: NextRequest, { params }: Params) {
   }
 }
 
-// DELETE /api/stores/[slug]/products/[id] — eliminar prenda (soft delete)
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     const supabase = createClient()
@@ -108,7 +123,12 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       )
     }
 
-    const store = await prisma.store.findUnique({ where: { slug: params.slug } })
+    const { data: store } = await admin
+      .from('stores')
+      .select('id, owner_id')
+      .eq('slug', params.slug)
+      .maybeSingle()
+
     if (!store) {
       return NextResponse.json<ApiError>(
         { error: 'Local no encontrado', code: 'NOT_FOUND' },
@@ -124,9 +144,13 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       )
     }
 
-    const product = await prisma.product.findFirst({
-      where: { id: params.id, store_id: store.id },
-    })
+    const { data: product } = await admin
+      .from('products')
+      .select('id')
+      .eq('id', params.id)
+      .eq('store_id', store.id)
+      .maybeSingle()
+
     if (!product) {
       return NextResponse.json<ApiError>(
         { error: 'Prenda no encontrada', code: 'NOT_FOUND' },
@@ -134,11 +158,12 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       )
     }
 
-    // Soft delete — preserva historial de analytics
-    await prisma.product.update({
-      where: { id: params.id },
-      data: { is_active: false, is_featured: false },
-    })
+    const { error } = await admin
+      .from('products')
+      .update({ is_active: false, is_featured: false })
+      .eq('id', params.id)
+
+    if (error) throw error
 
     return NextResponse.json<ApiSuccess<{ id: string }>>({ data: { id: params.id } })
   } catch (err) {

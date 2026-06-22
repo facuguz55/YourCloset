@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { admin } from '@/lib/supabase/admin'
 import type { ApiSuccess, ApiError } from '@/lib/types'
 
-// GET /api/dashboard/analytics — métricas del local del store_owner autenticado
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient()
@@ -23,10 +22,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const store = await prisma.store.findFirst({
-      where: { owner_id: user.id, is_active: true },
-      select: { id: true, name: true, slug: true },
-    })
+    const { data: store } = await admin
+      .from('stores')
+      .select('id, name, slug')
+      .eq('owner_id', user.id)
+      .eq('is_active', true)
+      .maybeSingle()
+
     if (!store) {
       return NextResponse.json<ApiError>(
         { error: 'No tenés un local registrado', code: 'NO_STORE' },
@@ -36,24 +38,29 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const days = Math.min(parseInt(searchParams.get('days') ?? '30'), 90)
-    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
 
-    const [events, ratings, products] = await Promise.all([
-      prisma.storeAnalytics.findMany({
-        where: { store_id: store.id, created_at: { gte: since } },
-        select: { event_type: true, product_id: true, created_at: true },
-      }),
-      prisma.storeRating.findMany({
-        where: { store_id: store.id },
-        select: { stars: true, positive_tags: true, negative_tags: true },
-      }),
-      prisma.product.findMany({
-        where: { store_id: store.id, is_active: true },
-        select: { id: true, name: true },
-      }),
+    const [eventsResult, ratingsResult, productsResult] = await Promise.all([
+      admin
+        .from('store_analytics')
+        .select('event_type, product_id, created_at')
+        .eq('store_id', store.id)
+        .gte('created_at', since),
+      admin
+        .from('store_ratings')
+        .select('stars, positive_tags, negative_tags')
+        .eq('store_id', store.id),
+      admin
+        .from('products')
+        .select('id, name')
+        .eq('store_id', store.id)
+        .eq('is_active', true),
     ])
 
-    // Agregaciones
+    const events = eventsResult.data ?? []
+    const ratings = ratingsResult.data ?? []
+    const products = productsResult.data ?? []
+
     const byType = events.reduce(
       (acc, e) => {
         acc[e.event_type] = (acc[e.event_type] ?? 0) + 1
@@ -84,8 +91,8 @@ export async function GET(request: NextRequest) {
           ) / 10
         : null
 
-    const allPositiveTags = ratings.flatMap((r) => r.positive_tags)
-    const allNegativeTags = ratings.flatMap((r) => r.negative_tags)
+    const allPositiveTags = ratings.flatMap((r) => r.positive_tags as string[])
+    const allNegativeTags = ratings.flatMap((r) => r.negative_tags as string[])
     const tagCount = (tags: string[]) =>
       tags.reduce((acc, t) => { acc[t] = (acc[t] ?? 0) + 1; return acc }, {} as Record<string, number>)
 

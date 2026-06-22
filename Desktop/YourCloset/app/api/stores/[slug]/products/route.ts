@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { admin } from '@/lib/supabase/admin'
 import type { ApiSuccess, ApiError } from '@/lib/types'
 
 const CreateProductSchema = z.object({
@@ -21,7 +21,6 @@ const CreateProductSchema = z.object({
 
 type Params = { params: { slug: string } }
 
-// GET /api/stores/[slug]/products — catálogo público del local
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     const supabase = createClient()
@@ -33,10 +32,13 @@ export async function GET(request: NextRequest, { params }: Params) {
       )
     }
 
-    const store = await prisma.store.findUnique({
-      where: { slug: params.slug, is_active: true },
-      select: { id: true },
-    })
+    const { data: store } = await admin
+      .from('stores')
+      .select('id')
+      .eq('slug', params.slug)
+      .eq('is_active', true)
+      .maybeSingle()
+
     if (!store) {
       return NextResponse.json<ApiError>(
         { error: 'Local no encontrado', code: 'NOT_FOUND' },
@@ -44,12 +46,17 @@ export async function GET(request: NextRequest, { params }: Params) {
       )
     }
 
-    const products = await prisma.product.findMany({
-      where: { store_id: store.id, is_active: true },
-      orderBy: [{ is_featured: 'desc' }, { created_at: 'desc' }],
-    })
+    const { data: products, error } = await admin
+      .from('products')
+      .select('*')
+      .eq('store_id', store.id)
+      .eq('is_active', true)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
 
-    return NextResponse.json<ApiSuccess<typeof products>>({ data: products })
+    if (error) throw error
+
+    return NextResponse.json<ApiSuccess<typeof products>>({ data: products ?? [] })
   } catch (err) {
     console.error('[GET /api/stores/[slug]/products]', err)
     return NextResponse.json<ApiError>(
@@ -59,7 +66,6 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-// POST /api/stores/[slug]/products — agregar prenda (solo el owner)
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     const supabase = createClient()
@@ -71,7 +77,12 @@ export async function POST(request: NextRequest, { params }: Params) {
       )
     }
 
-    const store = await prisma.store.findUnique({ where: { slug: params.slug } })
+    const { data: store } = await admin
+      .from('stores')
+      .select('id, owner_id')
+      .eq('slug', params.slug)
+      .maybeSingle()
+
     if (!store) {
       return NextResponse.json<ApiError>(
         { error: 'Local no encontrado', code: 'NOT_FOUND' },
@@ -98,10 +109,14 @@ export async function POST(request: NextRequest, { params }: Params) {
     const data = CreateProductSchema.parse(body)
 
     if (data.is_featured) {
-      const featuredCount = await prisma.product.count({
-        where: { store_id: store.id, is_featured: true, is_active: true },
-      })
-      if (featuredCount >= 6) {
+      const { count } = await admin
+        .from('products')
+        .select('id', { count: 'exact', head: true })
+        .eq('store_id', store.id)
+        .eq('is_featured', true)
+        .eq('is_active', true)
+
+      if ((count ?? 0) >= 6) {
         return NextResponse.json<ApiError>(
           { error: 'Máximo 6 prendas destacadas', code: 'FEATURED_LIMIT' },
           { status: 422 }
@@ -109,9 +124,13 @@ export async function POST(request: NextRequest, { params }: Params) {
       }
     }
 
-    const product = await prisma.product.create({
-      data: { ...data, store_id: store.id },
-    })
+    const { data: product, error } = await admin
+      .from('products')
+      .insert({ id: crypto.randomUUID(), ...data, store_id: store.id })
+      .select()
+      .single()
+
+    if (error) throw error
 
     return NextResponse.json<ApiSuccess<typeof product>>({ data: product }, { status: 201 })
   } catch (err) {

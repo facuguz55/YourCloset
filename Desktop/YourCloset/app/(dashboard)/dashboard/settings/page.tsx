@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import { Plus, X } from 'lucide-react'
 import CoverCropper from '@/components/store/CoverCropper'
+import { useStore } from '@/app/(dashboard)/store-context'
 
 const STYLE_OPTIONS = ['streetwear', 'casual', 'formal', 'sport', 'bohemio', 'minimalista']
 const GENDER_OPTIONS = ['masculino', 'femenino', 'unisex']

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { admin } from '@/lib/supabase/admin'
 import type { ApiSuccess, ApiError } from '@/lib/types'
 
 const StyleProfileSchema = z.object({
@@ -11,7 +11,6 @@ const StyleProfileSchema = z.object({
   talle: z.string().optional(),
 })
 
-// POST /api/user/style-profile — guardar/actualizar perfil de estilo del usuario
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient()
@@ -26,24 +25,29 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const styleProfile = StyleProfileSchema.parse(body)
 
-    const updated = await prisma.user.upsert({
-      where: { id: user.id },
-      update: {
-        style_profile: styleProfile,
-        onboarding_done: true,
-      },
-      create: {
+    const { data: existing } = await admin
+      .from('users')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (existing) {
+      await admin.from('users')
+        .update({ style_profile: styleProfile, onboarding_done: true })
+        .eq('id', user.id)
+    } else {
+      await admin.from('users').insert({
         id: user.id,
         email: user.email!,
-        name: user.user_metadata?.full_name ?? null,
-        avatar_url: user.user_metadata?.avatar_url ?? null,
+        name: (user.user_metadata?.full_name as string | undefined) ?? null,
+        avatar_url: (user.user_metadata?.avatar_url as string | undefined) ?? null,
         style_profile: styleProfile,
         onboarding_done: true,
-      },
-    })
+      })
+    }
 
     return NextResponse.json<ApiSuccess<{ onboarding_done: boolean }>>({
-      data: { onboarding_done: updated.onboarding_done },
+      data: { onboarding_done: true },
     })
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -60,7 +64,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/user/style-profile — obtener perfil de estilo actual
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient()
@@ -72,10 +75,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const dbUser = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: { style_profile: true, onboarding_done: true },
-    })
+    const { data: dbUser } = await admin
+      .from('users')
+      .select('style_profile, onboarding_done')
+      .eq('id', user.id)
+      .maybeSingle()
 
     return NextResponse.json<ApiSuccess<typeof dbUser>>({ data: dbUser })
   } catch (err) {

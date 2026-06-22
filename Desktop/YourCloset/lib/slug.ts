@@ -1,4 +1,4 @@
-import { prisma } from './prisma'
+import { admin } from './supabase/admin'
 
 export function slugify(text: string): string {
   return text
@@ -17,8 +17,8 @@ export async function generateUniqueSlug(name: string): Promise<string> {
   let attempt = 1
 
   while (true) {
-    const existing = await prisma.store.findUnique({ where: { slug } })
-    if (!existing) return slug
+    const { data } = await admin.from('stores').select('id').eq('slug', slug).maybeSingle()
+    if (!data) return slug
     slug = `${base}-${++attempt}`
   }
 }

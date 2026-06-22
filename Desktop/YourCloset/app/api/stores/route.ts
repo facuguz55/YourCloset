@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { Prisma } from '@prisma/client'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { admin } from '@/lib/supabase/admin'
 import { generateUniqueSlug } from '@/lib/slug'
 import type { ApiSuccess, ApiError } from '@/lib/types'
 
@@ -35,7 +34,6 @@ const CreateStoreSchema = z.object({
   logo_url: z.string().url().optional(),
 })
 
-// GET /api/stores — listar locales con filtros (para el mapa)
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient()
@@ -50,30 +48,30 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const filters = StoreFiltersSchema.parse(Object.fromEntries(searchParams))
 
-    const stores = await prisma.store.findMany({
-      where: {
-        is_active: true,
-        ...(filters.style && { style_tags: { has: filters.style } }),
-        ...(filters.price_range && { price_range: filters.price_range }),
-      },
-      include: {
-        _count: { select: { ratings: true } },
-        ratings: { select: { stars: true } },
-      },
-      take: filters.limit,
-    })
+    let query = admin
+      .from('stores')
+      .select('*, ratings:store_ratings(stars)')
+      .eq('is_active', true)
+      .limit(filters.limit)
 
-    const storesWithRating = stores
+    if (filters.style) query = query.contains('style_tags', [filters.style])
+    if (filters.price_range) query = query.eq('price_range', filters.price_range)
+
+    const { data: stores, error } = await query
+    if (error) throw error
+
+    const storesWithRating = (stores ?? [])
       .map((store) => {
+        const ratings = (store.ratings ?? []) as { stars: number }[]
         const avg =
-          store.ratings.length > 0
-            ? store.ratings.reduce((sum, r) => sum + r.stars, 0) / store.ratings.length
+          ratings.length > 0
+            ? ratings.reduce((sum, r) => sum + r.stars, 0) / ratings.length
             : null
-        const { ratings, ...rest } = store
+        const { ratings: _r, ...rest } = store
         return {
           ...rest,
           avg_rating: avg ? Math.round(avg * 10) / 10 : null,
-          rating_count: store._count.ratings,
+          rating_count: ratings.length,
         }
       })
       .filter((s) => {
@@ -99,7 +97,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/stores — crear local (solo store_owner)
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient()
@@ -122,20 +119,28 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = CreateStoreSchema.parse(body)
 
-    // Garantizar que el usuario existe en public.users (por si el trigger falló)
-    await prisma.user.upsert({
-      where: { id: user.id },
-      update: {},
-      create: {
+    // Garantizar que el usuario existe en public.users
+    const { data: existingUser } = await admin
+      .from('users')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (!existingUser) {
+      await admin.from('users').insert({
         id: user.id,
         email: user.email!,
         name: (user.user_metadata?.name as string | undefined) ?? null,
-      },
-    })
+      })
+    }
 
-    const existing = await prisma.store.findFirst({
-      where: { owner_id: user.id, is_active: true },
-    })
+    const { data: existing } = await admin
+      .from('stores')
+      .select('id')
+      .eq('owner_id', user.id)
+      .eq('is_active', true)
+      .maybeSingle()
+
     if (existing) {
       return NextResponse.json<ApiError>(
         { error: 'Ya tenés un local registrado', code: 'STORE_EXISTS' },
@@ -146,16 +151,21 @@ export async function POST(request: NextRequest) {
     const slug = await generateUniqueSlug(data.name)
     const { hours, price_range, ...rest } = data
 
-    const store = await prisma.store.create({
-      data: {
+    const { data: store, error } = await admin
+      .from('stores')
+      .insert({
+        id: crypto.randomUUID(),
         ...rest,
         slug,
         owner_id: user.id,
         city: 'Santa Fe',
         price_range: price_range ?? 'economico',
-        ...(hours && { hours: hours as Prisma.InputJsonValue }),
-      },
-    })
+        hours: hours ?? null,
+      })
+      .select()
+      .single()
+
+    if (error) throw error
 
     return NextResponse.json<ApiSuccess<typeof store>>({ data: store }, { status: 201 })
   } catch (err) {

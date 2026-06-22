@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { Prisma } from '@prisma/client'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { admin } from '@/lib/supabase/admin'
 import type { ApiSuccess, ApiError } from '@/lib/types'
 
 const UpdateStoreSchema = z.object({
@@ -25,7 +24,6 @@ const UpdateStoreSchema = z.object({
 
 type Params = { params: { slug: string } }
 
-// GET /api/stores/[slug] — perfil público del local
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     const supabase = createClient()
@@ -37,20 +35,12 @@ export async function GET(request: NextRequest, { params }: Params) {
       )
     }
 
-    const store = await prisma.store.findUnique({
-      where: { slug: params.slug, is_active: true },
-      include: {
-        products: {
-          where: { is_active: true },
-          orderBy: [{ is_featured: 'desc' }, { created_at: 'desc' }],
-        },
-        ratings: {
-          select: { stars: true, positive_tags: true, negative_tags: true, created_at: true },
-          orderBy: { created_at: 'desc' },
-        },
-        _count: { select: { ratings: true, products: true } },
-      },
-    })
+    const { data: store } = await admin
+      .from('stores')
+      .select('*')
+      .eq('slug', params.slug)
+      .eq('is_active', true)
+      .maybeSingle()
 
     if (!store) {
       return NextResponse.json<ApiError>(
@@ -59,18 +49,42 @@ export async function GET(request: NextRequest, { params }: Params) {
       )
     }
 
+    const [productsResult, ratingsResult] = await Promise.all([
+      admin
+        .from('products')
+        .select('*')
+        .eq('store_id', store.id)
+        .eq('is_active', true)
+        .order('is_featured', { ascending: false })
+        .order('created_at', { ascending: false }),
+      admin
+        .from('store_ratings')
+        .select('stars, positive_tags, negative_tags, created_at')
+        .eq('store_id', store.id)
+        .order('created_at', { ascending: false }),
+    ])
+
+    const products = productsResult.data ?? []
+    const ratings = ratingsResult.data ?? []
+
     const avg_rating =
-      store.ratings.length > 0
+      ratings.length > 0
         ? Math.round(
-            (store.ratings.reduce((sum, r) => sum + r.stars, 0) / store.ratings.length) * 10
+            (ratings.reduce((sum: number, r: { stars: number }) => sum + r.stars, 0) / ratings.length) * 10
           ) / 10
         : null
 
-    // Ocultar datos legales en respuesta pública
+    // Ocultar datos legales
     const { legal_name: _ln, cuit: _c, ...publicData } = store
 
-    return NextResponse.json<ApiSuccess<typeof publicData & { avg_rating: number | null }>>({
-      data: { ...publicData, avg_rating },
+    return NextResponse.json<ApiSuccess<object>>({
+      data: {
+        ...publicData,
+        products,
+        ratings,
+        avg_rating,
+        _count: { ratings: ratings.length, products: products.length },
+      },
     })
   } catch (err) {
     console.error('[GET /api/stores/[slug]]', err)
@@ -81,7 +95,6 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-// PUT /api/stores/[slug] — editar local (solo el owner)
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     const supabase = createClient()
@@ -93,7 +106,12 @@ export async function PUT(request: NextRequest, { params }: Params) {
       )
     }
 
-    const store = await prisma.store.findUnique({ where: { slug: params.slug } })
+    const { data: store } = await admin
+      .from('stores')
+      .select('id, owner_id')
+      .eq('slug', params.slug)
+      .maybeSingle()
+
     if (!store) {
       return NextResponse.json<ApiError>(
         { error: 'Local no encontrado', code: 'NOT_FOUND' },
@@ -110,16 +128,20 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
 
     const body = await request.json()
-    const data = UpdateStoreSchema.parse(body)
-    const { hours, ...rest } = data
+    const { hours, ...rest } = UpdateStoreSchema.parse(body)
 
-    const updated = await prisma.store.update({
-      where: { slug: params.slug },
-      data: {
+    const { data: updated, error } = await admin
+      .from('stores')
+      .update({
         ...rest,
-        ...(hours && { hours: hours as Prisma.InputJsonValue }),
-      },
-    })
+        ...(hours !== undefined && { hours }),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('slug', params.slug)
+      .select()
+      .single()
+
+    if (error) throw error
 
     return NextResponse.json<ApiSuccess<typeof updated>>({ data: updated })
   } catch (err) {

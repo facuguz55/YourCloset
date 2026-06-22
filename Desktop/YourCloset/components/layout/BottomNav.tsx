@@ -2,14 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Map, Search, User } from 'lucide-react'
+import { Home, Map, Search, User, Layers } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useDarkMode } from '@/lib/hooks/useDarkMode'
 
 const NAV_ITEMS = [
   { href: '/home', icon: Home, label: 'Inicio' },
-  { href: '/map', icon: Map, label: 'Mapa' },
+  { href: '/swipe', icon: Layers, label: 'Swipe' },
   { href: '/search', icon: Search, label: 'Buscar' },
+  { href: '/map', icon: Map, label: 'Mapa' },
   { href: '/profile', icon: User, label: 'Mi perfil' },
 ]
 

@@ -1,17 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Bookmark } from 'lucide-react'
 import type { ProductWithStore } from '@/lib/types'
 
 interface Props {
   product: ProductWithStore
   dark?: boolean
+  initialSaved?: boolean
 }
 
-export default function ProductCard({ product, dark = false }: Props) {
+export default function ProductCard({ product, dark = false, initialSaved = false }: Props) {
   const [loaded, setLoaded] = useState(false)
+  const [saved, setSaved] = useState(initialSaved)
+  const [saving, setSaving] = useState(false)
   const imageUrl = product.image_urls?.[0]
 
   const priceLabel = product.price
@@ -22,7 +26,6 @@ export default function ProductCard({ product, dark = false }: Props) {
     ? 'Premium'
     : null
 
-  // Apple HIG: light = blanco puro, dark = #1C1C1E (secondarySystemBackground)
   const cardBg = dark ? '#1C1C1E' : '#FFFFFF'
   const cardBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
   const cardShadow = dark
@@ -33,10 +36,31 @@ export default function ProductCard({ product, dark = false }: Props) {
   const productName = dark ? '#FFFFFF' : '#1D1D1F'
   const priceColor = dark ? '#0A84FF' : '#0071E3'
 
+  const handleSave = useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (saving) return
+    setSaving(true)
+    setSaved((prev) => !prev) // optimista
+    try {
+      const res = await fetch(`/api/user/saved/${product.id}`, { method: 'POST' })
+      if (res.ok) {
+        const { data } = await res.json()
+        setSaved(data.saved)
+      } else {
+        setSaved((prev) => !prev) // revertir
+      }
+    } catch {
+      setSaved((prev) => !prev)
+    } finally {
+      setSaving(false)
+    }
+  }, [product.id, saving])
+
   return (
     <Link
       href={`/store/${product.store.slug}`}
-      className="block overflow-hidden active:scale-[0.97] transition-transform duration-150"
+      className="block overflow-hidden active:scale-[0.97] transition-transform duration-150 relative"
       style={{
         borderRadius: '16px',
         backgroundColor: cardBg,
@@ -66,6 +90,46 @@ export default function ProductCard({ product, dark = false }: Props) {
             <span className="text-[11px]" style={{ color: '#8E8E93' }}>Sin imagen</span>
           </div>
         )}
+
+        {/* Botón guardar */}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="absolute top-2 right-2 flex items-center justify-center"
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            background: dark ? 'rgba(28,28,30,0.82)' : 'rgba(255,255,255,0.82)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            border: dark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.08)',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+          aria-label={saved ? 'Quitar de guardados' : 'Guardar prenda'}
+        >
+          <Bookmark
+            size={14}
+            strokeWidth={1.5}
+            fill={saved ? (dark ? '#0A84FF' : '#0071E3') : 'none'}
+            color={saved ? (dark ? '#0A84FF' : '#0071E3') : (dark ? '#AEAEB2' : '#8E8E93')}
+          />
+        </button>
+
+        {/* Badge agotado */}
+        {(product as ProductWithStore & { is_out_of_stock?: boolean }).is_out_of_stock && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.45)' }}
+          >
+            <span
+              className="px-3 py-1 rounded-full text-white font-semibold"
+              style={{ fontSize: '12px', background: 'rgba(0,0,0,0.65)' }}
+            >
+              Agotado
+            </span>
+          </div>
+        )}
       </div>
       <div className="p-3">
         <p className="text-[11px] font-medium truncate uppercase tracking-wider" style={{ color: storeName }}>
@@ -85,7 +149,6 @@ export default function ProductCard({ product, dark = false }: Props) {
 }
 
 export function ProductCardSkeleton({ dark = false }: { dark?: boolean }) {
-  // Apple: skeletons = systemFill grays
   const cardBg = dark ? '#1C1C1E' : '#FFFFFF'
   const cardBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
   const skeletonBg = dark ? '#2C2C2E' : '#E5E5EA'

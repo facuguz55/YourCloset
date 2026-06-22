@@ -15,7 +15,7 @@ const NAV_ITEMS = [
 
 export default function BottomNav() {
   const pathname = usePathname()
-  const dark = useDarkMode()
+  const { dark } = useDarkMode()
 
   // iOS 26 Liquid Glass: specular highlight en borde superior = rasgo definitorio
   const navBg = dark

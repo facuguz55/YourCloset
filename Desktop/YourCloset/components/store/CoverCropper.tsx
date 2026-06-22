@@ -47,7 +47,7 @@ async function getCroppedBlob(imageSrc: string, pixelCrop: Area): Promise<Blob> 
 }
 
 export default function CoverCropper({ imageSrc, onCrop, onCancel }: Props) {
-  const dark = useDarkMode()
+  const { dark } = useDarkMode()
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)

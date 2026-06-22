@@ -23,5 +23,12 @@ export function useDarkMode() {
     return () => observer.disconnect()
   }, [])
 
-  return dark
+  function toggle() {
+    const next = !dark
+    setDark(next)
+    localStorage.setItem('yc-theme', next ? 'dark' : 'light')
+    document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
+  }
+
+  return { dark, toggle }
 }

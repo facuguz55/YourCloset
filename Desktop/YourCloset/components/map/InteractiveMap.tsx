@@ -115,7 +115,7 @@ function LocateButton({ dark, onLocate }: { dark: boolean; onLocate: () => void 
 }
 
 export default function InteractiveMap() {
-  const dark = useDarkMode()
+  const { dark } = useDarkMode()
   const [stores, setStores] = useState<StoreWithRating[]>([])
   const [selectedStore, setSelectedStore] = useState<StoreWithRating | null>(null)
   const [userPos, setUserPos] = useState<[number, number] | null>(null)

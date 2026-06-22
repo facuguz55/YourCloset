@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { Search as SearchIcon, SlidersHorizontal, X, Frown } from 'lucide-react'
 import SearchBar from '@/components/search/SearchBar'
 import SearchFilters from '@/components/search/SearchFilters'
 import ProductCard, { ProductCardSkeleton } from '@/components/search/ProductCard'
@@ -10,8 +11,17 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 const EMPTY_FILTERS: Filters = {}
 
+const FILTER_LABELS: Partial<Record<keyof Filters, string>> = {
+  category: 'Categoría',
+  style: 'Estilo',
+  gender: 'Género',
+  price_range: 'Precio',
+  rating_min: 'Rating',
+  order_by: 'Orden',
+}
+
 export default function SearchPage() {
-  const dark = useDarkMode()
+  const { dark } = useDarkMode()
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
   const [pendingFilters, setPendingFilters] = useState<Filters>(EMPTY_FILTERS)
@@ -52,9 +62,16 @@ export default function SearchPage() {
     setFiltersOpen(false)
   }
 
-  const activeFilterCount = Object.values(filters).filter(Boolean).length
+  function removeFilter(key: keyof Filters) {
+    const next = { ...filters }
+    delete next[key]
+    setFilters(next)
+  }
 
-  // iOS 26 Liquid Glass
+  const activeChips = Object.entries(filters)
+    .filter(([, v]) => v !== undefined && v !== '')
+    .map(([k, v]) => ({ key: k as keyof Filters, value: String(v) }))
+
   const headerBg = dark ? 'rgba(10,10,12,0.82)' : 'rgba(248,248,252,0.82)'
   const headerBorder = dark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)'
   const headerShadow = dark
@@ -63,6 +80,7 @@ export default function SearchPage() {
   const textPrimary = dark ? '#FFFFFF' : '#000000'
   const textSecondary = dark ? '#8E8E93' : '#6E6E73'
   const accentColor = dark ? '#0A84FF' : '#0071E3'
+  const chipBg = dark ? 'rgba(10,132,255,0.18)' : 'rgba(0,113,227,0.12)'
 
   return (
     <div className="min-h-screen">
@@ -86,18 +104,29 @@ export default function SearchPage() {
             setPendingFilters(filters)
             setFiltersOpen(!filtersOpen)
           }}
-          filterActive={activeFilterCount > 0}
+          filterActive={activeChips.length > 0}
         />
-        {activeFilterCount > 0 && (
-          <div className="flex items-center gap-2 mt-2">
-            <span style={{ fontSize: '13px', color: textSecondary }}>
-              {activeFilterCount} filtro{activeFilterCount > 1 ? 's' : ''} activo{activeFilterCount > 1 ? 's' : ''}
-            </span>
+        {/* Chips de filtros activos */}
+        {activeChips.length > 0 && (
+          <div className="flex items-center gap-2 mt-2 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
+            {activeChips.map(({ key, value }) => (
+              <button
+                key={key}
+                onClick={() => removeFilter(key)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full flex-none"
+                style={{ backgroundColor: chipBg, minHeight: '28px' }}
+              >
+                <span style={{ fontSize: '12px', color: accentColor, fontWeight: 600 }}>
+                  {FILTER_LABELS[key] ?? key}: {value}
+                </span>
+                <X size={11} strokeWidth={2.5} color={accentColor} />
+              </button>
+            ))}
             <button
               onClick={handleClearFilters}
-              style={{ fontSize: '13px', color: accentColor, fontWeight: 600 }}
+              style={{ fontSize: '12px', color: textSecondary, fontWeight: 500, flexShrink: 0 }}
             >
-              Limpiar
+              Limpiar todo
             </button>
           </div>
         )}
@@ -107,8 +136,10 @@ export default function SearchPage() {
       <div className="px-4 pt-4 max-w-2xl mx-auto">
         {!searched && !query && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <span style={{ fontSize: '48px' }}>🔍</span>
-            <p className="mt-4 font-semibold" style={{ fontSize: '17px', color: textPrimary }}>
+            <div className="w-16 h-16 rounded-[20px] flex items-center justify-center mb-4" style={{ background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+              <SearchIcon size={28} strokeWidth={1.5} color={textSecondary} />
+            </div>
+            <p className="font-semibold" style={{ fontSize: '17px', color: textPrimary }}>
               Buscá lo que querés usar
             </p>
             <p className="mt-1" style={{ fontSize: '15px', color: textSecondary }}>
@@ -129,13 +160,24 @@ export default function SearchPage() {
 
         {!loading && searched && results.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <span style={{ fontSize: '48px' }}>🤷</span>
-            <p className="mt-4 font-semibold" style={{ fontSize: '17px', color: textPrimary }}>
+            <div className="w-16 h-16 rounded-[20px] flex items-center justify-center mb-4" style={{ background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+              <Frown size={28} strokeWidth={1.5} color={textSecondary} />
+            </div>
+            <p className="font-semibold" style={{ fontSize: '17px', color: textPrimary }}>
               Sin resultados
             </p>
             <p className="mt-1 max-w-xs" style={{ fontSize: '15px', color: textSecondary }}>
               No encontramos prendas con esos filtros. Probá con otros términos o ampliá la búsqueda.
             </p>
+            {activeChips.length > 0 && (
+              <button
+                onClick={handleClearFilters}
+                className="mt-4 px-5 py-2.5 rounded-[10px] font-semibold"
+                style={{ backgroundColor: accentColor, color: '#FFFFFF', fontSize: '14px' }}
+              >
+                Limpiar filtros
+              </button>
+            )}
           </div>
         )}
 
@@ -161,7 +203,7 @@ export default function SearchPage() {
           <>
             <motion.div
               className="fixed inset-0 z-40"
-              style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+              style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -179,6 +221,7 @@ export default function SearchPage() {
                 onChange={setPendingFilters}
                 onApply={handleApplyFilters}
                 onClear={handleClearFilters}
+                dark={dark}
               />
             </motion.div>
           </>

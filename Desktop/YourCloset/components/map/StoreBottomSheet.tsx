@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function StoreBottomSheet({ store, onClose, onTrack }: Props) {
-  const dark = useDarkMode()
+  const { dark } = useDarkMode()
 
   const sheetBg = dark ? '#1C1C1E' : '#FFFFFF'
   const textPrimary = dark ? '#FFFFFF' : '#1D1D1F'

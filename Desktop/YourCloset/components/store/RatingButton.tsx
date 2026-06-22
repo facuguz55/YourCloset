@@ -25,7 +25,7 @@ interface Props {
 }
 
 export default function RatingButton({ slug }: Props) {
-  const dark = useDarkMode()
+  const { dark } = useDarkMode()
   const [open, setOpen] = useState(false)
   const [stars, setStars] = useState(0)
   const [hovered, setHovered] = useState(0)

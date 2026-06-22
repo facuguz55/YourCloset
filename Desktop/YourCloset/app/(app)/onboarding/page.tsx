@@ -41,7 +41,7 @@ const TOTAL_STEPS = 4
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const dark = useDarkMode()
+  const { dark } = useDarkMode()
   const [step, setStep] = useState(1)
   const [selectedStyles, setSelectedStyles] = useState<string[]>([])
   const [gender, setGender] = useState('')

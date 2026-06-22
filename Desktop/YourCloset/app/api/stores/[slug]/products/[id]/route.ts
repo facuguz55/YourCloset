@@ -18,6 +18,7 @@ const UpdateProductSchema = z.object({
   video_url: z.string().url().optional(),
   is_featured: z.boolean().optional(),
   is_active: z.boolean().optional(),
+  is_out_of_stock: z.boolean().optional(),
 })
 
 type Params = { params: { slug: string; id: string } }
@@ -110,6 +111,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
       { status: 500 }
     )
   }
+}
+
+// PATCH reutiliza la misma lógica que PUT para actualizaciones parciales
+export async function PATCH(request: NextRequest, { params }: Params) {
+  return PUT(request, { params })
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {

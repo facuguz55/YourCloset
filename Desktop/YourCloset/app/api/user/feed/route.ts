@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       }
       if (params.cursor) q2 = q2.gt('id', params.cursor)
       if (excludeIds.length > 0) {
-        q2 = q2.not('id', 'in', ())
+        q2 = q2.not('id', 'in', `(${excludeIds.join(',')})`)
       }
 
       const { data: extras } = await q2

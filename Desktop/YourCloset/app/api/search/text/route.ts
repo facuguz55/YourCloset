@@ -32,12 +32,12 @@ export async function POST(request: NextRequest) {
 
     // Guardar historial sin bloquear la respuesta
     if (filters.query) {
-      admin.from('search_history').insert({
+      void admin.from('search_history').insert({
         id: crypto.randomUUID(),
         user_id: user.id,
         query: filters.query,
         query_type: 'text',
-      }).then(() => {}).catch(() => {})
+      })
     }
 
     let q = admin
